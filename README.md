@@ -13,7 +13,7 @@ there and development on this project will be discontinued.
 
 ## Usage
 
-__Leiningen__ ([via Clojars](http://clojars.org/xsc/lein-ancient))
+__Leiningen__ ([via Clojars](https://clojars.org/lein-ancient))
 
 Put the following into the `:plugins` vector of `~/.lein/profiles.clj`:
 
