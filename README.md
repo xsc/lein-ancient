@@ -18,7 +18,7 @@ __Leiningen__ ([via Clojars](https://clojars.org/lein-ancient))
 Put the following into the `:plugins` vector of the `:user` profile in your `~/.lein/profiles.clj`:
 
 ```clojure
-[lein-ancient "0.1.2"]
+[lein-ancient "0.2.0"]
 ```
 
 __Command Line__
@@ -37,6 +37,25 @@ $ lein ancient :all
 [com.taoensso/timbre "2.1.2"] is available but we use "2.0.1"
 [lein-tarsier/lein-tarsier "0.10.0"] is available but we use "0.9.4"
 ```
+
+To see available options, call `lein help ancient`:
+
+```bash
+$ lein help ancient
+Check your Projects for outdated Dependencies. 
+   
+   Commandline Options:
+  
+     :all                 Check Dependencies and Plugins.
+     :dependencies        Check Dependencies. (default)
+     :plugins             Check Plugins.
+     :no-profiles         Do not check Dependencies/Plugins in Profiles.
+     :allow-qualified     Allow '*-alpha*' versions & co. to be reported as new.
+     :allow-snapshots     Allow '*-SNAPSHOT' versions to be reported as new.
+
+Arguments: ([& args])
+```
+
 
 ## License
 
