@@ -15,10 +15,10 @@ there and development on this project will be discontinued.
 
 __Leiningen__ ([via Clojars](http://clojars.org/xsc/lein-ancient))
 
-Put the following into the `:plugins` vector of `~/.lein/profiles.clj`:
+Put the following into the `:plugins` vector of the `:user` profile in your `~/.lein/profiles.clj`:
 
 ```clojure
-[lein-ancient "0.1.1"]
+[lein-ancient "0.1.2"]
 ```
 
 __Command Line__
