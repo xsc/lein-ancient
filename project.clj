@@ -8,5 +8,6 @@
   :profiles {:midje {:dependencies [[midje "1.5.1"]]
                      :plugins [[lein-midje "3.0.1"]]
                      :test-paths ["test"]}}
-  :aliases {"midje-dev" ["with-profile" "midje" "midje"]}
+  :aliases {"midje-dev" ["with-profile" "midje" "midje"]
+            "deps-dev" ["with-profile" "midje" "deps"]}
   :eval-in-leiningen true)
