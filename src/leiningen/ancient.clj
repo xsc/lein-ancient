@@ -2,7 +2,8 @@
       :author "Yannick Scherer"}
   leiningen.ancient
   (:require [leiningen.core.project :as project :only [defaults]]
-            [clojure.data.xml :as xml :only [parse-str]]))
+            [clojure.data.xml :as xml :only [parse-str]]
+            [clojure.tools.cli :as cli :only [cli]]))
 
 ;; ## Utility Functions
 
@@ -103,15 +104,24 @@
   [v]
   (= (:qualifier v) "snapshot"))
 
+(defn- filter-versions
+  "Remove all versions that do not fit the given settings map."
+  [{:keys [allow-snapshots allow-qualified]} version-maps]
+  (let [v version-maps
+        v (if-not allow-snapshots (filter (complement snapshot?) v) v)
+        v (if-not allow-qualified (filter (comp nil? :qualifier) v) v)]
+    v))
+
 (defn latest-version
   "Get map of the latest available version in the given metadata XML
    string."
-  [mta]
-  (->> (version-seq mta)
-    (map version-map)
-    (filter (complement snapshot?))
-    (sort version-map-compare)
-    (last)))
+  ([mta] (latest-version mta nil))
+  ([mta settings]
+   (->> (version-seq mta)
+     (map version-map)
+     (filter-versions settings)
+     (sort version-map-compare)
+     (last))))
 
 ;; ## Project Map Inspection
 
@@ -141,12 +151,12 @@
 (defn- check-packages
   "Check the packages found at the given key in the project map.
    Will check the given repository urls for metadata."
-  [repos packages]
+  [repos packages settings]
   (let [retrieve! (partial retrieve-metadata! repos)]
     (doseq [{:keys [group-id artifact-id version] :as dep} 
             (map dependency-map packages)]
       (when-let [mta (retrieve! group-id artifact-id)]
-        (when-let [latest (latest-version mta)]
+        (when-let [latest (latest-version mta settings)]
           (when (version-outdated? version latest)
             (println
               (str "[" (:dependency-str dep) " \"" (:version-str latest) "\"]")
@@ -155,16 +165,38 @@
 
 ;; ## CLI
 
-(def ^:private KEYS
-  "Mapping of command-line parameter to project map key
-   containing package vectors."
-  {":dependencies" [:dependencies]
-   ":plugins" [:plugins]
-   ":all" [:dependencies :plugins]})
+(defn parse-cli
+  "Parse Command Line, return map of Settings."
+  [args]
+  (let [data (first
+               (cli/cli 
+                 (map #(.replace ^String % ":" "--") args)
+                 ["--dependencies" :flag true :default false]
+                 ["--all" :flag true :default false]
+                 ["--plugins" :flag true :default false]
+                 ["--allow-snapshots" :flag true :default false]
+                 ["--allow-qualified" :flag true :default false]
+                 ["--[no-]profiles" :flag true :default true]))]
+    (cond (:all data) (assoc data :dependencies true :plugins true :profiles true) 
+          (:plugins data) data
+          :else (assoc data :dependencies true))))
+
+(defn collect-dependencies
+  "Take settings map created by `parse-cli` and create seq of dependency vectors."
+  [project settings]
+  (distinct
+    (concat
+      (when (:dependencies settings) (:dependencies project))
+      (when (:plugins settings) (:plugins project))
+      (when (:profiles settings)
+        (concat
+          (when (:dependencies settings) (mapcat :dependencies (vals (:profiles project))))
+          (when (:plugins settings) (mapcat :plugins (vals (:profiles project)))))))))
 
 (defn ^:no-project-needed ancient
   "Check your Projects for outdated Dependencies."
   [project & args]
-  (let [repos (get-repository-urls project)]
-    (doseq [k (distinct (mapcat KEYS (or (seq args) [":dependencies"])))]
-      (check-packages repos (get project k)))))
+  (let [settings (parse-cli args)
+        repos (get-repository-urls project)
+        deps (collect-dependencies project settings)]
+    (check-packages repos deps settings)))
