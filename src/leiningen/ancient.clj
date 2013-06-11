@@ -149,7 +149,7 @@
         (when-let [latest (latest-version mta)]
           (when (version-outdated? version latest)
             (println
-              (str "[" (:dependency-str dep) " \"" (:version-str version) "\"]")
+              (str "[" (:dependency-str dep) " \"" (:version-str latest) "\"]")
               "is available but we use"
               (str "\"" (:version-str version) "\""))))))))
 
