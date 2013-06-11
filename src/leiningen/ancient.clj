@@ -177,7 +177,7 @@
                  ["--allow-snapshots" :flag true :default false]
                  ["--allow-qualified" :flag true :default false]
                  ["--[no-]profiles" :flag true :default true]))]
-    (cond (:all data) (assoc data :dependencies true :plugins true :profiles true) 
+    (cond (:all data) (assoc data :dependencies true :plugins true) 
           (:plugins data) data
           :else (assoc data :dependencies true))))
 
@@ -194,7 +194,16 @@
           (when (:plugins settings) (mapcat :plugins (vals (:profiles project)))))))))
 
 (defn ^:no-project-needed ancient
-  "Check your Projects for outdated Dependencies."
+  "Check your Projects for outdated Dependencies. 
+   
+   Commandline Options:
+  
+     :all                 Check Dependencies and Plugins.
+     :dependencies        Check Dependencies. (default)
+     :plugins             Check Plugins.
+     :no-profiles         Do not check Dependencies/Plugins in Profiles.
+     :allow-qualified     Allow '*-alpha*' versions & co. to be reported as new.
+     :allow-snapshots     Allow '*-SNAPSHOT' versions to be reported as new."
   [project & args]
   (let [settings (parse-cli args)
         repos (get-repository-urls project)
