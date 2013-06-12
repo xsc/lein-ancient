@@ -6,6 +6,7 @@ XML files in the different Maven repositories instead of a [Lucene](http://lucen
 search index.
 
 [![Build Status](https://travis-ci.org/xsc/lein-ancient.png)](https://travis-ci.org/xsc/lein-ancient)
+[![endorse](https://api.coderwall.com/xsc/endorsecount.png)](https://coderwall.com/xsc)
 
 There is an [open pull request](https://github.com/ato/lein-outdated/pull/16) of mine at lein-outdated that 
 resembles lein-ancient quite a bit. If it is accepted, any further additions to lein-ancient will end up
