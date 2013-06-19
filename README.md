@@ -19,7 +19,7 @@ __Leiningen__ ([via Clojars](https://clojars.org/lein-ancient))
 Put the following into the `:plugins` vector of the `:user` profile in your `~/.lein/profiles.clj`:
 
 ```clojure
-[lein-ancient "0.2.0"]
+[lein-ancient "0.3.0"]
 ```
 
 __Command Line__
@@ -53,6 +53,9 @@ Check your Projects for outdated Dependencies.
      :no-profiles         Do not check Dependencies/Plugins in Profiles.
      :allow-qualified     Allow '*-alpha*' versions & co. to be reported as new.
      :allow-snapshots     Allow '*-SNAPSHOT' versions to be reported as new.
+     :check-clojure       Include Clojure (org.clojure/clojure) in checks.
+     :verbose             Produce progress indicating messages.
+     :no-colors           Disable colorized output.
 
 Arguments: ([& args])
 ```
