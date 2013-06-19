@@ -3,7 +3,7 @@
   leiningen.ancient
   (:require [leiningen.core.project :as project :only [defaults]]
             [clojure.data.xml :as xml :only [parse-str]]
-            [clojure.tools.cli :as cli :only [cli]]))
+            [colorize.core :as colorize]))
 
 ;; ## Utility Functions
 
@@ -11,6 +11,33 @@
   "Convert ID to URL path by replacing dots with slashes."
   [^String s]
   (if-not s "" (.replace s "." "/")))
+
+;; ## Colorize
+
+(def ^:dynamic ^:private *colors* true)
+
+(defmacro ^:private conditional-colors
+  [& ids]
+  `(do
+     ~@(for [id ids]
+         `(defn ~(vary-meta (symbol (name id)) assoc :private true)
+            [& msg#]
+            (let [msg# (apply str msg#)]
+              (if *colors*
+                (~id msg#)
+                msg#))))))
+(conditional-colors colorize/yellow colorize/green colorize/red)
+
+;; ## Verbose
+
+(def ^:dynamic ^:private *verbose* nil)
+
+(defn- verbose
+  "Write Log Message."
+  [& msg]
+  (when *verbose*
+    (binding [*out* *err*]
+      (println "(verbose)" (apply str msg)))))
 
 ;; ## Version Comparison
 
@@ -148,6 +175,17 @@
 
 ;; ## Actual Check Logic
 
+(defn- version-string
+  [version]
+  (str "\"" (:version-str version) "\""))
+
+(defn- artifact-string
+  [group-id artifact-id version]
+  (let [f (if (= group-id artifact-id)
+            artifact-id
+            (str group-id "/" artifact-id))]
+    (str "[" f " " (green (version-string version)) "]")))
+
 (defn- check-packages
   "Check the packages found at the given key in the project map.
    Will check the given repository urls for metadata."
@@ -155,28 +193,34 @@
   (let [retrieve! (partial retrieve-metadata! repos)]
     (doseq [{:keys [group-id artifact-id version] :as dep} 
             (map dependency-map packages)]
-      (when-let [mta (retrieve! group-id artifact-id)]
-        (when-let [latest (latest-version mta settings)]
+      (verbose "Checking " group-id "/" artifact-id " (current version: " (version-string version) ") ...")
+      (if-let [mta (retrieve! group-id artifact-id)]
+        (if-let [latest (latest-version mta settings)]
           (when (version-outdated? version latest)
             (println
-              (str "[" (:dependency-str dep) " \"" (:version-str latest) "\"]")
+              (artifact-string group-id artifact-id latest)
               "is available but we use"
-              (str "\"" (:version-str version) "\""))))))))
+              (yellow (version-string version))))
+          (verbose "No latest Version found!"))
+        (verbose "No Metadata File found!")))))
 
 ;; ## CLI
+
+(def ^:private CLI_FLAGS
+  "Available CLI Flags."
+  #{":dependencies" ":all" ":plugins" ":allow-snapshots"
+    ":allow-qualified" ":no-profiles" ":check-clojure"
+    ":verbose" ":no-colors"})
 
 (defn parse-cli
   "Parse Command Line, return map of Settings."
   [args]
-  (let [data (first
-               (cli/cli 
-                 (map #(.replace ^String % ":" "--") args)
-                 ["--dependencies" :flag true :default false]
-                 ["--all" :flag true :default false]
-                 ["--plugins" :flag true :default false]
-                 ["--allow-snapshots" :flag true :default false]
-                 ["--allow-qualified" :flag true :default false]
-                 ["--[no-]profiles" :flag true :default true]))]
+  (let [data (->> (for [^String flag args]
+                    (when (contains? CLI_FLAGS flag)
+                      (vector
+                        (keyword (.substring flag 1))
+                        true)))
+               (into {}))]
     (cond (:all data) (assoc data :dependencies true :plugins true) 
           (:plugins data) data
           :else (assoc data :dependencies true))))
@@ -184,14 +228,19 @@
 (defn collect-dependencies
   "Take settings map created by `parse-cli` and create seq of dependency vectors."
   [project settings]
-  (distinct
-    (concat
-      (when (:dependencies settings) (:dependencies project))
-      (when (:plugins settings) (:plugins project))
-      (when (:profiles settings)
-        (concat
-          (when (:dependencies settings) (mapcat :dependencies (vals (:profiles project))))
-          (when (:plugins settings) (mapcat :plugins (vals (:profiles project)))))))))
+  (let [deps? (:dependencies settings)
+        plugins? (:plugins settings)
+        dependencies (distinct
+                       (concat
+                         (when deps? (:dependencies project))
+                         (when plugins? (:plugins project))
+                         (when-not (:no-profiles settings)
+                           (concat
+                             (when deps? (mapcat :dependencies (vals (:profiles project))))
+                             (when plugins? (mapcat :plugins (vals (:profiles project))))))))]
+    (if-not (:check-clojure settings)
+      (filter (complement (comp #{"org.clojure/clojure"} str first)) dependencies)
+      dependencies)))
 
 (defn ^:no-project-needed ancient
   "Check your Projects for outdated Dependencies. 
@@ -203,9 +252,17 @@
      :plugins             Check Plugins.
      :no-profiles         Do not check Dependencies/Plugins in Profiles.
      :allow-qualified     Allow '*-alpha*' versions & co. to be reported as new.
-     :allow-snapshots     Allow '*-SNAPSHOT' versions to be reported as new."
+     :allow-snapshots     Allow '*-SNAPSHOT' versions to be reported as new.
+     :check-clojure       Include Clojure (org.clojure/clojure) in checks.
+     :verbose             Produce progress indicating messages.
+     :no-colors           Disable colorized output.
+  "
   [project & args]
-  (let [settings (parse-cli args)
-        repos (get-repository-urls project)
-        deps (collect-dependencies project settings)]
-    (check-packages repos deps settings)))
+  (let [settings (parse-cli args)]
+    (binding [*verbose* (:verbose settings)
+              *colors* (not (:no-colors settings))]
+      (let [repos (get-repository-urls project)
+            deps (collect-dependencies project settings)]
+        (verbose "Checking " (count deps) " Dependencies ...")
+        (check-packages repos deps settings)
+        (verbose "Done.")))))
