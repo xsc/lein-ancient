@@ -9,8 +9,8 @@ search index.
 [![endorse](https://api.coderwall.com/xsc/endorsecount.png)](https://coderwall.com/xsc)
 
 There is an [open pull request](https://github.com/ato/lein-outdated/pull/16) of mine at lein-outdated that 
-resembles lein-ancient quite a bit. If it is accepted, any further additions to lein-ancient will end up
-there and development on this project will be discontinued.
+resembles lein-ancient's inner workings quite a bit. If it is accepted, some of the functionality that accumualated
+here might end up in lein-outdated if desired.
 
 ## Usage
 
