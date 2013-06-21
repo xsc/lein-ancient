@@ -32,12 +32,15 @@
    artifact metadata using group-id and artifact-id."
   (fn [repository-map]
     (let [^String url (:url repository-map)
-          i (.indexOf url "://")]
+          i (.indexOf url ":/")]
       (when-not (neg? i)
-        (.substring url 0 i)))))
+        (.substring url 0 i))))
+  :default nil)
 
 (defmethod find-retriever "http" [m] (partial slurp-metadata! (:url m)))
 (defmethod find-retriever "https" [m] (partial slurp-metadata! (:url m)))
+(defmethod find-retriever "file" [m] (partial slurp-metadata! (:url m)))
+(defmethod find-retriever nil [m] nil)
 
 (defn retrieve-metadata!
   "Find metadata XML file in one of the given Maven repositories."

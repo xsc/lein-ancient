@@ -11,7 +11,8 @@
   (->>
     (:repositories project (:repositories project/defaults))
     (map second)
-    (map find-retriever)))
+    (map find-retriever)
+    (filter (complement nil?))))
 
 (defn- dependency-map
   "Create dependency map (:group-id, :artifact-id, :version)."
