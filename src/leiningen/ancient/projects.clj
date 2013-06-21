@@ -21,7 +21,6 @@
                 (.split dep "/" 2)
                 [dep dep])] 
     (-> {}
-      (assoc :dependency-str dep)
       (assoc :group-id g)
       (assoc :artifact-id a)
       (assoc :version (version-map version)))))
@@ -31,15 +30,15 @@
   [project settings]
   (let [deps? (:dependencies settings)
         plugins? (:plugins settings)
-        dependencies (distinct
-                       (concat
-                         (when deps? (:dependencies project))
-                         (when plugins? (:plugins project))
-                         (when-not (:no-profiles settings)
-                           (concat
-                             (when deps? (mapcat :dependencies (vals (:profiles project))))
-                             (when plugins? (mapcat :plugins (vals (:profiles project))))))))]
-    (map dependency-map
-         (if-not (:check-clojure settings)
+        dependencies (concat
+                       (when deps? (:dependencies project))
+                       (when plugins? (:plugins project))
+                       (when-not (:no-profiles settings)
+                         (concat
+                           (when deps? (mapcat :dependencies (vals (:profiles project))))
+                           (when plugins? (mapcat :plugins (vals (:profiles project)))))))]
+    (->> (if-not (:check-clojure settings)
            (filter (complement (comp #{"org.clojure/clojure"} str first)) dependencies)
-           dependencies))))
+           dependencies)
+      (map dependency-map)
+      (distinct))))
