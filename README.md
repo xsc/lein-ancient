@@ -1,16 +1,14 @@
 # lein-ancient
 
 A [Leiningen](https://github.com/technomancy/leiningen) plugin to check your project for outdated
-dependencies. Similar to [lein-outdated](https://github.com/ato/lein-outdated) but uses metadata
-XML files in the different Maven repositories instead of a [Lucene](http://lucene.apache.org/core/)-based
-search index.
+dependencies and plugins. 
 
 [![Build Status](https://travis-ci.org/xsc/lein-ancient.png)](https://travis-ci.org/xsc/lein-ancient)
 [![endorse](https://api.coderwall.com/xsc/endorsecount.png)](https://coderwall.com/xsc)
 
-There is an [open pull request](https://github.com/ato/lein-outdated/pull/16) of mine at lein-outdated that 
-resembles lein-ancient's inner workings quite a bit. If it is accepted, some of the functionality that accumualated
-here might end up in lein-outdated if desired.
+This plugin supersedes [lein-outdated](https://github.com/ato/lein-outdated) and uses metadata
+XML files in the different Maven repositories instead of a [Lucene](http://lucene.apache.org/core/)-based
+search index.
 
 ## Usage
 
