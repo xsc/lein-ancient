@@ -2,7 +2,7 @@
       :author "Yannick Scherer"}
   leiningen.ancient.projects
   (:use [leiningen.ancient.version :only [version-map]]
-        [leiningen.ancient.maven-metadata :only [find-retriever]])
+        [leiningen.ancient.maven-metadata :only [metadata-retriever]])
   (:require [leiningen.core.project :as project :only [defaults]]))
 
 (defn collect-metadata-retrievers
@@ -11,7 +11,7 @@
   (->>
     (:repositories project (:repositories project/defaults))
     (map second)
-    (map find-retriever)
+    (map metadata-retriever)
     (filter (complement nil?))))
 
 (defn- dependency-map

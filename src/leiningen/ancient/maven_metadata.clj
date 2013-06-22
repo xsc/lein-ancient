@@ -12,22 +12,27 @@
   (if-not s "" (.replace s "." "/")))
 
 (defn build-metadata-url
-  "Get URL to maven-metadata.xml of the given package."
-  [^String repository-url ^String group-id ^String artifact-id]
-  (str repository-url 
-       (if (.endsWith repository-url "/") "" "/")
-       (id->path group-id) "/" artifact-id
-       "/maven-metadata.xml"))
-
-;; ## Metadata Retrieval
+  "Get URL to metadata XML file of the given package."
+  ([^String repository-url ^String group-id ^String artifact-id]
+   (build-metadata-url repository-url group-id artifact-id nil))
+  ([^String repository-url ^String group-id ^String artifact-id ^String file-name]
+   (str repository-url 
+        (if (.endsWith repository-url "/") "" "/")
+        (id->path group-id) "/" artifact-id
+        "/" 
+        (or file-name "maven-metadata.xml"))))
 
 (defn slurp-metadata!
   "Use `slurp` to access metadata."
-  [url group-id artifact-id]
-  (let [u (build-metadata-url url group-id artifact-id)]
-    (slurp u)))
+  ([url group-id artifact-id]
+   (slurp-metadata! url nil group-id artifact-id))
+  ([url file-name group-id artifact-id]
+   (let [u (build-metadata-url url group-id artifact-id file-name)]
+     (slurp u))))
 
-(defmulti find-retriever
+;; ## Metadata Retrieval
+
+(defmulti metadata-retriever
   "Multimethod that takes a repository map (:url, ...) and produces a function that can access 
    artifact metadata using group-id and artifact-id."
   (fn [repository-map]
@@ -37,10 +42,20 @@
         (.substring url 0 i))))
   :default nil)
 
-(defmethod find-retriever "http" [m] (partial slurp-metadata! (:url m)))
-(defmethod find-retriever "https" [m] (partial slurp-metadata! (:url m)))
-(defmethod find-retriever "file" [m] (partial slurp-metadata! (:url m)))
-(defmethod find-retriever nil [m] nil)
+(defmethod metadata-retriever "http" [m] 
+  (partial slurp-metadata! (:url m)))
+
+(defmethod metadata-retriever "https" [m] 
+  (partial slurp-metadata! (:url m)))
+
+(defmethod metadata-retriever "file" [m] 
+  (let [url (:url m)]
+    (fn [group-id artifact-id]
+      (or
+        (slurp-metadata! url "maven-metadata-local.xml" group-id artifact-id)
+        (slurp-metadata! url "maven-metadata.xml" group-id artifact-id)))))
+
+(defmethod metadata-retriever nil [m] nil)
 
 (defn retrieve-metadata!
   "Find metadata XML file in one of the given Maven repositories."
@@ -50,7 +65,6 @@
       (if-let [data (try ((first rf) group-id artifact-id) (catch Exception _ nil))]
         data
         (recur (rest rf))))))
-
 
 ;; ## XML Analysis
 

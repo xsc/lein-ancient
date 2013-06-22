@@ -5,6 +5,8 @@
 (fact "about metadata XML"
   (build-metadata-url "http://clojars.org/repo" "pandect" "pandect") 
       => "http://clojars.org/repo/pandect/pandect/maven-metadata.xml"
+  (build-metadata-url "http://clojars.org/repo" "pandect" "pandect" "maven-metadata-local.xml") 
+      => "http://clojars.org/repo/pandect/pandect/maven-metadata-local.xml"
   (build-metadata-url "http://clojars.org/repo/" "pandect" "pandect") 
       => "http://clojars.org/repo/pandect/pandect/maven-metadata.xml"
   (build-metadata-url "http://clojars.org/repo" "org.clojure" "data.codec") 
