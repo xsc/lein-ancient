@@ -1,5 +1,18 @@
 # CHANGES: `lein-ancient`
 
+## 0.3.3
+
+- Using additional "maven-metadata-local.xml" when resolving dependency in local repositories
+  (see issue #5).
+
+## 0.3.2
+
+- Unknown repository formats should not break dependency resolution (see issue #5).
+
+## 0.3.1
+
+- Fixed duplicate artifact handling. 
+
 ## 0.3.0
 
 - Removed `tools.cli` from Dependencies.
