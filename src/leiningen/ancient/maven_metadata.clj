@@ -2,7 +2,8 @@
       :author "Yannick Scherer"}
   leiningen.ancient.maven-metadata
   (:require [clojure.data.xml :as xml :only [parse-str]])
-  (:use [leiningen.ancient.version :only [version-sort version-map snapshot?]]))
+  (:use [leiningen.ancient.version :only [version-sort version-map snapshot?]]
+        [leiningen.ancient.verbose :only [verbose]]))
 
 ;; ## Utilities
 
@@ -71,7 +72,10 @@
 (defn version-seq
   "Get all the available versions from the given metadata XML string."
   [mta]
-  (for [t (xml-seq (xml/parse-str mta))
+  (for [t (try 
+            (xml-seq (xml/parse-str mta))
+            (catch Exception e
+              (verbose "Could not read XML: " (.getMessage e))))
         :when (= (:tag t) :version)]
     (first (:content t))))
 
