@@ -45,6 +45,7 @@
   (let [v0 (:version m0)
         v1 (:version m1)
         v0 (if (< (count v0) (count v1)) (concat v0 (repeat 0)) v0)
+        v1 (if (< (count v1) (count v0)) (concat v1 (repeat 0)) v1)
         version-zip (map vector v0 v1)
         version-compare (if-let [[d0 d1] (some #(when-not (= (first %) (second %)) %) version-zip)]
                           (compare d0 d1)
