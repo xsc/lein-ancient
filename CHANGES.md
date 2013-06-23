@@ -4,6 +4,7 @@
 
 - Modified version comparison algorithm in response to issues encountered when resolving #5.
 - Added verbose message indicating XML parse error.
+- Fixed issue with `:allow-snapshots` that made it only usable with `:allow-qualified`.
 
 ## 0.3.3
 
