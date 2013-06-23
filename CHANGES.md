@@ -1,5 +1,10 @@
 # CHANGES: `lein-ancient`
 
+## 0.3.4 
+
+- Modified version comparison algorithm in response to issues encountered when resolving #5.
+- Added verbose message indicating XML parse error.
+
 ## 0.3.3
 
 - Using additional "maven-metadata-local.xml" when resolving dependency in local repositories
