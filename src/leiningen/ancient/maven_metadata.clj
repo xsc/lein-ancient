@@ -84,7 +84,7 @@
   [{:keys [allow-snapshots allow-qualified]} version-maps]
   (let [v version-maps
         v (if-not allow-snapshots (filter (complement snapshot?) v) v)
-        v (if-not allow-qualified (filter (comp nil? :qualifier) v) v)]
+        v (if-not allow-qualified (filter #(or (snapshot? %) (nil? (:qualifier %))) v) v)]
     v))
 
 (defn latest-version
@@ -92,8 +92,9 @@
    string."
   ([mta] (latest-version mta nil))
   ([mta settings]
-   (->> (version-seq mta)
-     (map version-map)
-     (filter-versions settings)
-     (version-sort)
-     (last))))
+   (let [vs (version-seq mta)]
+     (->> vs
+       (map version-map)
+       (filter-versions settings)
+       (version-sort)
+       (last)))))
