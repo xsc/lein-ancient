@@ -5,17 +5,18 @@
 (tabular
   (fact "about version map creation"
     (let [m (version-map ?version)]
-      (:major m) => ?major
-      (:minor m) => ?minor
-      (:incremental m) => ?incr
+      (:version m) => ?v
       (:qualifier m) => ?q
       (:version-str m) => ?version))
-  ?version         ?major ?minor ?incr ?q
-  "1.0.0"          1      0      0     nil
-  "1.0"            1      0      0     nil
-  "1"             -1     -1     -1     "1"
-  "1.0.1-SNAPSHOT" 1      0      1     "snapshot"
-  "1.0.1-alpha2"   1      0      1     "alpha2")
+  ?version         ?v           ?q
+  "1.0.0"          [1 0 0]      nil
+  "1.0"            [1 0]        nil
+  "1"              [1]          nil
+  "1a"             [1]          "a"
+  "1-a"            [1]          "a"
+  "1.0.1-SNAPSHOT" [1 0 1]      "snapshot"
+  "1.0.1-alpha2"   [1 0 1]      "alpha2"
+  "11.2.0.3.0"     [11 2 0 3 0] nil)
 
 (fact "about SNAPSHOTs"
   (version-map "1.0.0") =not=> snapshot?
@@ -33,6 +34,8 @@
   "0.9.2"          "0.9.3"          -1
   "0.9.2"          "0.9.1"           1
   "0.9.5"          "0.9.13"         -1
+  "10.2.0.3.0"     "11.2.0.3.0"     -1
+  "10.2.0.3.0"     "5.2.0.3.0"       1
   "1.0.0-SNAPSHOT" "1.0.1-SNAPSHOT" -1
   "1.0.0-alpha"    "1.0.1-beta"     -1
 

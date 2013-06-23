@@ -6,20 +6,20 @@
   #"^([0-9]+)\.([0-9]+)(\.([0-9]+))?(\-(.+))?$")
 
 (defn version-map
-  "Create version map (:major, :minor, :incremental, :qualifier) from 
-   version string. Conforms to Maven's version string format."
+  "Create version map from version string. Uses everything after the first
+   non-number-or-dot character as `:qualifier`, storing a vector of version numbers
+   in `:version`."
   [^String version]
-  (->
-    (if-let [[_ major minor _ incremental _ qualifier] (re-find (re-matcher VERSION_REGEX version))]
-      {:major (Integer/parseInt major) 
-       :minor (Integer/parseInt minor)
-       :incremental (if incremental (Integer/parseInt incremental) 0)
-       :qualifier (if qualifier (.toLowerCase ^String qualifier) qualifier)}
-      {:major -1
-       :minor -1
-       :incremental -1
-       :qualifier version })
-    (assoc :version-str version)))
+  (let [^String v (first (.split version "[^0-9.]" 2))
+        ^String q (let [^String q (.substring version (count v))]
+                    (if (.startsWith q "-")
+                      (.substring q 1)
+                      q))
+        ^String q (when (seq q) (.toLowerCase q))]
+    (-> {}
+      (assoc :version-str version)
+      (assoc :qualifier q)
+      (assoc :version (map #(Integer/parseInt ^String %) (.split v "\\."))))))
 
 (defn- qualifier-compare
   "Compare two qualifier strings. This tries to introduce numeric comparison
@@ -42,13 +42,16 @@
 (defn- version-map-compare
   "Compare two version maps."
   [m0 m1]
-  (cond (< (:major m0) (:major m1))             -1
-        (< (:major m1) (:major m0))              1
-        (< (:minor m0) (:minor m1))             -1
-        (< (:minor m1) (:minor m0))              1
-        (< (:incremental m0) (:incremental m1)) -1
-        (< (:incremental m1) (:incremental m0))  1
-        :else (qualifier-compare (:qualifier m0) (:qualifier m1))))
+  (let [v0 (:version m0)
+        v1 (:version m1)
+        v0 (if (< (count v0) (count v1)) (concat v0 (repeat 0)) v0)
+        version-zip (map vector v0 v1)
+        version-compare (if-let [[d0 d1] (some #(when-not (= (first %) (second %)) %) version-zip)]
+                          (compare d0 d1)
+                          0)]
+    (if (zero? version-compare)
+      (qualifier-compare (:qualifier m0) (:qualifier m1))
+      version-compare)))
 
 (defn version-outdated?
   "Check if the first version is outdated."
