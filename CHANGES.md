@@ -1,5 +1,10 @@
 # CHANGES: `lein-ancient`
 
+## 0.3.5
+
+- Bugfix in version comparison when using different lengths ("1.0.1" was equal to "1.0" because
+  the latter was not correctly extended to "1.0.0").
+
 ## 0.3.4 
 
 - Modified version comparison algorithm in response to issues encountered when resolving #5.
