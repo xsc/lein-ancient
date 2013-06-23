@@ -1,5 +1,9 @@
 # CHANGES: `lein-ancient`
 
+## 0.3.6
+
+- Bugfix to remove infinite loop.
+
 ## 0.3.5
 
 - Bugfix in version comparison when using different lengths ("1.0.1" was equal to "1.0" because
