@@ -29,6 +29,14 @@ in `~/.lein/profiles.clj`.
 $ lein ancient
 [com.taoensso/timbre "2.1.2"] is available but we use "2.0.1"
 
+$ lein ancient :allow-qualified
+[com.taoensso/timbre "2.1.2"] is available but we use "2.0.1"
+[midje "1.6-alpha2"] is available but we use "1.5.1"
+
+$ lein ancient :allow-snapshots
+[com.taoensso/timbre "2.1.2"] is available but we use "2.0.1"
+[midje "1.6-SNAPSHOT"] is available but we use "1.5.1"
+
 $ lein ancient :plugins
 [lein-tarsier/lein-tarsier "0.10.0"] is available but we use "0.9.4"
 
