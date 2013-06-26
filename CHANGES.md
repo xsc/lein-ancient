@@ -1,5 +1,9 @@
 # CHANGES: `lein-ancient`
 
+## 0.3.7
+
+- Implemented more generic version comparison (see [here](http://docs.codehaus.org/display/MAVEN/Versioning)).
+
 ## 0.3.6
 
 - Bugfix to remove infinite loop.
