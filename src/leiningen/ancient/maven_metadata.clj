@@ -2,7 +2,7 @@
       :author "Yannick Scherer"}
   leiningen.ancient.maven-metadata
   (:require [clojure.data.xml :as xml :only [parse-str]])
-  (:use [leiningen.ancient.version :only [version-sort version-map snapshot?]]
+  (:use [leiningen.ancient.version :only [version-sort version-map snapshot? qualified?]]
         [leiningen.ancient.verbose :only [verbose]]))
 
 ;; ## Utilities
@@ -84,7 +84,7 @@
   [{:keys [allow-snapshots allow-qualified]} version-maps]
   (let [v version-maps
         v (if-not allow-snapshots (filter (complement snapshot?) v) v)
-        v (if-not allow-qualified (filter #(or (snapshot? %) (nil? (:qualifier %))) v) v)]
+        v (if-not allow-qualified (filter #(or (snapshot? %) (not (qualified? %))) v) v)]
     v))
 
 (defn latest-version

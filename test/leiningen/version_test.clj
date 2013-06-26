@@ -21,6 +21,13 @@
   (version-map "1.0.0") =not=> snapshot?
   (version-map "1.0.0-SNAPSHOT") => snapshot?)
 
+(fact "about qualified versions"
+  (version-map "1.0.0") =not=> qualified?
+  (version-map "1.0.0-SNAPSHOT") => qualified?
+  (version-map "1.0.0-alpha1") => qualified?
+  (version-map "1.0.0-1-2") =not=> qualified?
+  (version-map "1.0.0-1-2-coala") => qualified?)
+
 (tabular
   (fact "about version comparison"
     (version-compare ?v0 ?v1) => ?r)

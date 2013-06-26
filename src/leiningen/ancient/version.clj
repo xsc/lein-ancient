@@ -166,3 +166,13 @@
             (integer? x) nil
             :else (snapshot? {:version x})))
     (:version v)))
+
+(defn qualified?
+  "Check if the given version is a qualified version (i.e. contains a string element)."
+  [v]
+  (some
+    (fn [x]
+      (cond (string? x) (not= x "")
+            (integer? x) nil
+            :else (qualified? {:version x})))
+    (:version v)) )
