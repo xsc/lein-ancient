@@ -72,3 +72,5 @@ Arguments: ([& args])
 Copyright &copy; 2013 Yannick Scherer
 
 Distributed under the Eclipse Public License, the same as Clojure.
+
+_lein-outdated_ Source Copyright &copy; Alex Osborne &amp; Contributors
