@@ -1,5 +1,11 @@
 # CHANGES: `lein-ancient`
 
+## 0.4.1
+
+- Added more verbose messages (indicating URLs of metadata files and amount of downloaded data).
+- Added `:aggressive` mode.
+- Added S3 retriever.
+
 ## 0.4.0
 
 - Switched to [version-clj](https://github.com/xsc/version-clj) for version comparison.
