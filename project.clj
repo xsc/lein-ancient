@@ -3,7 +3,7 @@
   :url "https://github.com/xsc/lein-ancient"
   :dependencies [[org.clojure/data.xml "0.0.7"]
                  [colorize "0.1.1"]
-                 [version-clj "0.1.0-SNAPSHOT"]]
+                 [version-clj "0.1.0"]]
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :profiles {:midje {:dependencies [[midje "1.5.1"]]

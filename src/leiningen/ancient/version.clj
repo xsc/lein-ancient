@@ -1,4 +1,4 @@
-(ns ^{:doc "Version Utilities for lein-ancient"
+(ns ^{:doc "Wrappers around version-clj to include original version string."
       :author "Yannick Scherer"}
   leiningen.ancient.version
   (:require [version-clj.core :as v]))
@@ -29,22 +29,10 @@
   [version-maps]
   (sort version-map-compare version-maps))
 
-(defn snapshot?
+(def snapshot?
   "Check if the given version is a SNAPSHOT."
-  [v]
-  (some
-    (fn [x]
-      (cond (string? x) (= x "snapshot")
-            (integer? x) nil
-            :else (snapshot? {:version x})))
-    (:version v)))
+  (comp v/snapshot? :version))
 
-(defn qualified?
+(def qualified?
   "Check if the given version is a qualified version (i.e. contains a string element)."
-  [v]
-  (some
-    (fn [x]
-      (cond (string? x) (not= x "")
-            (integer? x) nil
-            :else (qualified? {:version x})))
-    (:version v)) )
+  (comp v/qualified? :version))
