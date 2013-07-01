@@ -1,5 +1,9 @@
 # CHANGES: `lein-ancient`
 
+## 0.4.0
+
+- Switched to [version-clj](https://github.com/xsc/version-clj) for version comparison.
+
 ## 0.3.7
 
 - Implemented more generic version comparison (see [here](http://docs.codehaus.org/display/MAVEN/Versioning)).

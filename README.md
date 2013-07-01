@@ -8,7 +8,7 @@ dependencies and plugins.
 
 This plugin supersedes [lein-outdated](https://github.com/ato/lein-outdated) and uses metadata
 XML files in the different Maven repositories instead of a [Lucene](http://lucene.apache.org/core/)-based
-search index.
+search index. Version comparison is done using [version-clj](https://github.com/xsc/version-clj).
 
 ## Usage
 
