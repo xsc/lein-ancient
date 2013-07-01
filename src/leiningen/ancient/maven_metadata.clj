@@ -1,7 +1,9 @@
 (ns ^{:doc "Maven Metadata Inspection for lein-ancient"
       :author "Yannick Scherer"}
   leiningen.ancient.maven-metadata
-  (:require [clojure.data.xml :as xml :only [parse-str]])
+  (:require [clojure.data.xml :as xml :only [parse-str]]
+            [leiningen.core.user :as uu]
+            [aws.sdk.s3 :as s3])
   (:use [leiningen.ancient.version :only [version-sort version-map snapshot? qualified?]]
         [leiningen.ancient.verbose :only [verbose]]))
 
@@ -29,7 +31,10 @@
    (slurp-metadata! url nil group-id artifact-id))
   ([url file-name group-id artifact-id]
    (let [u (build-metadata-url url group-id artifact-id file-name)]
-     (slurp u))))
+     (verbose "  Trying to retrieve " u " ...")
+     (when-let [xml (slurp u)]
+       (verbose "  Got " (count xml) " byte(s) of data.")
+       xml))))
 
 ;; ## Metadata Retrieval
 
@@ -56,28 +61,49 @@
         (slurp-metadata! url "maven-metadata-local.xml" group-id artifact-id)
         (slurp-metadata! url "maven-metadata.xml" group-id artifact-id)))))
 
+(defmethod metadata-retriever "s3p" [m]
+  (let [{:keys [url username passphrase]} (uu/resolve-credentials m)
+        url (.substring ^String url 6)
+        [bucket key-prefix] (.split ^String url "/" 2) 
+        creds { :access-key username :secret-key passphrase }
+        get! (partial s3/get-object creds bucket)]
+    (when-not (or (= bucket "") (not key-prefix) (= key-prefix ""))
+      (fn [group-id artifact-id]
+        (let [k (build-metadata-url key-prefix group-id artifact-id)]
+          (verbose "  Trying to retrieve " k " (S3 bucket: " bucket ") ...")
+          (let [{:keys [content]} (get! k)]
+            (when-let [xml (slurp content)]
+              (verbose "  Got " (count xml) " byte(s) of data.")
+              xml)))))))
+
 (defmethod metadata-retriever nil [m] nil)
 
 (defn retrieve-metadata!
-  "Find metadata XML file in one of the given Maven repositories."
-  [retrievers group-id artifact-id]
-  (loop [rf retrievers]
-    (when (seq rf)
+  "Find metadata XML file(s) in the given Maven repositories. Returns a seq of XML strings."
+  [retrievers settings group-id artifact-id]
+  (loop [rf retrievers
+         rx []]
+    (if-not (seq rf)
+      rx
       (if-let [data (try ((first rf) group-id artifact-id) (catch Exception _ nil))]
-        data
-        (recur (rest rf))))))
+        (if (:aggressive settings)
+          (recur (rest rf) (conj rx data))
+          (vector data))
+        (recur (rest rf) rx)))))
 
 ;; ## XML Analysis
 
 (defn version-seq
-  "Get all the available versions from the given metadata XML string."
+  "Get all the available versions from the given metadata XML string(s)."
   [mta]
-  (for [t (try 
-            (xml-seq (xml/parse-str mta))
-            (catch Exception e
-              (verbose "Could not read XML: " (.getMessage e))))
-        :when (= (:tag t) :version)]
-    (first (:content t))))
+  (if (string? mta)
+    (for [t (try 
+              (xml-seq (xml/parse-str mta))
+              (catch Exception e
+                (verbose "Could not read XML: " (.getMessage e))))
+          :when (= (:tag t) :version)]
+      (first (:content t)))
+    (mapcat version-seq mta)))
 
 (defn- filter-versions
   "Remove all versions that do not fit the given settings map."

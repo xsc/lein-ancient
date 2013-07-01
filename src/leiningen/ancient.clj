@@ -25,7 +25,7 @@
   "Check the packages found at the given key in the project map.
    Will check the given repository urls for metadata."
   [retrievers packages settings]
-  (let [retrieve! (partial retrieve-metadata! retrievers)]
+  (let [retrieve! (partial retrieve-metadata! retrievers settings)]
     (doseq [{:keys [group-id artifact-id version] :as dep} packages]
       (verbose "Checking " group-id "/" artifact-id " (current version: " (version-string version) ") ...")
       (if-let [mta (retrieve! group-id artifact-id)]
@@ -44,7 +44,7 @@
   "Available CLI Flags."
   #{":dependencies" ":all" ":plugins" ":allow-snapshots"
     ":allow-qualified" ":no-profiles" ":check-clojure"
-    ":verbose" ":no-colors"})
+    ":verbose" ":no-colors" ":aggressive"})
 
 (defn parse-cli
   "Parse Command Line, return map of Settings."
@@ -71,6 +71,7 @@
      :allow-qualified     Allow '*-alpha*' versions & co. to be reported as new.
      :allow-snapshots     Allow '*-SNAPSHOT' versions to be reported as new.
      :check-clojure       Include Clojure (org.clojure/clojure) in checks.
+     :aggressive          Check all available repositories (= Do not stop after first artifact match).
      :verbose             Produce progress indicating messages.
      :no-colors           Disable colorized output.
   "
