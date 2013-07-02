@@ -17,7 +17,7 @@ __Leiningen__ ([via Clojars](https://clojars.org/lein-ancient))
 Put the following into the `:plugins` vector of the `:user` profile in your `~/.lein/profiles.clj`:
 
 ```clojure
-[lein-ancient "0.4.0"]
+[lein-ancient "0.4.1"]
 ```
 
 __Command Line__

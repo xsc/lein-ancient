@@ -3,8 +3,10 @@
 ## 0.4.1
 
 - Added more verbose messages (indicating URLs of metadata files and amount of downloaded data).
-- Added `:aggressive` mode.
-- Added S3 retriever.
+- Added `:aggressive` mode (always checks all available repositories and does not stop after first
+  artifact match).
+- Added Amazon S3 retriever.
+- Restructured retriever code.
 
 ## 0.4.0
 
