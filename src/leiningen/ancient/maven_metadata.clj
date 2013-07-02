@@ -1,40 +1,9 @@
 (ns ^{:doc "Maven Metadata Inspection for lein-ancient"
       :author "Yannick Scherer"}
   leiningen.ancient.maven-metadata
-  (:require [clojure.data.xml :as xml :only [parse-str]]
-            [leiningen.core.user :as uu]
-            [aws.sdk.s3 :as s3])
+  (:require [clojure.data.xml :as xml :only [parse-str]])
   (:use [leiningen.ancient.version :only [version-sort version-map snapshot? qualified?]]
         [leiningen.ancient.verbose :only [verbose]]))
-
-;; ## Utilities
-
-(defn- id->path
-  "Convert ID to URL path by replacing dots with slashes."
-  [^String s]
-  (if-not s "" (.replace s "." "/")))
-
-(defn build-metadata-url
-  "Get URL to metadata XML file of the given package."
-  ([^String repository-url ^String group-id ^String artifact-id]
-   (build-metadata-url repository-url group-id artifact-id nil))
-  ([^String repository-url ^String group-id ^String artifact-id ^String file-name]
-   (str repository-url 
-        (if (.endsWith repository-url "/") "" "/")
-        (id->path group-id) "/" artifact-id
-        "/" 
-        (or file-name "maven-metadata.xml"))))
-
-(defn slurp-metadata!
-  "Use `slurp` to access metadata."
-  ([url group-id artifact-id]
-   (slurp-metadata! url nil group-id artifact-id))
-  ([url file-name group-id artifact-id]
-   (let [u (build-metadata-url url group-id artifact-id file-name)]
-     (verbose "  Trying to retrieve " u " ...")
-     (when-let [xml (slurp u)]
-       (verbose "  Got " (count xml) " byte(s) of data.")
-       xml))))
 
 ;; ## Metadata Retrieval
 
@@ -48,34 +17,6 @@
         (.substring url 0 i))))
   :default nil)
 
-(defmethod metadata-retriever "http" [m] 
-  (partial slurp-metadata! (:url m)))
-
-(defmethod metadata-retriever "https" [m] 
-  (partial slurp-metadata! (:url m)))
-
-(defmethod metadata-retriever "file" [m] 
-  (let [url (:url m)]
-    (fn [group-id artifact-id]
-      (or
-        (slurp-metadata! url "maven-metadata-local.xml" group-id artifact-id)
-        (slurp-metadata! url "maven-metadata.xml" group-id artifact-id)))))
-
-(defmethod metadata-retriever "s3p" [m]
-  (let [{:keys [url username passphrase]} (uu/resolve-credentials m)
-        url (.substring ^String url 6)
-        [bucket key-prefix] (.split ^String url "/" 2) 
-        creds { :access-key username :secret-key passphrase }
-        get! (partial s3/get-object creds bucket)]
-    (when-not (or (= bucket "") (not key-prefix) (= key-prefix ""))
-      (fn [group-id artifact-id]
-        (let [k (build-metadata-url key-prefix group-id artifact-id)]
-          (verbose "  Trying to retrieve " k " (S3 bucket: " bucket ") ...")
-          (let [{:keys [content]} (get! k)]
-            (when-let [xml (slurp content)]
-              (verbose "  Got " (count xml) " byte(s) of data.")
-              xml)))))))
-
 (defmethod metadata-retriever nil [m] nil)
 
 (defn retrieve-metadata!
@@ -85,11 +26,12 @@
          rx []]
     (if-not (seq rf)
       rx
-      (if-let [data (try ((first rf) group-id artifact-id) (catch Exception _ nil))]
-        (if (:aggressive settings)
-          (recur (rest rf) (conj rx data))
-          (vector data))
-        (recur (rest rf) rx)))))
+      (let [[retrieve! & rst] rf] 
+        (if-let [data (try (retrieve! group-id artifact-id) (catch Exception _ nil))]
+          (if (:aggressive settings)
+            (recur rst (conj rx data))
+            (vector data))
+          (recur rst rx))))))
 
 ;; ## XML Analysis
 

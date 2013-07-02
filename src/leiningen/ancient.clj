@@ -4,7 +4,8 @@
   (:use [leiningen.ancient.verbose :only [verbose *verbose* yellow green red *colors*]]
         [leiningen.ancient.maven-metadata :only [retrieve-metadata! latest-version]]
         [leiningen.ancient.version :only [version-outdated?]]
-        [leiningen.ancient.projects :only [collect-dependencies collect-metadata-retrievers]]))
+        [leiningen.ancient.projects :only [collect-dependencies collect-metadata-retrievers]])
+  (:require [leiningen.ancient.maven-metadata http local s3p]))
 
 ;; ## Output Strings
 
