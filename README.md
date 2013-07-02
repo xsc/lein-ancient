@@ -66,6 +66,11 @@ Check your Projects for outdated Dependencies.
 Arguments: ([& args])
 ```
 
+## Supported Repository Types
+
+- HTTP/HTTPS Repositories
+- Local Repositories
+- [Amazon S3 Repositories](https://github.com/technomancy/s3-wagon-private) (private)
 
 ## License
 
