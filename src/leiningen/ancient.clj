@@ -130,7 +130,7 @@
               (let [releases (filter (complement qualified?) vs)
                     snapshots (filter snapshot? vs)
                     qualified (filter #(and (not (snapshot? %)) (qualified? %)) vs)]
-                (println (str "  * " (count vs) " versions found."))
+                (println (str "  * " (count vs) " version(s) found."))
                 (print-version "latest release" (first releases))
                 (print-version "latest SNAPSHOT" (first snapshots))
                 (print-version "latest qualified" (first qualified))
