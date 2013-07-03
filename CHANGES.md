@@ -1,5 +1,9 @@
 # CHANGES: `lein-ancient`
 
+## 0.4.2
+
+- Added `:get` mode to retrieve version data for a specific package.
+
 ## 0.4.1
 
 - Added more verbose messages (indicating URLs of metadata files and amount of downloaded data).

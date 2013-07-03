@@ -17,7 +17,7 @@ __Leiningen__ ([via Clojars](https://clojars.org/lein-ancient))
 Put the following into the `:plugins` vector of the `:user` profile in your `~/.lein/profiles.clj`:
 
 ```clojure
-[lein-ancient "0.4.1"]
+[lein-ancient "0.4.2"]
 ```
 
 __Command Line__
@@ -50,6 +50,11 @@ To see available options, call `lein help ancient`:
 ```bash
 $ lein help ancient
 Check your Projects for outdated Dependencies. 
+
+   Usage:
+
+     lein ancient :get <package> [<options>]
+     lein ancient [<options>]
    
    Commandline Options:
   
