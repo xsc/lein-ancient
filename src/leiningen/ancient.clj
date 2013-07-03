@@ -2,9 +2,9 @@
       :author "Yannick Scherer"}
   leiningen.ancient
   (:use [leiningen.ancient.verbose :only [verbose *verbose* yellow green red *colors*]]
-        [leiningen.ancient.maven-metadata :only [retrieve-metadata! latest-version]]
-        [leiningen.ancient.version :only [version-outdated?]]
-        [leiningen.ancient.projects :only [collect-dependencies collect-metadata-retrievers]])
+        [leiningen.ancient.maven-metadata :only [retrieve-metadata! latest-version version-seq filter-versions]]
+        [leiningen.ancient.version :only [version-outdated? version-sort version-map snapshot? qualified?]]
+        [leiningen.ancient.projects :only [collect-dependencies collect-metadata-retrievers dependency-map]])
   (:require [leiningen.ancient.maven-metadata http local s3p]))
 
 ;; ## Output Strings
@@ -60,9 +60,94 @@
           (:plugins data) data
           :else (assoc data :dependencies true))))
 
+;; ## Operation Modes
+
+;; ### default
+
+(defn- run-default!
+  "Run project/plugin checker."
+  [project args]
+  (let [settings (parse-cli args)]
+    (binding [*verbose* (:verbose settings)
+              *colors* (not (:no-colors settings))]
+      (let [retrievers (collect-metadata-retrievers project)
+            deps (collect-dependencies project settings)]
+        (verbose "Checking " (count deps) " Dependencies using " (count retrievers) " Repositories ...")
+        (check-packages retrievers deps settings)
+        (verbose "Done.")))))
+
+;; `:get`
+
+(def ^:private ^:const WIDTH
+  "Maximum width of labels for `:get`."
+  23)
+
+(defn- print-version
+  "Print version number line."
+  [label v]
+  (when v
+    (print (str "  * " label ": "))
+    (print (apply str (repeat (- WIDTH (count label)) \space)))
+    (print (green "\"" (:version-str v) "\""))
+    (println)))
+
+(defn- print-version-seq
+  "Print version seq lines."
+  [label vs]
+  (when (seq vs)
+    (let [c (count label)
+          indent (apply str (repeat (+ 8 WIDTH) \space))
+          label (if (>= c WIDTH) (str label ":") (str label ":" (apply str (repeat (- WIDTH c) \space))))]
+      (print (str "  * " label " [ "))
+      (let [vps (partition 5 5 nil (map :version-str vs))]
+        (doseq [v (first vps)] (print (pr-str v) ""))
+        (doseq [vp (rest vps)] 
+          (println)
+          (print indent)
+          (doseq [v vp] (print (pr-str v) ""))))
+      (println "]"))))
+
+(defn- run-get!
+  [project [_ package & args]]
+  (if-not package
+    (println "':get' expects a package to retrieve version information for.")
+    (let [settings (parse-cli args)
+          {:keys [artifact-id group-id]} (dependency-map [package ""])
+          artifact-str (str group-id "/" artifact-id)]
+      (binding [*verbose* (:verbose settings)
+                *colors* (not (:no-colors settings))]
+        (let [retrievers (collect-metadata-retrievers project)]
+          (println "Getting Version Information for" (yellow artifact-str) 
+                   "from" (count retrievers) "Repositories ...")
+          (let [vs (->> (retrieve-metadata! retrievers settings group-id artifact-id)
+                     (mapcat version-seq)
+                     (distinct)
+                     (map version-map)
+                     (version-sort)
+                     (reverse))]
+            (if-not (seq vs)
+              (println "No versions found.")
+              (let [releases (filter (complement qualified?) vs)
+                    snapshots (filter snapshot? vs)
+                    qualified (filter #(and (not (snapshot? %)) (qualified? %)) vs)]
+                (println (str "  * " (count vs) " versions found."))
+                (print-version "latest release" (first releases))
+                (print-version "latest SNAPSHOT" (first snapshots))
+                (print-version "latest qualified" (first qualified))
+                (print-version-seq "all releases" releases)
+                (print-version-seq "all SNAPSHOTs" snapshots)
+                (print-version-seq "all qualified versions" qualified)))))))))
+
+;; ## Main
+
 (defn ^:no-project-needed ancient
   "Check your Projects for outdated Dependencies. 
-   
+  
+   Usage:
+
+     lein ancient :get <package> [<options>]
+     lein ancient [<options>]
+
    Commandline Options:
   
      :all                 Check Dependencies and Plugins.
@@ -77,11 +162,6 @@
      :no-colors           Disable colorized output.
   "
   [project & args]
-  (let [settings (parse-cli args)]
-    (binding [*verbose* (:verbose settings)
-              *colors* (not (:no-colors settings))]
-      (let [retrievers (collect-metadata-retrievers project)
-            deps (collect-dependencies project settings)]
-        (verbose "Checking " (count deps) " Dependencies using " (count retrievers) " Repositories ...")
-        (check-packages retrievers deps settings)
-        (verbose "Done.")))))
+  (condp = (first args)
+    ":get" (run-get! project args)
+    (run-default! project args)))

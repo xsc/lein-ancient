@@ -14,7 +14,7 @@
     (map metadata-retriever)
     (filter (complement nil?))))
 
-(defn- dependency-map
+(defn dependency-map
   "Create dependency map (:group-id, :artifact-id, :version)."
   [[dep version & _]]
   (let [dep (str dep)

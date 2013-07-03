@@ -47,7 +47,7 @@
       (first (:content t)))
     (mapcat version-seq mta)))
 
-(defn- filter-versions
+(defn filter-versions
   "Remove all versions that do not fit the given settings map."
   [{:keys [allow-snapshots allow-qualified]} version-maps]
   (let [v version-maps
