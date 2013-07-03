@@ -111,7 +111,8 @@
   [project [_ package & args]]
   (if-not package
     (println "':get' expects a package to retrieve version information for.")
-    (let [settings (parse-cli args)
+    (let [settings (-> (parse-cli args)
+                     (assoc :aggressive true))
           {:keys [artifact-id group-id]} (dependency-map [package ""])
           artifact-str (str group-id "/" artifact-id)]
       (binding [*verbose* (:verbose settings)
