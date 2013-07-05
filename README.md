@@ -20,6 +20,8 @@ Put the following into the `:plugins` vector of the `:user` profile in your `~/.
 [lein-ancient "0.4.2"]
 ```
 
+This plugin is destined for Leiningen >= 2.0.0.
+
 __Command Line__
 
 You can use `lein-ancient` to check the dependencies/plugins of a project and those specified
