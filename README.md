@@ -67,6 +67,7 @@ Check your Projects for outdated Dependencies.
      :allow-qualified     Allow '*-alpha*' versions & co. to be reported as new.
      :allow-snapshots     Allow '*-SNAPSHOT' versions to be reported as new.
      :check-clojure       Include Clojure (org.clojure/clojure) in checks.
+     :aggressive          Check all available repositories (= Do not stop after first artifact match).
      :verbose             Produce progress indicating messages.
      :no-colors           Disable colorized output.
 
