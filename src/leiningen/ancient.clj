@@ -1,11 +1,11 @@
 (ns ^{:doc "Check your Project for outdated Dependencies."
       :author "Yannick Scherer"}
   leiningen.ancient
-  (:use [leiningen.ancient.verbose :only [verbose *verbose* yellow green red *colors*]]
-        [leiningen.ancient.maven-metadata :only [retrieve-metadata! latest-version version-seq filter-versions]]
-        [leiningen.ancient.version :only [version-outdated? version-sort version-map snapshot? qualified?]]
-        [leiningen.ancient.projects :only [collect-dependencies collect-metadata-retrievers dependency-map]])
-  (:require [leiningen.ancient.maven-metadata http local s3p]))
+  (:require [leiningen.ancient.verbose :refer [verbose *verbose* yellow green red *colors*]]
+            [leiningen.ancient.maven-metadata :refer [retrieve-metadata! latest-version version-seq filter-versions]]
+            [leiningen.ancient.version :refer [version-outdated? version-sort version-map snapshot? qualified?]]
+            [leiningen.ancient.projects :refer [collect-dependencies collect-metadata-retrievers dependency-map]]
+            [leiningen.ancient.maven-metadata http local s3p]))
 
 ;; ## Output Strings
 
