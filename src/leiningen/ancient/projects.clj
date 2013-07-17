@@ -1,9 +1,9 @@
 (ns ^{:doc "Project Map Inspection for lein-ancient"
       :author "Yannick Scherer"}
   leiningen.ancient.projects
-  (:use [leiningen.ancient.version :only [version-map]]
-        [leiningen.ancient.maven-metadata :only [metadata-retriever]])
-  (:require [leiningen.core.project :as project :only [defaults]]))
+  (:require [leiningen.ancient.version :refer [version-map]]
+            [leiningen.ancient.maven-metadata :refer [metadata-retriever]]
+            [leiningen.core.project :as project :only [defaults]]))
 
 (defn collect-metadata-retrievers
   "Get Retriever Functions from Project."
