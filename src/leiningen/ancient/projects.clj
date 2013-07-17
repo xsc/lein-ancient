@@ -2,7 +2,6 @@
       :author "Yannick Scherer"}
   leiningen.ancient.projects
   (:require [leiningen.ancient.version :refer [version-map]]
-            [leiningen.ancient.maven-metadata :refer [metadata-retrievers]]
             [leiningen.core.project :as project :only [defaults]]))
 
 (defn dependency-map
@@ -25,11 +24,6 @@
     (map second)
     (map #(if (string? %) { :url % } %))
     (filter (complement nil?))))
-
-(defn collect-metadata-retrievers
-  "Create seq of retriever functions from project map."
-  [project]
-  (metadata-retrievers (repository-maps project)))
 
 (defn collect-dependencies
   "Take settings map created by `parse-cli` and create seq of dependency vectors."

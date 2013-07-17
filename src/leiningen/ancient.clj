@@ -2,9 +2,9 @@
       :author "Yannick Scherer"}
   leiningen.ancient
   (:require [leiningen.ancient.verbose :refer [verbose *verbose* yellow green red *colors*]]
-            [leiningen.ancient.maven-metadata :refer [retrieve-metadata! latest-version version-seq filter-versions]]
+            [leiningen.ancient.maven-metadata :refer [metadata-retrievers retrieve-metadata! latest-version version-seq filter-versions]]
             [leiningen.ancient.version :refer [version-outdated? version-sort version-map snapshot? qualified?]]
-            [leiningen.ancient.projects :refer [collect-dependencies collect-metadata-retrievers dependency-map]]
+            [leiningen.ancient.projects :refer [collect-dependencies repository-maps dependency-map]]
             [leiningen.ancient.maven-metadata http local s3p]))
 
 ;; ## Output Strings
@@ -63,6 +63,11 @@
 ;; ## Operation Modes
 
 ;; ### default
+
+(defn collect-metadata-retrievers
+  "Create seq of retriever functions from project map."
+  [project]
+  (metadata-retrievers (repository-maps project)))
 
 (defn- run-default!
   "Run project/plugin checker."
