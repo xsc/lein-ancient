@@ -1,7 +1,7 @@
 (ns leiningen.projects-test
-  (:use midje.sweet
-        leiningen.ancient.projects
-        leiningen.ancient.version))
+  (:require [midje.sweet :refer :all]
+            [leiningen.ancient.projects :refer [dependency-map collect-dependencies]]
+            [leiningen.ancient.version :refer [version-map]]))
 
 (tabular
   (fact "about dependency maps"

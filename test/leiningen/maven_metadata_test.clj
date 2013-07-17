@@ -1,9 +1,9 @@
 (ns leiningen.maven-metadata-test
-  (:use midje.sweet
-        leiningen.ancient.maven-metadata
-        [leiningen.ancient.maven-metadata.utils :only [build-metadata-url]]))
+  (:require [midje.sweet :refer :all]
+            [leiningen.ancient.maven-metadata :refer [version-seq latest-version]]
+            [leiningen.ancient.maven-metadata.utils :refer [build-metadata-url]]))
 
-(fact "about metadata XML"
+(fact "about metadata URL creation"
   (build-metadata-url "http://clojars.org/repo" "pandect" "pandect") 
       => "http://clojars.org/repo/pandect/pandect/maven-metadata.xml"
   (build-metadata-url "http://clojars.org/repo" "pandect" "pandect" "maven-metadata-local.xml") 
@@ -11,8 +11,8 @@
   (build-metadata-url "http://clojars.org/repo/" "pandect" "pandect") 
       => "http://clojars.org/repo/pandect/pandect/maven-metadata.xml"
   (build-metadata-url "http://clojars.org/repo" "org.clojure" "data.codec") 
-      => "http://clojars.org/repo/org/clojure/data.codec/maven-metadata.xml"
-) 
+      => "http://clojars.org/repo/org/clojure/data.codec/maven-metadata.xml")
+
 (let [xml-string "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
                   <metadata>
                     <groupId>pandect</groupId>
