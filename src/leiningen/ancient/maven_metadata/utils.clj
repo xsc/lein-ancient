@@ -1,5 +1,5 @@
 (ns leiningen.ancient.maven-metadata.utils
-  (:use [leiningen.ancient.verbose :only [verbose]]))
+  (:require [leiningen.ancient.verbose :refer [verbose]]))
 
 (defn- id->path
   "Convert ID to URL path by replacing dots with slashes."
