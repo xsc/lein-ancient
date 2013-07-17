@@ -1,7 +1,8 @@
 (ns leiningen.maven-metadata-test
   (:require [midje.sweet :refer :all]
-            [leiningen.ancient.maven-metadata :refer [version-seq latest-version]]
-            [leiningen.ancient.maven-metadata.utils :refer [build-metadata-url]]))
+            [leiningen.ancient.maven-metadata :refer [version-seq latest-version metadata-retriever]]
+            [leiningen.ancient.maven-metadata.utils :refer [build-metadata-url]]
+            [leiningen.ancient.maven-metadata http local s3p]))
 
 (fact "about metadata URL creation"
   (build-metadata-url "http://clojars.org/repo" "pandect" "pandect") 
@@ -45,3 +46,13 @@
     {:allow-qualified true}                        "0.2.4-alpha"
     {:allow-snapshots true}                        "0.2.4-SNAPSHOT"
     {:allow-qualified true  :allow-snapshots true} "0.2.4-SNAPSHOT"))
+
+(tabular 
+  (fact "about retriever function generation"
+    (metadata-retriever {:url ?url}) => ?r)
+  ?url                                               ?r
+  "http://repo1.maven.org/repo"                      fn?
+  "https://clojars.org/repo"                         fn?
+  "s3p://private/repo"                               fn?
+  "file:/local/repo"                                 fn?
+  "ftp://ftp/repo"                                   falsey)

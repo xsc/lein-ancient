@@ -19,6 +19,13 @@
 
 (defmethod metadata-retriever nil [m] nil)
 
+(defn metadata-retrievers
+  "Get seq of retriever functions from seq of repository maps."
+  [repository-maps]
+  (->> repository-maps
+    (map metadata-retriever)
+    (filter (complement nil?))))
+
 (defn retrieve-metadata!
   "Find metadata XML file(s) in the given Maven repositories. Returns a seq of XML strings."
   [retrievers settings group-id artifact-id]
