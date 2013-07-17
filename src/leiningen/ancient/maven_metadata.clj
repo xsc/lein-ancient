@@ -1,9 +1,9 @@
 (ns ^{:doc "Maven Metadata Inspection for lein-ancient"
       :author "Yannick Scherer"}
   leiningen.ancient.maven-metadata
-  (:require [clojure.data.xml :as xml :only [parse-str]])
-  (:use [leiningen.ancient.version :only [version-sort version-map snapshot? qualified?]]
-        [leiningen.ancient.verbose :only [verbose]]))
+  (:require [clojure.data.xml :as xml :only [parse-str]]
+            [leiningen.ancient.version :refer [version-sort version-map snapshot? qualified?]]
+            [leiningen.ancient.verbose :refer [verbose]]))
 
 ;; ## Metadata Retrieval
 
