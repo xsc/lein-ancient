@@ -1,8 +1,8 @@
 (ns ^{ :doc "Local Repositories" 
        :author "Yannick Scherer" }
   leiningen.ancient.maven-metadata.local
-  (:use [leiningen.ancient.maven-metadata :only [metadata-retriever]]
-        [leiningen.ancient.maven-metadata.utils :only [slurp-metadata!]]))
+  (:require [leiningen.ancient.maven-metadata :refer [metadata-retriever]]
+            [leiningen.ancient.maven-metadata.utils :refer [slurp-metadata!]]))
 
 (defmethod metadata-retriever "file" [m] 
   (let [url (:url m)]

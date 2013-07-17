@@ -2,10 +2,10 @@
        :author "Yannick Scherer" }
   leiningen.ancient.maven-metadata.s3p
   (:require [leiningen.core.user :as uu]
-            [aws.sdk.s3 :as s3])
-  (:use [leiningen.ancient.maven-metadata :only [metadata-retriever]]
-        [leiningen.ancient.maven-metadata.utils :only [build-metadata-url]]
-        [leiningen.ancient.verbose :only [verbose]]))
+            [aws.sdk.s3 :as s3] 
+            [leiningen.ancient.maven-metadata :refer [metadata-retriever]]
+            [leiningen.ancient.maven-metadata.utils :refer [build-metadata-url]]
+            [leiningen.ancient.verbose :refer [verbose]]))
 
 (defmethod metadata-retriever "s3p" [m]
   (let [{:keys [url username passphrase]} (uu/resolve-credentials m)
