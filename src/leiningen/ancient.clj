@@ -2,7 +2,7 @@
       :author "Yannick Scherer"}
   leiningen.ancient
   (:require [leiningen.ancient.verbose :refer [verbose *verbose* yellow green red *colors*]]
-            [leiningen.ancient.maven-metadata :refer [metadata-retrievers retrieve-metadata! latest-version version-seq filter-versions]]
+            [leiningen.ancient.maven-metadata :refer [metadata-retrievers retrieve-metadata! latest-version version-seq]]
             [leiningen.ancient.version :refer [version-outdated? version-sort version-map snapshot? qualified?]]
             [leiningen.ancient.projects :refer [collect-dependencies repository-maps dependency-map]]
             [leiningen.ancient.maven-metadata http local s3p]))
