@@ -3,7 +3,8 @@
   leiningen.ancient.maven-metadata
   (:require [clojure.data.xml :as xml :only [parse-str]]
             [leiningen.ancient.version :refer [version-sort version-map snapshot? qualified?]]
-            [leiningen.ancient.verbose :refer [verbose]]))
+            [leiningen.ancient.verbose :refer [verbose]]
+            [leiningen.ancient.projects :refer [repository-maps]]))
 
 ;; ## Metadata Retrieval
 
@@ -19,12 +20,17 @@
 
 (defmethod metadata-retriever nil [m] nil)
 
-(defn metadata-retrievers
+(defn- metadata-retrievers
   "Get seq of retriever functions from seq of repository maps."
   [repository-maps]
   (->> repository-maps
     (map metadata-retriever)
     (filter (complement nil?))))
+
+(defn collect-metadata-retrievers
+  "Create seq of retriever functions from project map."
+  [project]
+  (metadata-retrievers (repository-maps project)))
 
 (defn retrieve-metadata!
   "Find metadata XML file(s) in the given Maven repositories. Returns a seq of XML strings."
