@@ -2,7 +2,7 @@
   (:require [midje.sweet :refer :all]
             [leiningen.ancient.maven-metadata :refer [version-seq latest-version metadata-retriever]]
             [leiningen.ancient.maven-metadata.utils :refer [build-metadata-url]]
-            [leiningen.ancient.maven-metadata http local s3p]))
+            leiningen.ancient.maven-metadata.all))
 
 (fact "about metadata URL creation"
   (build-metadata-url "http://clojars.org/repo" "pandect" "pandect") 

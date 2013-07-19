@@ -3,7 +3,7 @@
   leiningen.ancient.tasks.get
   (:require [leiningen.ancient.verbose :refer :all]
             [leiningen.ancient.maven-metadata :refer :all]
-            [leiningen.ancient.maven-metadata http local s3p]  
+            [leiningen.ancient.maven-metadata all]  
             [leiningen.ancient.version :refer [version-sort version-map snapshot? qualified?]]
             [leiningen.ancient.projects :refer [dependency-map]]
             [leiningen.ancient.cli :refer [parse-cli]]))

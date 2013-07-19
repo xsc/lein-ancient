@@ -2,7 +2,8 @@
       :author "Yannick Scherer"}
   leiningen.ancient
   (:require [leiningen.ancient.tasks.check :refer [run-check-task!]]
-            [leiningen.ancient.tasks.get :refer [run-get-task!]]))
+            [leiningen.ancient.tasks.get :refer [run-get-task!]]
+            [leiningen.ancient.tasks.update-project :refer []]))
 
 (defn ^:no-project-needed ancient
   "Check your Projects for outdated Dependencies. 
