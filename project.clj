@@ -4,7 +4,7 @@
   :dependencies [[org.clojure/data.xml "0.0.7"]
                  [colorize "0.1.1"]
                  [clj-aws-s3 "0.3.6"]
-                 [rewrite-clj "0.1.0-SNAPSHOT"]
+                 [rewrite-clj "0.2.0-SNAPSHOT"]
                  [version-clj "0.1.0"]]
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
