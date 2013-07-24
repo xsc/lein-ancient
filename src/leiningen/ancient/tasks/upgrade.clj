@@ -1,6 +1,6 @@
 (ns ^{ :doc "Rewrite project.clj to include latest versions of dependencies." 
        :author "Yannick Scherer" }
-  leiningen.ancient.tasks.update-project
+  leiningen.ancient.tasks.upgrade
   (:require [leiningen.ancient.verbose :refer :all]
             [leiningen.ancient.maven-metadata :refer :all]
             [leiningen.ancient.maven-metadata all]  
@@ -42,12 +42,15 @@
     (let [prompt! (partial prompt-for settings)]
       (when (z/vector? zloc)
         (let [{:keys [group-id artifact-id version]} (dependency-map (z/sexpr zloc)) ]
-          (when-let [mta (retrieve! group-id artifact-id)]
-            (when-let [latest (latest-version mta settings)]
-              (when (and (version-outdated? version latest)
-                         (prompt! group-id artifact-id latest version))
-                (println "Upgrading to" (artifact-string group-id artifact-id latest) "...")
-                (z/edit-> zloc z/down z/right (z/replace (:version-str latest)))))))))
+          (when (or (:check-clojure settings)
+                    (not= (str group-id "/" artifact-id) "org.clojure/clojure"))
+            (when-let [mta (retrieve! group-id artifact-id)]
+              (when-let [latest (latest-version mta settings)]
+                (when (and (version-outdated? version latest)
+                           (prompt! group-id artifact-id latest version))
+                  (println "Upgrade to" (artifact-string group-id artifact-id latest) 
+                           "from" (yellow (version-string version)))
+                  (z/edit-> zloc z/down z/right (z/replace (:version-str latest))))))))))
     zloc))
 
 (defn- upgrade-dependencies!
@@ -81,9 +84,9 @@
             (z/map 
               (fn [loc]
                 (when (z/map? loc)
-                  (z/edit-> loc 
-                    (z/get k) 
-                    (upgrade-dependencies! retrieve! settings)))))
+                  (if-let [n (z/get loc k)]
+                    (z/up (upgrade-dependencies! n retrieve! settings))
+                    loc))))
             z/up))))
     proj))
 
