@@ -123,7 +123,8 @@
           (z/print-root data)
           (println))
         (binding [*out* (io/writer f)]
-          (z/print-root data))))))
+          (z/print-root data)
+          (.flush ^java.io.Writer *out*))))))
 
 ;; ## Task
 
