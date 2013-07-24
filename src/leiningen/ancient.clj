@@ -3,15 +3,16 @@
   leiningen.ancient
   (:require [leiningen.ancient.tasks.check :refer [run-check-task!]]
             [leiningen.ancient.tasks.get :refer [run-get-task!]]
-            [leiningen.ancient.tasks.update-project :refer []]))
+            [leiningen.ancient.tasks.update-project :refer [run-upgrade-task!]]))
 
 (defn ^:no-project-needed ancient
   "Check your Projects for outdated Dependencies. 
   
    Usage:
 
-     lein ancient :get <package> [<options>]
      lein ancient [<options>]
+     lein ancient :get <package> [<options>]
+     lein ancient :upgrade [<options>]
 
    Commandline Options:
   
@@ -29,4 +30,5 @@
   [project & args]
   (condp = (first args)
     ":get" (run-get-task! project args)
+    ":upgrade" (run-upgrade-task! project args)
     (run-check-task! project args)))

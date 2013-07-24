@@ -6,7 +6,8 @@
   "Available CLI Flags."
   #{":dependencies" ":all" ":plugins" ":allow-snapshots"
     ":allow-qualified" ":no-profiles" ":check-clojure"
-    ":verbose" ":no-colors" ":aggressive"})
+    ":verbose" ":no-colors" ":aggressive" ":print"
+    ":interactive"})
 
 (defn parse-cli
   "Parse Command Line, return map of Settings."

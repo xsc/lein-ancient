@@ -8,19 +8,6 @@
             [leiningen.ancient.projects :refer [collect-dependencies repository-maps dependency-map]]
             [leiningen.ancient.cli :refer [parse-cli]]))
 
-;; ## Output Strings
-
-(defn- version-string
-  [version]
-  (str "\"" (:version-str version) "\""))
-
-(defn- artifact-string
-  [group-id artifact-id version]
-  (let [f (if (= group-id artifact-id)
-            artifact-id
-            (str group-id "/" artifact-id))]
-    (str "[" f " " (green (version-string version)) "]")))
-
 ;; ## Actual Check Logic
 
 (defn- check-packages
