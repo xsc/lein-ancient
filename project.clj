@@ -9,7 +9,7 @@
                  [version-clj "0.1.0"]]
   :repositories  {"sonatype-oss-public" "https://oss.sonatype.org/content/groups/public/"}
   :profiles {:dev {:dependencies [[midje "1.5.1"]]
-                   :plugins [[lein-midje "3.0.1"]]}
+                   :plugins [[lein-midje "3.1.1"]]}
              :1.4 {:dependencies [[org.clojure/clojure "1.4.0"]]}
              :1.5 {:dependencies [[org.clojure/clojure "1.5.1"]]}
              :1.6 {:dependencies [[org.clojure/clojure "1.6.0-master-SNAPSHOT"]]}}
