@@ -48,7 +48,7 @@
           (println "Getting Version Information for" (yellow artifact-str) 
                    "from" (count repos) "Repositories ...")
           (let [vs (->> (anc/versions! settings repos artifact)
-                     (sort #(v/version-compare (second %1) (second %2)))
+                     (sort #(v/version-seq-compare (second %1) (second %2)))
                      (reverse))]
             (if-not (seq vs)
               (println "No versions found.")

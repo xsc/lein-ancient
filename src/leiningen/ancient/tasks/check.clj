@@ -13,7 +13,7 @@
   [repos settings artifacts]
   (doseq [{:keys [group-id artifact-id version] :as artifact} artifacts]
     (verbose "Checking " group-id "/" artifact-id " (current version: " (version-string version) ") ...")
-    (when-let [[latest _] (anc/artifact-outdated? artifact)]
+    (when-let [latest (anc/artifact-outdated? settings repos artifact)]
       (println
         (artifact-string group-id artifact-id latest)
         "is available but we use"

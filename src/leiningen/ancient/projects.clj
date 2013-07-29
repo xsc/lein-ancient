@@ -8,7 +8,6 @@
 (defn collect-repositories
   "Get seq of repository maps from project map."
   [project]
-  (prn project/defaults)
   (->>
     (:repositories project (:repositories project/defaults))
     (map second)
