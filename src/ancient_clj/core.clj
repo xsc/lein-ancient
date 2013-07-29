@@ -25,13 +25,13 @@
 
 (defmacro ^:private defancient
   "Create function that takes an optional settings map and/or repository seq as first/second
-   parameters."
+   parameters, allowing for use of either an artifact vector or artifact symbol."
   [id docstring f]
   (let [[s r a] ['settings 'repos 'artifact-vector]]
     `(defn ~id ~docstring
        ([~a] (~id nil r/*repositories* ~a))
        ([~r ~a] (~id (when (map? ~r) ~r) (if (map? ~r) r/*repositories* ~r) ~a))
-       ([~s ~r ~a] (let [m# (artifact-map ~a)]
+       ([~s ~r ~a] (let [m# (artifact-map (if (symbol? ~a) [~a "RELEASE"] ~a))]
                      (~f ~s ~r (:group-id m#) (:artifact-id m#)))))))
 
 (defancient versions!
@@ -67,3 +67,8 @@
      (when-let [[_ v1 :as latest] (r/retrieve-latest-version! settings repos group-id artifact-id)]
        (when (= -1 (v/version-seq-compare v0 v1))
          latest)))))
+
+(def artifact-outdated-string?
+  "Check if the given artifact (`[artifact version ...]`) is outdated. Return the latest version's
+   version string or `nil`."
+  (comp first artifact-outdated?))

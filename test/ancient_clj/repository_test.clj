@@ -107,21 +107,18 @@
                            (slurp (rc/build-metadata-url ?url2 "pandect" "pandect" "maven-metadata.xml")) => METADATA2
                            (slurp (rc/build-metadata-url ?url2 "pandect" "pandect" "maven-metadata-local.xml")) => nil])
       (when (not= ?url1 ?url2)
-        (r/retrieve-version-strings! {:aggressive? true} [?url1 ?url2] "pandect" "pandect") => (just (concat VERSIONS VERSIONS2))
+        (r/retrieve-version-strings! [?url1 ?url2] "pandect" "pandect") => (just (concat VERSIONS VERSIONS2))
         (r/retrieve-latest-version-string! 
-          {:aggressive? true} 
           [?url1 ?url2] "pandect" "pandect") => "0.3.0-SNAPSHOT"
         (r/retrieve-latest-version-string! 
-          {:aggressive? true :snapshots? false} 
+          {:snapshots? false} 
           [?url1 ?url2] "pandect" "pandect") => "0.2.4-alpha"
         (r/retrieve-latest-version-string! 
-          {:aggressive? true :qualified? false} 
+          {:qualified? false} 
           [?url1 ?url2] "pandect" "pandect") => "0.3.0-SNAPSHOT"
         (r/retrieve-latest-version-string! 
-          {:aggressive? true :snapshots? false :qualified? false} 
-          [?url1 ?url2] "pandect" "pandect") => "0.2.3"
-        
-        ))
+          {:snapshots? false :qualified? false} 
+          [?url1 ?url2] "pandect" "pandect") => "0.2.3"))
     ?url2 "http://repo" "https://repo" "file://repo" "file:/repo")
   ?url1 "http://repo" "https://repo" "file://repo" "file:/repo")
 

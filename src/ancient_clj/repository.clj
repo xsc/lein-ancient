@@ -33,7 +33,7 @@
 (def ^:dynamic *repositories*
   "Repositories to use for metadata retrieval if none are given."
   (vector
-    (repository "http://repo1.maven.org/repo")
+    (repository "http://repo1.maven.org/maven2")
     (repository "https://clojars.org/repo")))
 
 ;; ## Access Functions
@@ -71,7 +71,7 @@
      (if (map? repos) *repositories* repos)
      group-id artifact-id))
   ([{:keys [aggressive? snapshots? qualified?] :as settings} repos group-id artifact-id]
-   (let [aggressive? (:aggressive? settings false)
+   (let [aggressive? (:aggressive? settings true)
          snapshots? (:snapshots? settings true)
          qualified? (:qualified? settings true)] 
      (->>
