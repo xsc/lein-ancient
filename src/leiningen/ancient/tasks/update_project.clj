@@ -1,12 +1,10 @@
 (ns ^{ :doc "Rewrite project.clj to include latest versions of dependencies." 
        :author "Yannick Scherer" }
   leiningen.ancient.tasks.update-project
-  (:require [leiningen.ancient.verbose :refer :all]
-            [leiningen.ancient.maven-metadata :refer :all]
-            [leiningen.ancient.maven-metadata all]  
-            [leiningen.ancient.version :refer [version-outdated?]]
-            [leiningen.ancient.projects :refer [collect-dependencies repository-maps dependency-map]]
+  (:require [leiningen.ancient.projects :refer [collect-repositories]]
             [leiningen.ancient.cli :refer [parse-cli]]
+            [ancient-clj.verbose :refer :all]
+            [ancient-clj.core :as anc]
             [rewrite-clj.parser :as p]
             [rewrite-clj.zip :as z]
             [rewrite-clj.printer :as prn]))

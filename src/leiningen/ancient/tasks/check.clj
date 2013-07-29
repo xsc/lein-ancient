@@ -1,12 +1,10 @@
 (ns ^{ :doc "Check for outdated dependencies." 
        :author "Yannick Scherer" }
   leiningen.ancient.tasks.check
-  (:require [leiningen.ancient.verbose :refer :all]
-            [leiningen.ancient.maven-metadata :refer :all]
-            [leiningen.ancient.maven-metadata all]  
-            [leiningen.ancient.version :refer [version-outdated?]]
-            [leiningen.ancient.projects :refer [collect-dependencies repository-maps dependency-map]]
-            [leiningen.ancient.cli :refer [parse-cli]]))
+  (:require [leiningen.ancient.projects :refer [collect-artifacts collect-repositories]]
+            [leiningen.ancient.cli :refer [parse-cli]]
+            [ancient-clj.verbose :refer :all]
+            [ancient-clj.core :as anc]))
 
 ;; ## Output Strings
 
@@ -23,22 +21,16 @@
 
 ;; ## Actual Check Logic
 
-(defn- check-packages
-  "Check the packages found at the given key in the project map.
-   Will check the given repository urls for metadata."
-  [retrievers packages settings]
-  (let [retrieve! (partial retrieve-metadata! retrievers settings)]
-    (doseq [{:keys [group-id artifact-id version] :as dep} packages]
-      (verbose "Checking " group-id "/" artifact-id " (current version: " (version-string version) ") ...")
-      (if-let [mta (retrieve! group-id artifact-id)]
-        (if-let [latest (latest-version mta settings)]
-          (when (version-outdated? version latest)
-            (println
-              (artifact-string group-id artifact-id latest)
-              "is available but we use"
-              (yellow (version-string version))))
-          (verbose "No latest Version found!"))
-        (verbose "No Metadata File found!")))))
+(defn- check-artifacts
+  "Check the given artifacts for outdated dependencies."
+  [repos settings artifacts]
+  (doseq [{:keys [group-id artifact-id version] :as artifact} artifacts]
+    (verbose "Checking " group-id "/" artifact-id " (current version: " (version-string version) ") ...")
+    (when-let [[latest _] (anc/artifact-outdated? artifact)]
+      (println
+        (artifact-string group-id artifact-id latest)
+        "is available but we use"
+        (yellow (version-string version))))))
 
 ;; ## Task
 
@@ -46,10 +38,9 @@
   "Run project/plugin checker."
   [project args]
   (let [settings (parse-cli args)]
-    (binding [*verbose* (:verbose settings)
-              *colors* (not (:no-colors settings))]
-      (let [retrievers (collect-metadata-retrievers project)
-            deps (collect-dependencies project settings)]
-        (verbose "Checking " (count deps) " Dependencies using " (count retrievers) " Repositories ...")
-        (check-packages retrievers deps settings)
+    (with-settings settings
+      (let [repos (collect-repositories project)
+            artifacts (collect-artifacts project settings)]
+        (verbose "Checking " (count artifacts) " Dependencies using " (count repos) " Repositories ...")
+        (check-artifacts repos settings artifacts)
         (verbose "Done.")))))

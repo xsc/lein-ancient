@@ -4,9 +4,16 @@
 
 (def ^:private CLI_FLAGS
   "Available CLI Flags."
-  #{":dependencies" ":all" ":plugins" ":allow-snapshots"
-    ":allow-qualified" ":no-profiles" ":check-clojure"
-    ":verbose" ":no-colors" ":aggressive"})
+  {":dependencies"    :dependencies
+   ":all"             :all
+   ":plugins"         :plugins 
+   ":allow-snapshots" :snapshots?
+   ":allow-qualified" :qualified?
+   ":no-profiles"     :no-profiles
+   ":check-clojure"   :check-clojure
+   ":verbose"         :verbose
+   ":no-colors"       :no-colors
+   ":aggressive"      :aggressive?})
 
 (defn parse-cli
   "Parse Command Line, return map of Settings."
@@ -14,7 +21,7 @@
   (let [data (->> (for [^String flag args]
                     (when (contains? CLI_FLAGS flag)
                       (vector
-                        (keyword (.substring flag 1))
+                        (get CLI_FLAGS flag)
                         true)))
                (into {}))]
     (cond (:all data) (assoc data :dependencies true :plugins true) 
