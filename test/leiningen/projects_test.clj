@@ -1,7 +1,6 @@
 (ns leiningen.projects-test
   (:require [midje.sweet :refer :all]
-            [leiningen.ancient.projects :refer [dependency-map repository-maps collect-dependencies]]
-            [leiningen.ancient.version :refer [version-map]]))
+            [leiningen.ancient.projects :refer [collect-repositories collect-artifacts]]))
 
 (def test-project
   '{:repositories [["str" "http://string/repo"]
@@ -12,23 +11,12 @@
     :profiles {:xyz {:dependencies [[xyz "1.2.3"]]
                      :plugins [[xyz-plugin "3.2.1"]]}}})
 
-(tabular
-  (fact "about dependency maps"
-    (let [d (dependency-map [?dep "1.0.0"])]
-      (:group-id d) => ?group
-      (:artifact-id d) => ?artifact
-      (:version d) => (version-map "1.0.0")))
-  ?dep                       ?group         ?artifact
-  "test/test"                "test"         "test"
-  "group/artifact"           "group"        "artifact"
-  "test"                     "test"         "test")
-
 (fact "about repository maps"
-  (repository-maps test-project) => [{:url "http://string/repo"} {:url "http://map/repo"}])
+  (collect-repositories test-project) => #(every? fn? %))
 
 (tabular
   (fact "about dependency collection"
-    (let [deps (collect-dependencies test-project ?settings)]
+    (let [deps (collect-artifacts test-project ?settings)]
       (map (juxt :group-id :artifact-id) deps) => (just ?result)))
   ?settings                                                  ?result
   {:dependencies true}                                       [["group" "artifact"] ["xyz" "xyz"]]
