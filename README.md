@@ -63,7 +63,7 @@ __REPL__
 
 ;; The function 'artifact-outdated?' can check whether a given artifact has newer 
 ;; versions available. It has to be called with an artifact vector and takes a settings 
-;; map or repository seq as well, returning either a pair of `[version-string version-seq]` 
+;; map or repository seq as well, returning either `[version-string version-seq]` 
 ;; (see version-clj) or `nil`:
 (anc/artifact-outdated? '[lein-ancient "0.4.2"])                     
 ;;   => ["0.4.3-SNAPSHOT" ...]
