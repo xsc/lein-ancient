@@ -4,7 +4,8 @@
   (:require [ancient-clj.repository.core :as r]
             [ancient-clj.repository http local s3p]
             [ancient-clj.verbose :refer [verbose]]
-            [clojure.data.xml :as xml :only [parse-str]]))
+            [clojure.data.xml :as xml :only [parse-str]]
+            [version-clj.core :as v]))
 
 ;; ## Wrapper
 
@@ -46,36 +47,74 @@
    (loop [repos repos]
      (when (seq repos)
        (or 
-         (r/retrieve-metadata-xml! (first repos) group-id artifact-id)
+         (try  
+           (r/retrieve-metadata-xml! (first repos) group-id artifact-id)
+           (catch Exception _ nil))
          (recur (rest repos)))))))
 
 (defn retrieve-versions!
-  "Retrieve a seq of version strings for the given artifact from the given
-   repositories. The first found result will be returned."
+  "Retrieve a seq of version pairs (`[version-string version-seq]`) for the given artifact 
+   from the given repositories. The following calls are possible (using an optional 
+   settings map):
+  
+     (retrieve-versions! [r1 r2] group artifact)
+     (retrieve-versions! {:aggressive? true} [r1 r2] group artifact)
+  
+   The second call will not stop after the first metadata match. By default, the keys
+   `:snapshots?` and `:qualified` of the settings map are set to `true`."
+  ([artifact-id] (retrieve-versions! nil *repositories* artifact-id artifact-id))
   ([group-id artifact-id]
-   (retrieve-versions! *repositories* group-id artifact-id))
+   (retrieve-versions! nil *repositories* group-id artifact-id))
   ([repos group-id artifact-id]
-   (loop [repos repos]
-     (when (seq repos)
-       (let [[repo & rst] repos]
-         (or
-           (when-let [mta (r/retrieve-metadata-xml! repo group-id artifact-id)]
-             (when (string? mta)
-               (for [t (try 
-                         (xml-seq (xml/parse-str mta))
-                         (catch Exception e
-                           (verbose "Could not read XML: " (.getMessage e))))
-                     :when (= (:tag t) :version)]
-                 (first (:content t)))))
-           (recur rst)))))))
+   (retrieve-versions! 
+     (if (map? repos) repos nil)
+     (if (map? repos) *repositories* repos)
+     group-id artifact-id))
+  ([{:keys [aggressive? snapshots? qualified?] :as settings} repos group-id artifact-id]
+   (let [aggressive? (:aggressive? settings false)
+         snapshots? (:snapshots? settings true)
+         qualified? (:qualified? settings true)] 
+     (->>
+       (loop [repos repos
+              versions nil]
+         (if-not (seq repos)
+           versions
+           (let [[repo & rst] repos]
+             (if-let [repo-versions (when-let [mta (try
+                                                     (r/retrieve-metadata-xml! repo group-id artifact-id)
+                                                     (catch Exception _ nil))]
+                                      (when (string? mta)
+                                        (for [t (try 
+                                                  (xml-seq (xml/parse-str mta))
+                                                  (catch Exception e
+                                                    (verbose "Could not read XML: " (.getMessage e))))
+                                              :when (= (:tag t) :version)]
+                                          (first (:content t)))))]
+               (if-not aggressive?
+                 repo-versions
+                 (recur rst (concat versions repo-versions)))
+               (recur rst versions)))))
+       (map (juxt identity v/version->seq))
+       (filter
+         (fn [[v vs]]
+           (and (or snapshots? (not (v/snapshot? vs)))
+                (or qualified? (v/snapshot? vs) (not (v/qualified? vs))))))))))
 
-(defn retrieve-all-versions!
-  "Retrieve a seq of all available versions for the given artifact from all of the given
-   repositories."
-  ([group-id artifact-id] 
-   (retrieve-all-versions! *repositories* group-id artifact-id))
-  ([repos group-id artifact-id]
-   (mapcat
-     (fn [repo]
-       (retrieve-versions! [repo] group-id artifact-id))
-     repos)))
+(defn retrieve-version-strings!
+  "Retrieve version strings. Arguments are the same as for `retrieve-versions!`."
+  [& args]
+  (let [versions (apply retrieve-versions! args)]
+    (map first versions)))
+
+(defn retrieve-latest-version!
+  "Retrieve the latest version. Arguments are the same as for `retrieve-versions!`."
+  [& args]
+  (let [versions (apply retrieve-versions! args)]
+    (->> versions
+      (sort #(v/version-seq-compare (second %1) (second %2)))
+      (last))))
+
+(def retrieve-latest-version-string!
+  "Retrieve the latest version's version string. Arguments are the same as for 
+   `retrieve-latest-version!`."
+  (comp first retrieve-latest-version!))
