@@ -13,7 +13,9 @@
    ":check-clojure"   :check-clojure
    ":verbose"         :verbose
    ":no-colors"       :no-colors
-   ":aggressive"      :aggressive?})
+   ":aggressive"      :aggressive?
+   ":print"           :print
+   ":interactive"     :interactive})
 
 (defn parse-cli
   "Parse Command Line, return map of Settings."
@@ -27,4 +29,3 @@
     (cond (:all data) (assoc data :dependencies true :plugins true) 
           (:plugins data) data
           :else (assoc data :dependencies true))))
-
