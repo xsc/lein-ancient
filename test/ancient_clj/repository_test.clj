@@ -124,3 +124,10 @@
         ))
     ?url2 "http://repo" "https://repo" "file://repo" "file:/repo")
   ?url1 "http://repo" "https://repo" "file://repo" "file:/repo")
+
+(tabular
+  (fact "about unknown repository types"
+    (r/repository ?url) => falsey)
+  ?url
+  "ftp://repo"
+  "git://repo")

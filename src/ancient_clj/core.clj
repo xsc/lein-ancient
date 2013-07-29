@@ -38,19 +38,19 @@
   "Retrieve seq of version pairs for the given artifact vector."
   r/retrieve-versions!)
 
-(def version-strings!
+(defancient version-strings!
   "Retrieve seq of version strings for the given artifact vector."
-  (comp #(map first %) versions!))
+  r/retrieve-version-strings!)
 
 (defancient latest-version!
   "Retrieve latest version for the given artifact (`[artifact version ...]`). `settings` and
    `repos` have the same semantics as in `ancient-clj.repository/retrieve-versions!`."
   r/retrieve-latest-version!)
 
-(def latest-version-string!
+(defancient latest-version-string!
   "Retrieve latest version string for the given artifact (`[artifact version ...]`). `settings` and
    `repos` have the same semantics as in `ancient-clj.repository/retrieve-versions!`."
-  (comp first latest-version!))
+  r/retrieve-latest-version-string!)
 
 (defn artifact-outdated?
   "Check if the given artifact (`[artifact version ...]`) is outdated. Return the latest version pair
