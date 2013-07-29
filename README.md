@@ -71,6 +71,13 @@ __REPL__
 ;;   => nil
 (anc/artifact-outdated-string? repos '[org.clojure/clojure "1.5.1"]) 
 ;;   => "1.6.0-master-SNAPSHOT"
+
+;; Repositories that need authentication can be represented as maps. They have the
+;; same format as the (expanded) repository maps in Leiningen's `project.clj`.
+(anc/artifact-outdated? 
+  [{:url "s3p://bucket/repo" :username "..." :passphrase "..."}]
+  'my.private/project)
+;;   => ...
 ```
 
 ## Supported Repository Types
