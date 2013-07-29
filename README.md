@@ -74,7 +74,7 @@ __REPL__
 
 ;; Repositories that need authentication can be represented as maps. They have the
 ;; same format as the (expanded) repository maps in Leiningen's `project.clj`.
-(anc/artifact-outdated? 
+(anc/versions!
   [{:url "s3p://bucket/repo" :username "..." :passphrase "..."}]
   'my.private/project)
 ;;   => ...
