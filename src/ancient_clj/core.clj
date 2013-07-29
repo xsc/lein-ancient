@@ -27,11 +27,13 @@
   "Create function that takes an optional settings map and/or repository seq as first/second
    parameters, allowing for use of either an artifact vector or artifact symbol."
   [id docstring f]
-  (let [[s r a] ['settings 'repos 'artifact-vector]]
+  (let [[s r a] ['settings 'repos 'artifact]]
     `(defn ~id ~docstring
        ([~a] (~id nil r/*repositories* ~a))
        ([~r ~a] (~id (when (map? ~r) ~r) (if (map? ~r) r/*repositories* ~r) ~a))
-       ([~s ~r ~a] (let [m# (artifact-map (if (symbol? ~a) [~a "RELEASE"] ~a))]
+       ([~s ~r ~a] (let [m# (if-not (map? ~a) 
+                              (artifact-map (if (symbol? ~a) [~a "RELEASE"] ~a))
+                              ~a)]
                      (~f ~s ~r (:group-id m#) (:artifact-id m#)))))))
 
 (defancient versions!
@@ -55,14 +57,18 @@
 (defn artifact-outdated?
   "Check if the given artifact (`[artifact version ...]`) is outdated. Return the latest version pair
    if the given version is lower than the retrieved one; `nil` otherwise."
-  ([artifact-vector] (artifact-outdated? nil r/*repositories* artifact-vector))
-  ([repos artifact-vector]
+  ([artifact] (artifact-outdated? nil r/*repositories* artifact))
+  ([repos artifact]
    (artifact-outdated?
      (when (map? repos) repos)
      (if (map? repos) r/*repositories* repos)
-     artifact-vector))
-  ([settings repos artifact-vector]
-   (let [{:keys [group-id artifact-id version]} (artifact-map artifact-vector)
+     artifact))
+  ([settings repos artifact]
+   (let [{:keys [group-id artifact-id version]} (if-not (map? artifact) 
+                                                  (artifact-map artifact)
+                                                  artifact)
+         _ (when-not (and group-id artifact-id version)
+             (throw (Exception. (str "Not a valid artifact specification: " artifact))))
          [_ v0] version]
      (when-let [[_ v1 :as latest] (r/retrieve-latest-version! settings repos group-id artifact-id)]
        (when (= -1 (v/version-seq-compare v0 v1))
