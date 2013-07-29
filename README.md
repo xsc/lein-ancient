@@ -73,6 +73,12 @@ __REPL__
 ;;   => "1.6.0-master-SNAPSHOT"
 ```
 
+## Supported Repository Types
+
+- HTTP/HTTPS Repositories
+- Local Repositories
+- [Amazon S3 Repositories](https://github.com/technomancy/s3-wagon-private) (private)
+
 ## License
 
 Copyright &copy; Yannick Scherer
