@@ -20,6 +20,10 @@
 (extend-protocol r/Repository
   java.lang.String
   (retrieve-metadata-xml! [this group-id artifact-id]
+    (when-let [repo (repository {:url this})]
+      (r/retrieve-metadata-xml! repo group-id artifact-id)))
+  clojure.lang.IPersistentMap
+  (retrieve-metadata-xml! [this group-id artifact-id]
     (when-let [repo (repository this)]
       (r/retrieve-metadata-xml! repo group-id artifact-id))))
 
@@ -55,7 +59,7 @@
      (when (seq repos)
        (let [[repo & rst] repos]
          (or
-           (when-let [mta (retrieve-metadata-xml! repo group-id artifact-id)]
+           (when-let [mta (r/retrieve-metadata-xml! repo group-id artifact-id)]
              (when (string? mta)
                (for [t (try 
                          (xml-seq (xml/parse-str mta))
