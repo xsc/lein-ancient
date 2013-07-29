@@ -13,7 +13,7 @@ Version comparison is done using [version-clj](https://github.com/xsc/version-cl
 __Leiningen ([via Clojars](https://clojars.org/ancient-clj))__
 
 ```clojure
-[ancient-clj "0.1.0"]
+[ancient-clj "0.1.1"]
 ```
 
 __REPL__
@@ -34,9 +34,13 @@ __REPL__
 (anc/latest-version-string! 'ancient-clj) 
 ;;   => "0.1.0-SNAPSHOT"
 
-;; ... or the artifact vector.
+;; ... the artifact vector, ...
 (anc/versions! '[ancient-clj "0.1.0"])    
 ;;   => (["0.1.0-SNAPSHOT" [(0 1 0) ("snapshot")]])
+
+;; ... or the artifact map.
+(anc/latest-version-string! (anc/artifact-map '[ancient-clj "0.1.0-SNAPSHOT"]))
+;;   => "0.1.0-SNAPSHOT"
 
 ;; You can use an optional settings map with all the above functions, ...
 (anc/latest-version-string! 'lein-ancient)                     ;; => "0.4.3-SNAPSHOT"
