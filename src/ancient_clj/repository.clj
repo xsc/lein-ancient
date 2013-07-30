@@ -2,7 +2,9 @@
        :author "Yannick Scherer" }
   ancient-clj.repository
   (:require [ancient-clj.repository.core :as r]
-            [ancient-clj.repository http local s3p]
+            [ancient-clj.repository.http]
+            [ancient-clj.repository.local]
+            [ancient-clj.repository.s3p]
             [ancient-clj.verbose :refer [verbose]]
             [clojure.data.xml :as xml :only [parse-str]]
             [version-clj.core :as v]))
@@ -95,6 +97,7 @@
                  (recur rst (concat versions repo-versions)))
                (recur rst versions)))))
        (map (juxt identity v/version->seq))
+       (distinct)
        (filter
          (fn [[v vs]]
            (and (or snapshots? (not (v/snapshot? vs)))
