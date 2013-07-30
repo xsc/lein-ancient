@@ -27,8 +27,9 @@
                         true)))
                (into {}))
         data (assoc data 
-                    :snapshots? (:snapshots? data false)
-                    :qualified? (:qualified? data false))]
+                    :aggressive? (:aggressive? data false)
+                    :snapshots?  (:snapshots? data false)
+                    :qualified?  (:qualified? data false))]
     (cond (:all data) (assoc data :dependencies true :plugins true) 
           (:plugins data) data
           :else (assoc data :dependencies true))))

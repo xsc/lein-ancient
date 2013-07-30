@@ -3,7 +3,7 @@
   leiningen.ancient
   (:require [leiningen.ancient.tasks.check :refer [run-check-task!]]
             [leiningen.ancient.tasks.get :refer [run-get-task!]]
-            [leiningen.ancient.tasks.upgrade :refer [run-upgrade-task!]]))
+            [leiningen.ancient.tasks.upgrade :refer [run-upgrade-task! run-upgrade-global-task!]]))
 
 (defn ^:no-project-needed ancient
   "Check your Projects for outdated Dependencies. 
@@ -13,6 +13,13 @@
      lein ancient [<options>]
      lein ancient :get <package> [<options>]
      lein ancient :upgrade [<options>]
+     lein ancient :upgrade-global [<options>]
+
+   Modes:
+
+     :get                 Retrieve artifact information from Maven repositories.
+     :upgrade             Replace artifacts in your 'project.clj' with newer versions.
+     :upgrade-global      Replace artifacts in '~/.lein/profiles.clj' with newer versions.
 
    Commandline Options:
   
@@ -33,4 +40,5 @@
   (condp = (first args)
     ":get" (run-get-task! project args)
     ":upgrade" (run-upgrade-task! project args)
+    ":upgrade-global" (run-upgrade-global-task! project args)
     (run-check-task! project args)))

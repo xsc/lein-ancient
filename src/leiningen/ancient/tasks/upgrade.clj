@@ -110,12 +110,27 @@
         (println "Could not find valid project map '(defproject ...)'."))
       zloc)))
 
-(defn- upgrade-project-file!
-  "Given a project's `project.clj` file (as `java.io.File`), upgrade everything allowed in 
+(defn- upgrade-profiles-plugins!
+  "Given a zipper location containing a map of profiles, update the profile plugins."
+  [repos settings zloc]
+  (when-let [zloc (z/find-tag zloc z/next :map)] 
+    (z/map
+      (fn [loc]
+        (or
+          (when (z/map? loc)
+            (when-let [plugins (z/get loc :plugins)]
+              (-> plugins 
+                (upgrade-dependencies! repos settings)
+                z/up)))
+          loc))
+      zloc)))
+
+(defn- upgrade-file!
+  "Given a Clojure file (as `java.io.File`) and a upgrade function, upgrade everything allowed in 
    the given settings map using the given retrievers and write result back to the file."
-  [f repos settings]
+  [upgrade-fn f repos settings]
   (let [data (z/of-file f)]
-    (when-let [data (upgrade-project! repos settings data)]
+    (when-let [data (upgrade-fn repos settings data)]
       (if (:print settings)
         (do
           (println)
@@ -124,6 +139,12 @@
         (binding [*out* (io/writer f)]
           (z/print-root data)
           (.flush ^java.io.Writer *out*))))))
+
+(def ^:private upgrade-project-file! 
+  (partial upgrade-file! upgrade-project!))
+
+(def ^:private upgrade-profiles-file!
+  (partial upgrade-file! upgrade-profiles-plugins!))
 
 ;; ## Task
 
@@ -137,3 +158,12 @@
           repos (collect-repositories project)]
       (with-settings settings
         (upgrade-project-file! project-file repos settings)))))
+
+(defn run-upgrade-global-task!
+  "Run plugin upgrade on global profiles."
+  [project args]
+  (let [profiles-file (io/file (System/getProperty "user.home") ".lein" "profiles.clj")
+        settings (parse-cli args)
+        repos (collect-repositories project)]
+    (with-settings settings
+      (upgrade-profiles-file! profiles-file repos settings))))
