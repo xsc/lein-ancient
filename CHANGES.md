@@ -3,6 +3,7 @@
 ## 0.4.4
 
 - Fix for Amazon S3 Repositories (missing credentials)
+- Using [ancient-clj](https://github.com/xsc/ancient-clj) 0.1.3.
 
 ## 0.4.3
 
