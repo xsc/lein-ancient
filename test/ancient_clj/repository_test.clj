@@ -40,6 +40,7 @@
      <artifactId>pandect</artifactId>
      <versioning>
        <versions>
+         <version>0.2.2</version>
          <version>0.3.0-SNAPSHOT</version>
        </versions>
        <lastUpdated>20130524133042</lastUpdated>
