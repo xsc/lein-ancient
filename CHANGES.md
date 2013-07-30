@@ -1,5 +1,15 @@
 # CHANGES: `lein-ancient`
 
+## 0.4.4
+
+- Fix for Amazon S3 Repositories (missing credentials)
+
+## 0.4.3
+
+- Using [ancient-clj](https://github.com/xsc/ancient-clj) as backend.
+- New modes `:upgrade` and `:upgrade-global` for project.clj/profiles.clj rewriting
+  (based on [rewrite-clj](https://github.com/xsc/rewrite-clj))
+
 ## 0.4.2
 
 - Added `:get` mode to retrieve version data for a specific package.

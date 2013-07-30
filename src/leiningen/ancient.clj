@@ -19,7 +19,7 @@
 
      :get                 Retrieve artifact information from Maven repositories.
      :upgrade             Replace artifacts in your 'project.clj' with newer versions.
-     :upgrade-global      Replace artifacts in '~/.lein/profiles.clj' with newer versions.
+     :upgrade-global      Replace plugins in '~/.lein/profiles.clj' with newer versions.
 
    Commandline Options:
   
@@ -31,7 +31,7 @@
      :allow-snapshots     Allow '*-SNAPSHOT' versions to be reported as new.
      :check-clojure       Include Clojure (org.clojure/clojure) in checks.
      :aggressive          Check all available repositories (= Do not stop after first artifact match).
-     :interactive         Run ':upgrade' in interactive mode, prompting whtether to apply changes.
+     :interactive         Run ':upgrade' in interactive mode, prompting whether to apply changes.
      :print               Print result of ':upgrade' task instead of writing it to 'project.clj'.
      :verbose             Produce progress indicating messages.
      :no-colors           Disable colorized output.
