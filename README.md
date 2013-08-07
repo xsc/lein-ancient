@@ -17,7 +17,7 @@ __Leiningen__ ([via Clojars](https://clojars.org/lein-ancient))
 Put the following into the `:plugins` vector of the `:user` profile in your `~/.lein/profiles.clj`:
 
 ```clojure
-[lein-ancient "0.4.4"]
+[lein-ancient "0.5.0"]
 ```
 
 This plugin is destined for Leiningen >= 2.0.0.
@@ -58,7 +58,7 @@ $ lein ancient :all
 You can automatically and iteractively upgrade dependencies in need:
 
 ```bash
-$ lein ancient :upgrade :interactive
+$ lein ancient upgrade :interactive
 
 [com.taoensso/timbre "2.4.1"] is available but we use "2.1.2"
 Do you want to upgrade? [yes/no] yes
@@ -84,15 +84,15 @@ Check your Projects for outdated Dependencies.
    Usage:
 
      lein ancient [<options>]
-     lein ancient :get <package> [<options>]
-     lein ancient :upgrade [<options>]
-     lein ancient :upgrade-global [<options>]
+     lein ancient get <package> [<options>]
+     lein ancient upgrade [<options>]
+     lein ancient upgrade-global [<options>]
 
-   Modes:
+   Tasks:
 
-     :get                 Retrieve artifact information from Maven repositories.
-     :upgrade             Replace artifacts in your 'project.clj' with newer versions.
-     :upgrade-global      Replace plugins in '~/.lein/profiles.clj' with newer versions.
+     get                 Retrieve artifact information from Maven repositories.
+     upgrade             Replace artifacts in your 'project.clj' with newer versions.
+     upgrade-global      Replace plugins in '~/.lein/profiles.clj' with newer versions.
 
    Commandline Options:
   
