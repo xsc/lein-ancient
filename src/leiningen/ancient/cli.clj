@@ -15,7 +15,9 @@
    ":no-colors"       :no-colors
    ":aggressive"      :aggressive?
    ":print"           :print
-   ":interactive"     :interactive})
+   ":interactive"     :interactive
+   ":no-tests"        :no-tests
+   ":overwrite-backup":overwrite-backup})
 
 (defn parse-cli
   "Parse Command Line, return map of Settings."

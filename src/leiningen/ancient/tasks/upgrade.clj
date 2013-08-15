@@ -1,12 +1,14 @@
 (ns ^{ :doc "Rewrite project.clj to include latest versions of dependencies." 
        :author "Yannick Scherer" }
   leiningen.ancient.tasks.upgrade
-  (:require [leiningen.ancient.projects :refer [collect-repositories]]
+  (:require [leiningen.ancient.tasks.test :as t]
+            [leiningen.ancient.projects :refer [collect-repositories]]
             [leiningen.ancient.cli :refer [parse-cli]]
             [ancient-clj.verbose :refer :all]
             [ancient-clj.core :as anc]
             [rewrite-clj.zip :as z]
-            [clojure.java.io :as io :only [file writer]]))
+            [clojure.java.io :as io :only [file writer]])
+  (:import java.io.File))
 
 ;; ## Prompt
 
@@ -137,53 +139,90 @@
 
 (defn- create-backup-file!
   "Create backup of a given File. Print errors and return `nil` if a failure occurs."
-  [^java.io.File f]
-  (let [^java.io.File parent (.getParentFile f)
-        ^java.io.File backup (io/file parent (str (.getName f) ".backup"))]
+  ^File
+  [^File f settings]
+  (let [^File parent (.getParentFile f)
+        ^File backup (io/file parent (str (.getName f) ".backup"))]
     (try
-      (when (or (not (.exists backup))
+      (when (or (:overwrite-backup settings)
+                (not (.exists backup))
                 (prompt "Do you want to overwrite the existing backup file?")) 
         (verbose "Creating backup at: " (.getCanonicalPath backup))
         (io/copy f backup) 
         backup)
       (catch Exception ex
-        (println (red "Could not create backup file:") " " (.getMessage ex))
+        (println (red "Could not create backup file:") (.getMessage ex))
         nil))))
 
 (defn- read-clojure-file!
-  "Read Clojure File. Print errors and return `nil` if a failure occurs."
-  [^java.io.File f]
+  "Read Clojure File. Prints errors and returns `nil` if a failure occurs;
+   otherwise a rewrite-clj zipper is returned."
+  [^File f]
   (try
     (z/of-file f)
     (catch Exception ex
-      (println (red "Could not read artifacts from file:") " " (.getMessage ex))
+      (println (red "Could not read artifacts from file:") (.getMessage ex))
       nil)))
+
+(defn- write-clojure-file!
+  "Write Clojure File. Returns `::ok` if data was written to disk, and `::failure`
+   if something fails."
+  [^File f data settings]
+  (try
+    (if (:print settings)
+      (do 
+        (println) 
+        (z/print-root data) 
+        (println))
+      (binding [*out* (io/writer f)]
+        (z/print-root data)
+        (.flush ^java.io.Writer *out*)
+        ::ok))
+    (catch Exception ex
+      (println (red "An error occured while writing the generated data:") (.getMessage ex))
+      ::failure)))
+
+(defn- delete-backup-file!
+  [^File backup]
+  (try
+    (verbose "Deleting backup file ...")
+    (.delete backup)
+    (catch Exception ex 
+      (println (red "Could not delete backup file " (.getPath backup) ":") (.getMessage ex)))))
+
+(defn- replace-with-backup!
+  [^File f ^File backup]
+  (try
+    (verbose "Replacing original file with backup file ...")
+    (.delete f)
+    (io/copy backup f)
+    (.delete backup)
+    (catch Exception ex
+      (println (red "Could not replace original file " (.getPath f) ":") (.getMessage ex)))))
 
 (defn- upgrade-file-with-backup!
   "Given a Clojure file and an upgrade function, upgrade everything allowed
    in the given settings map using the given repositories and write result back
    to file, creating a backup file first."
-  [upgrade-fn ^java.io.File f repos settings]
+  [upgrade-fn ^File f project repos settings]
   (verbose "Upgrading artifacts in: " (.getCanonicalPath f))
-  (when-let [backup (create-backup-file! f)]
+  (when-let [backup (create-backup-file! f settings)]
     (when-let [src-data (read-clojure-file! f)]
       (when-let [data (upgrade-fn repos settings src-data)]
-        (if (:print settings)
-          (do
-            (println)
-            (z/print-root data)
-            (println))
-          (binding [*out* (io/writer f)]
-            (z/print-root data)
-            (.flush ^java.io.Writer *out*)))))))
+        (condp = (write-clojure-file! f data settings)
+          ::failure (replace-with-backup! f backup)
+          ::ok (if (or (:no-tests settings) (t/run-all-tests-with-refresh! project))
+                 (delete-backup-file! backup)
+                 (replace-with-backup! f backup))
+          (delete-backup-file! backup))))))
 
 (defn- upgrade-file!
   "Given a Clojure file (as `java.io.File`) and a upgrade function, upgrade everything allowed in 
    the given settings map using the given retrievers and write result back to the file."
-  [upgrade-fn ^java.io.File f repos settings]
+  [upgrade-fn ^File f project repos settings]
   (if-not (and (.isFile f) (.exists f))
     (println "No such file:" (.getPath f))
-    (upgrade-file-with-backup! upgrade-fn f repos settings)))
+    (upgrade-file-with-backup! upgrade-fn f project repos settings)))
 
 (def ^:private upgrade-project-file! 
   (partial upgrade-file! upgrade-project!))
@@ -202,7 +241,7 @@
           settings (parse-cli args)
           repos (collect-repositories project)]
       (with-settings settings
-        (upgrade-project-file! project-file repos settings)))))
+        (upgrade-project-file! project-file project repos settings)))))
 
 (defn run-upgrade-global-task!
   "Run plugin upgrade on global profiles."
@@ -211,4 +250,4 @@
         settings (parse-cli args)
         repos (collect-repositories project)]
     (with-settings settings
-      (upgrade-profiles-file! profiles-file repos settings))))
+      (upgrade-profiles-file! profiles-file project repos settings))))
