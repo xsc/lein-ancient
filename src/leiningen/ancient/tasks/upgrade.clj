@@ -46,7 +46,7 @@
               (when (prompt! group-id artifact-id latest version)
                 (println "Upgrade to" (artifact-string group-id artifact-id latest) 
                          "from" (yellow (version-string version)))
-                (z/edit-> zloc z/down z/right (z/replace (first latest)))))))))
+                (z/subedit-> zloc z/down z/right (z/replace (first latest)))))))))
     zloc))
 
 (defn- upgrade-dependencies!
