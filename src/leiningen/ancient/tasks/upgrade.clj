@@ -10,7 +10,21 @@
 
 ;; ## Prompt
 
-(defn- prompt-for 
+(defn- prompt
+  "Create a yes/no prompt using the given message."
+  [& msg]
+  (let [msg (str (apply str msg) " [yes/no] ")]
+    (loop [i 3]
+      (when (pos? i)
+        (print msg)
+        (.flush ^java.io.Writer *out*)
+        (let [r (or (read-line) "")
+              r (.toLowerCase r)]
+          (cond (= r "yes") true
+                (= r "no") false
+                :else (recur (dec i))))))))
+
+(defn- prompt-for-upgrade 
   "If the `:interactive` flag in the given settings map is set, this function will ask the
    user (on stdout/stdin) whether he wants to upgrade the given artifact and return a boolean
    value indicating the user's choice."
@@ -22,13 +36,7 @@
       (println (artifact-string group-id artifact-id latest) 
                "is available but we use"
                (yellow (version-string version)))
-      (loop []
-        (print "Do you want to upgrade? [yes/no] ")
-        (.flush ^java.io.Writer *out*)
-        (let [r (read-line)]
-          (cond (= r "yes") true
-                (= r "no") false
-                :else (recur)))))))
+      (prompt "Do you want to upgrade?"))))
 
 ;; ## Upgrade
 
@@ -37,7 +45,7 @@
    check if newer versions are available and replace if so."
   [zloc repos settings]
   (or 
-    (let [prompt! (partial prompt-for settings)]
+    (let [prompt! (partial prompt-for-upgrade settings)]
       (when (z/vector? zloc)
         (let [{:keys [group-id artifact-id version] :as artifact} (anc/artifact-map (z/sexpr zloc)) ]
           (when (or (:check-clojure settings)
@@ -125,20 +133,57 @@
           loc))
       zloc)))
 
+;; ## Handle Files
+
+(defn- create-backup-file!
+  "Create backup of a given File. Print errors and return `nil` if a failure occurs."
+  [^java.io.File f]
+  (let [^java.io.File parent (.getParentFile f)
+        ^java.io.File backup (io/file parent (str (.getName f) ".backup"))]
+    (try
+      (when (or (not (.exists backup))
+                (prompt "Do you want to overwrite the existing backup file?")) 
+        (verbose "Creating backup at: " (.getCanonicalPath backup))
+        (io/copy f backup) 
+        backup)
+      (catch Exception ex
+        (println (red "Could not create backup file:") " " (.getMessage ex))
+        nil))))
+
+(defn- read-clojure-file!
+  "Read Clojure File. Print errors and return `nil` if a failure occurs."
+  [^java.io.File f]
+  (try
+    (z/of-file f)
+    (catch Exception ex
+      (println (red "Could not read artifacts from file:") " " (.getMessage ex))
+      nil)))
+
+(defn- upgrade-file-with-backup!
+  "Given a Clojure file and an upgrade function, upgrade everything allowed
+   in the given settings map using the given repositories and write result back
+   to file, creating a backup file first."
+  [upgrade-fn ^java.io.File f repos settings]
+  (verbose "Upgrading artifacts in: " (.getCanonicalPath f))
+  (when-let [backup (create-backup-file! f)]
+    (when-let [src-data (read-clojure-file! f)]
+      (when-let [data (upgrade-fn repos settings src-data)]
+        (if (:print settings)
+          (do
+            (println)
+            (z/print-root data)
+            (println))
+          (binding [*out* (io/writer f)]
+            (z/print-root data)
+            (.flush ^java.io.Writer *out*)))))))
+
 (defn- upgrade-file!
   "Given a Clojure file (as `java.io.File`) and a upgrade function, upgrade everything allowed in 
    the given settings map using the given retrievers and write result back to the file."
-  [upgrade-fn f repos settings]
-  (let [data (z/of-file f)]
-    (when-let [data (upgrade-fn repos settings data)]
-      (if (:print settings)
-        (do
-          (println)
-          (z/print-root data)
-          (println))
-        (binding [*out* (io/writer f)]
-          (z/print-root data)
-          (.flush ^java.io.Writer *out*))))))
+  [upgrade-fn ^java.io.File f repos settings]
+  (if-not (and (.isFile f) (.exists f))
+    (println "No such file:" (.getPath f))
+    (upgrade-file-with-backup! upgrade-fn f repos settings)))
 
 (def ^:private upgrade-project-file! 
   (partial upgrade-file! upgrade-project!))
@@ -152,7 +197,7 @@
   "Run artifact upgrade on project file."
   [{:keys [root] :as project} args]
   (if-not root
-    (println "':upgrade' can only be run inside of project.")
+    (println "'upgrade' can only be run inside of project.")
     (let [project-file (io/file root "project.clj")
           settings (parse-cli args)
           repos (collect-repositories project)]
