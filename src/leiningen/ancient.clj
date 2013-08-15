@@ -6,6 +6,12 @@
             [leiningen.ancient.tasks.upgrade :refer [run-upgrade-task! run-upgrade-global-task!]]
             [ancient-clj.verbose :refer :all]))
 
+(def ^:private dispatch-table
+  {"get"            run-get-task!
+   "upgrade"        run-upgrade-task!
+   "upgrade-global" run-upgrade-global-task!
+   nil              run-check-task!})
+
 (defn ^:no-project-needed ancient
   "Check your Projects for outdated Dependencies. 
   
@@ -38,12 +44,10 @@
      :no-colors           Disable colorized output.
   "
   [project & args]
-  (let [t (first args)]
-    (condp = (first args)
-      "get" (run-get-task! project args)
-      "upgrade" (run-upgrade-task! project args)
-      "upgrade-global" (run-upgrade-global-task! project args)
-      (if (or (not t) (.startsWith ^String t ":"))
-        (run-check-task! project args)
-        (println (red "unknown task:") (str "'" t "'") 
-                 "with parameters" (pr-str (vec (rest args))))))))
+  (let [^String t (when-let [^String t (first args)]
+                    (when-not (.startsWith t ":") t))
+        run-task! (get dispatch-table t)]
+    (when-not run-task!
+      (println (red "unknown task:") (str "'" t "'") "with parameters" (pr-str (vec (rest args))))
+      (System/exit 1))
+    (run-task! project args)))
