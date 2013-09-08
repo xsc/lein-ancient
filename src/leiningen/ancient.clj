@@ -14,7 +14,7 @@
    "test"           run-test-task!
    nil              run-check-task!})
 
-(defn ^:no-project-needed ancient
+(defn ^:higher-order ^:no-project-needed ancient
   "Check your Projects for outdated Dependencies. 
   
    Usage:

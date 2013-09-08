@@ -211,7 +211,7 @@
       (when-let [data (upgrade-fn repos settings src-data)]
         (condp = (write-clojure-file! f data settings)
           ::failure (replace-with-backup! f backup)
-          ::ok (if (or (:no-tests settings) (t/run-all-tests-with-refresh! project))
+          ::ok (if (or (:no-tests settings) (t/run-tests-with-refresh! project))
                  (delete-backup-file! backup)
                  (replace-with-backup! f backup))
           (delete-backup-file! backup))))))
