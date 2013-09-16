@@ -1,10 +1,10 @@
 (ns ^{:doc "Check your Project for outdated Dependencies."
       :author "Yannick Scherer"}
   leiningen.ancient
-  (:require [leiningen.ancient.tasks.check :refer [run-check-task!]]
-            [leiningen.ancient.tasks.get :refer [run-get-task!]]
-            [leiningen.ancient.tasks.upgrade :refer [run-upgrade-task! run-upgrade-global-task!]]
-            [leiningen.ancient.tasks.test :refer [run-test-task!]]
+  (:require [leiningen.ancient.check :refer [run-check-task!]]
+            [leiningen.ancient.get :refer [run-get-task!]]
+            [leiningen.ancient.upgrade :refer [run-upgrade-task! run-upgrade-global-task!]]
+            [leiningen.ancient.test :refer [run-test-task!]]
             [ancient-clj.verbose :refer :all]))
 
 (def ^:private dispatch-table
