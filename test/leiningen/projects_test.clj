@@ -1,6 +1,6 @@
 (ns leiningen.projects-test
   (:require [midje.sweet :refer :all]
-            [leiningen.ancient.projects :refer [collect-repositories collect-artifacts]]))
+            [leiningen.ancient.utils.projects :refer [collect-repositories collect-artifacts]]))
 
 (def test-project
   '{:repositories [["str" "http://string/repo"]

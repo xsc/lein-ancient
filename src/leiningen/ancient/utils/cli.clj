@@ -1,6 +1,6 @@
 (ns ^{ :doc "CLI processing for lein-ancient."
        :author "Yannick Scherer" }
-  leiningen.ancient.cli)
+  leiningen.ancient.utils.cli)
 
 (def ^:private CLI_FLAGS
   "Available CLI Flags."

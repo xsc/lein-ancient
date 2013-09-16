@@ -1,6 +1,6 @@
 (ns ^{:doc "Project Map Inspection for lein-ancient"
       :author "Yannick Scherer"}
-  leiningen.ancient.projects
+  leiningen.ancient.utils.projects
   (:require [leiningen.core.project :as project :only [defaults]]
             [leiningen.core.user :as uu :only [resolve-credentials]]
             [ancient-clj.core :refer [artifact-map]]

@@ -1,7 +1,7 @@
 (ns ^{ :doc "Regression Testing for lein-ancient"
        :author "Yannick Scherer" }
-  leiningen.ancient.tasks.test
-  (:require [leiningen.ancient.cli :refer [parse-cli]]
+  leiningen.ancient.test
+  (:require [leiningen.ancient.utils.cli :refer [parse-cli]]
             [leiningen.core.project :as prj]
             [leiningen.core.main :as main]
             [testem.core :as testem :only [create-test-tasks]]

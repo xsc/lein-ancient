@@ -1,8 +1,8 @@
 (ns ^{ :doc "List artifact version information." 
        :author "Yannick Scherer" }
-  leiningen.ancient.tasks.get
-  (:require [leiningen.ancient.projects :refer [collect-repositories]]
-            [leiningen.ancient.cli :refer [parse-cli]]
+  leiningen.ancient.get
+  (:require [leiningen.ancient.utils.projects :refer [collect-repositories]]
+            [leiningen.ancient.utils.cli :refer [parse-cli]]
             [ancient-clj.verbose :refer :all]
             [ancient-clj.core :as anc]
             [version-clj.core :as v]))

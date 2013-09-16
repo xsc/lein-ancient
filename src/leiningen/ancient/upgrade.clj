@@ -1,9 +1,9 @@
 (ns ^{ :doc "Rewrite project.clj to include latest versions of dependencies." 
        :author "Yannick Scherer" }
-  leiningen.ancient.tasks.upgrade
-  (:require [leiningen.ancient.tasks.test :as t]
-            [leiningen.ancient.projects :refer [collect-repositories]]
-            [leiningen.ancient.cli :refer [parse-cli]]
+  leiningen.ancient.upgrade
+  (:require [leiningen.ancient.test :as t]
+            [leiningen.ancient.utils.projects :refer [collect-repositories]]
+            [leiningen.ancient.utils.cli :refer [parse-cli]]
             [ancient-clj.verbose :refer :all]
             [ancient-clj.core :as anc]
             [rewrite-clj.zip :as z]

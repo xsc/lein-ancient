@@ -1,8 +1,8 @@
 (ns ^{ :doc "Check for outdated dependencies." 
        :author "Yannick Scherer" }
-  leiningen.ancient.tasks.check
-  (:require [leiningen.ancient.projects :refer [collect-artifacts collect-repositories]]
-            [leiningen.ancient.cli :refer [parse-cli]]
+  leiningen.ancient.check
+  (:require [leiningen.ancient.utils.projects :refer [collect-artifacts collect-repositories]]
+            [leiningen.ancient.utils.cli :refer [parse-cli]]
             [ancient-clj.verbose :refer :all]
             [ancient-clj.core :as anc]))
 
