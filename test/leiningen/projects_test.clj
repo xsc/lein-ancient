@@ -23,9 +23,9 @@
   {:plugins true}                                            [["group" "plugin"] ["xyz-plugin" "xyz-plugin"]]
   {:dependencies true :plugins true}                         [["group" "artifact"] ["group" "plugin"] 
                                                               ["xyz" "xyz"] ["xyz-plugin" "xyz-plugin"]]
-  {:dependencies true :no-profiles true}                     [["group" "artifact"]]
-  {:plugins true :no-profiles true}                          [["group" "plugin"]]
-  {:dependencies true :plugins true :no-profiles true}       [["group" "artifact"] ["group" "plugin"]]
+  {:dependencies true :profiles false}                       [["group" "artifact"]]
+  {:plugins true :profiles false}                            [["group" "plugin"]]
+  {:dependencies true :plugins true :profiles false}          [["group" "artifact"] ["group" "plugin"]]
   {:dependencies true :check-clojure true}                   [["group" "artifact"] ["org.clojure" "clojure"]
                                                               ["xyz" "xyz"]]
-  {:dependencies true :check-clojure true :no-profiles true} [["group" "artifact"] ["org.clojure" "clojure"]])
+  {:dependencies true :check-clojure true :profiles false}   [["group" "artifact"] ["org.clojure" "clojure"]])

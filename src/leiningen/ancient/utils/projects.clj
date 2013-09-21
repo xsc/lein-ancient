@@ -25,7 +25,7 @@
         dependencies (concat
                        (when deps? (:dependencies project))
                        (when plugins? (:plugins project))
-                       (when-not (:no-profiles settings)
+                       (when (:profiles settings true)
                          (concat
                            (when deps? (mapcat :dependencies (vals (:profiles project))))
                            (when plugins? (mapcat :plugins (vals (:profiles project)))))))]

@@ -107,7 +107,7 @@
         upgrading-steps (concat
                           (when deps? [#(upgrade-proj! % :dependencies)])
                           (when plugins? [#(upgrade-proj! % :plugins)])
-                          (when-not (:no-profiles settings)
+                          (when (:profiles settings)
                             (concat
                               (when deps? [#(upgrade-prof! % :dependencies)])
                               (when plugins? [#(upgrade-prof! % :plugins)]))))]
@@ -211,7 +211,7 @@
       (when-let [data (upgrade-fn repos settings src-data)]
         (condp = (write-clojure-file! f data settings)
           ::failure (replace-with-backup! f backup)
-          ::ok (if (or (:no-tests settings) (t/run-tests-with-refresh! project))
+          ::ok (if (or (not (:tests settings)) (t/run-tests-with-refresh! project))
                  (delete-backup-file! backup)
                  (replace-with-backup! f backup))
           (delete-backup-file! backup))))))

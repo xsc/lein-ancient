@@ -3,43 +3,54 @@
   leiningen.ancient.utils.cli)
 
 (def ^:private CLI_FLAGS
-  "Available CLI Flags."
-  {":dependencies"    :dependencies
-   ":all"             :all
-   ":plugins"         :plugins 
-   ":allow-snapshots" :snapshots?
-   ":allow-qualified" :qualified?
-   ":no-profiles"     :no-profiles
-   ":check-clojure"   :check-clojure
-   ":verbose"         :verbose
-   ":no-colors"       :no-colors
-   ":aggressive"      :aggressive?
-   ":print"           :print
-   ":interactive"     :interactive
-   ":no-tests"        :no-tests
-   ":overwrite-backup":overwrite-backup})
+  "Available CLI Flags (and how they affect the settings map)."
+  {":all"             [:dependencies     true
+                       :plugins          true]
+   ":plugins"         [:plugins          true
+                       :dependencies     false]
+   ":allow-snapshots" [:snapshots?       true]
+   ":allow-qualified" [:qualified?       true]
+   ":no-profiles"     [:profiles         false]
+   ":check-clojure"   [:check-clojure    true]
+   ":verbose"         [:verbose          true]
+   ":no-colors"       [:no-colors        true]
+   ":aggressive"      [:aggressive?      true]
+   ":print"           [:print            true]
+   ":interactive"     [:interactive      true]
+   ":no-tests"        [:tests            false]
+   ":overwrite-backup"[:overwrite-backup true]})
+
+(def ^:private CLI_DEFAULTS
+  (merge
+    (into {} (for [[k _] (mapcat #(partition 2 %) (vals CLI_FLAGS))]
+               [k false]))
+    {:dependencies true
+     :profiles     true
+     :tests        true}))
 
 (def ^:private CLI_DEPRECATED
   "Flags that are no longer supported."
   {":upgrade"        "use task 'upgrade' instead"
    ":upgrade-global" "use task 'upgrade-global' instead"
-   ":get"            "use task 'get' instead"})
+   ":get"            "use task 'get' instead"
+   ":dependencies"   "since it is the default behaviour"})
+
+(defn- supported?
+  "Check if an argument is supported and print warning if not. Returns
+   true if argument is supported, nil otherwise."
+  [arg]
+  (if-let [msg (CLI_DEPRECATED arg)]
+    (println "WARN: option" (str "'" arg "'") "is no longer supported"
+             (str "(" msg ")."))
+    (or (contains? CLI_FLAGS arg)
+        (println "WARN: option" (str "'" arg "'") "not recognized."))))
 
 (defn parse-cli
-  "Parse Command Line, return map of Settings."
+  "Take seq of CLI arguments and produce a map of settings."
   [args]
-  (let [data (->> (for [^String flag args]
-                    (cond (contains? CLI_DEPRECATED flag) (println "WARN: option" (str "'" flag "'") "is no longer supported"
-                                                                   (str "(" (get CLI_DEPRECATED flag) ")."))
-                          (contains? CLI_FLAGS flag) (vector
-                                                       (get CLI_FLAGS flag)
-                                                       true)
-                          :else (println "WARN: option" (str "'" flag "'") "not recognized.")))
-               (into {}))
-        data (assoc data 
-                    :aggressive? (:aggressive? data false)
-                    :snapshots?  (:snapshots? data false)
-                    :qualified?  (:qualified? data false))]
-    (cond (:all data) (assoc data :dependencies true :plugins true) 
-          (:plugins data) data
-          :else (assoc data :dependencies true))))
+  (reduce
+    (fn [settings arg]
+      (if-not (supported? arg)
+        settings
+        (apply assoc settings (CLI_FLAGS arg))))
+    CLI_DEFAULTS args))
