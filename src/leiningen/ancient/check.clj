@@ -1,10 +1,9 @@
 (ns ^{ :doc "Check for outdated dependencies." 
        :author "Yannick Scherer" }
   leiningen.ancient.check
-  (:require [leiningen.ancient.utils.projects :refer [collect-artifacts 
-                                                      artifact-path 
-                                                      collect-repositories]]
-            [leiningen.ancient.utils.cli :refer [parse-cli]]
+  (:require [leiningen.ancient.utils.projects :refer :all]
+            [leiningen.ancient.utils.cli :refer :all]
+            [leiningen.ancient.utils.io :refer :all]
             [ancient-clj.verbose :refer :all]
             [ancient-clj.core :as anc]))
 
@@ -25,6 +24,17 @@
   (let [checked-artifacts (map #(check-artifact! repos settings %) artifacts)]
     (filter :latest checked-artifacts)))
 
+;; ## Console Interaction
+
+(defn print-outdated-message
+  "Takes an artifact map (containing the `:latest` element) and prints 
+   the \"[...] is available but we use ...\" message to stdout."
+  [{:keys [group-id artifact-id version latest]}]
+  (println
+    (artifact-string group-id artifact-id latest)
+    "is available but we use"
+    (yellow (version-string version))))
+
 ;; ## Task
 
 (defn run-check-task!
@@ -36,9 +46,12 @@
             artifacts (collect-artifacts project settings)
             outdated (get-outdated-artifacts! repos settings artifacts)]
         (verbose "Checking " (count artifacts) " Dependencies using " (count repos) " Repositories ...")
-        (doseq [{:keys [group-id artifact-id version latest]} outdated]
-          (println
-            (artifact-string group-id artifact-id latest)
-            "is available but we use"
-            (yellow (version-string version))))
+        (doseq [artifact outdated]
+          (print-outdated-message artifact))
         (verbose "Done.")))))
+
+(defn run-file-check-task!
+  "Run project/plugin checker on the given file."
+  [project [_ path & args]]
+  (when-let [project (read-project-map! path)]
+    (run-check-task! project args)))

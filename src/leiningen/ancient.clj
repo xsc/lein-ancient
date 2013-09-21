@@ -1,7 +1,7 @@
 (ns ^{:doc "Check your Project for outdated Dependencies."
       :author "Yannick Scherer"}
   leiningen.ancient
-  (:require [leiningen.ancient.check :refer [run-check-task!]]
+  (:require [leiningen.ancient.check :refer [run-check-task! run-file-check-task!]]
             [leiningen.ancient.get :refer [run-get-task!]]
             [leiningen.ancient.upgrade :refer [run-upgrade-task! run-upgrade-global-task!]]
             [leiningen.ancient.test :refer [run-test-task!]]
@@ -12,6 +12,7 @@
    "upgrade"        run-upgrade-task!
    "upgrade-global" run-upgrade-global-task!
    "test"           run-test-task!
+   "check"          run-file-check-task!
    nil              run-check-task!})
 
 (defn ^:higher-order ^:no-project-needed ancient
@@ -20,6 +21,7 @@
    Usage:
 
      lein ancient [<options>]
+     lein ancient check <project-file> [<option>]
      lein ancient get <package> [<options>]
      lein ancient test [<options>]
      lein ancient upgrade [<options>]
@@ -27,6 +29,7 @@
 
    Tasks:
 
+     check                Check a given project file.
      get                  Retrieve artifact information from Maven repositories.
      test                 Auto-detect test framework (clojure.test, midje, ...) and run tests.
      upgrade              Replace artifacts in your 'project.clj' with newer versions.

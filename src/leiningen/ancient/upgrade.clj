@@ -2,29 +2,36 @@
        :author "Yannick Scherer" }
   leiningen.ancient.upgrade
   (:require [leiningen.ancient.test :as t]
-            [leiningen.ancient.utils.projects :refer [collect-repositories]]
-            [leiningen.ancient.utils.cli :refer [parse-cli]]
+            [leiningen.ancient.check :as c]
+            [leiningen.ancient.utils.projects :refer :all]
+            [leiningen.ancient.utils.cli :refer :all]
+            [leiningen.ancient.utils.io :refer :all]
+            [leiningen.core.project :as prj]
+            [leiningen.core.main :as main]
             [ancient-clj.verbose :refer :all]
             [ancient-clj.core :as anc]
             [rewrite-clj.zip :as z]
             [clojure.java.io :as io :only [file writer]])
   (:import java.io.File))
 
-;; ## Prompt
+;; ## Concept
+;;
+;; We use Leiningen's built-in functions to read the project map from a file,
+;; and rewrite-clj's zipper to access said file. We can use lein-ancient's existing
+;; check functions to find the artifacts that need updating and rewrite-clj to 
+;; create the updated project map.
 
-(defn- prompt
-  "Create a yes/no prompt using the given message."
-  [& msg]
-  (let [msg (str (apply str msg) " [yes/no] ")]
-    (loop [i 3]
-      (when (pos? i)
-        (print msg)
-        (.flush ^java.io.Writer *out*)
-        (let [r (or (read-line) "")
-              r (.toLowerCase r)]
-          (cond (= r "yes") true
-                (= r "no") false
-                :else (recur (dec i))))))))
+(defn upgrade-project-file!*
+  [settings path]
+  (when-let [project (read-project-map! path)]
+    (let [repos (collect-repositories project)
+          artifacts (collect-artifacts project settings)]
+      (with-settings settings
+        (let [outdated (c/get-outdated-artifacts! repos settings artifacts)]
+          ;; TODO: Use Zipper to update
+          )))))
+
+;; ## Prompt
 
 (defn- prompt-for-upgrade 
   "If the `:interactive` flag in the given settings map is set, this function will ask the
@@ -137,33 +144,6 @@
 
 ;; ## Handle Files
 
-(defn- create-backup-file!
-  "Create backup of a given File. Print errors and return `nil` if a failure occurs."
-  ^File
-  [^File f settings]
-  (let [^File parent (.getParentFile f)
-        ^File backup (io/file parent (str (.getName f) ".backup"))]
-    (try
-      (when (or (:overwrite-backup settings)
-                (not (.exists backup))
-                (prompt "Do you want to overwrite the existing backup file?")) 
-        (verbose "Creating backup at: " (.getCanonicalPath backup))
-        (io/copy f backup) 
-        backup)
-      (catch Exception ex
-        (println (red "Could not create backup file:") (.getMessage ex))
-        nil))))
-
-(defn- read-clojure-file!
-  "Read Clojure File. Prints errors and returns `nil` if a failure occurs;
-   otherwise a rewrite-clj zipper is returned."
-  [^File f]
-  (try
-    (z/of-file f)
-    (catch Exception ex
-      (println (red "Could not read artifacts from file:") (.getMessage ex))
-      nil)))
-
 (defn- write-clojure-file!
   "Write Clojure File. Returns `::ok` if data was written to disk, and `::failure`
    if something fails."
@@ -182,23 +162,15 @@
       (println (red "An error occured while writing the generated data:") (.getMessage ex))
       ::failure)))
 
-(defn- delete-backup-file!
-  [^File backup]
+(defn- read-clojure-file!
+  "Read Clojure File. Prints errors and returns `nil` if a failure occurs;
+   otherwise a rewrite-clj zipper is returned."
+  [^File f]
   (try
-    (verbose "Deleting backup file ...")
-    (.delete backup)
-    (catch Exception ex 
-      (println (red "Could not delete backup file " (.getPath backup) ":") (.getMessage ex)))))
-
-(defn- replace-with-backup!
-  [^File f ^File backup]
-  (try
-    (verbose "Replacing original file with backup file ...")
-    (.delete f)
-    (io/copy backup f)
-    (.delete backup)
+    (z/of-file f)
     (catch Exception ex
-      (println (red "Could not replace original file " (.getPath f) ":") (.getMessage ex)))))
+      (println (red "Could not read artifacts from file:") (.getMessage ex))
+      nil)))
 
 (defn- upgrade-file-with-backup!
   "Given a Clojure file and an upgrade function, upgrade everything allowed
