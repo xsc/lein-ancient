@@ -2,8 +2,10 @@
   (:require [midje.sweet :refer :all]
             [leiningen.ancient.utils.cli :refer :all]))
 
+(def DEFAULTS (parse-cli nil))
+
 (fact "about the default settings"
-  (parse-cli nil) => 
+  DEFAULTS => 
       {:aggressive?      false
        :check-clojure    false
        :dependencies     true
@@ -17,3 +19,21 @@
        :snapshots?       false
        :tests            true
        :verbose          false})
+
+(tabular
+  (fact "about flag effects"
+    (parse-cli ?args) => (apply assoc DEFAULTS ?effects))
+  ?args                     ?effects
+  [":plugins"]              [:dependencies false :plugins true]
+  [":all"]                  [:dependencies true  :plugins true]
+  [":interactive"]          [:interactive true]
+  [":allow-snapshots"
+   ":allow-qualified"]      [:snapshots? true :qualified? true]
+  [":aggressive"]           [:aggressive? true]
+  [":overwrite-backup"]     [:overwrite-backup true]
+  [":no-tests"]             [:tests false]
+  [":no-profiles"]          [:profiles false]
+  [":no-colors"]            [:no-colors true]
+  [":verbose" 
+   ":check-clojure"
+   ":print"]                [:verbose true :check-clojure true :print true])
