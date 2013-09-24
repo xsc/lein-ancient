@@ -131,13 +131,17 @@
     (let [repos (collect-repo-fn artifact-map)
           artifacts (collect-artifact-fn artifact-map settings)]
       (with-settings settings
-        (when-let [outdated (seq 
-                              (->> artifacts
-                                (c/get-outdated-artifacts! repos settings)
-                                (filter-artifacts-with-prompt! settings)))]
-          (when-let [map-loc (read-zipper-fn path)]
-            (when-let [new-loc (upgrade-artifact-map! map-loc settings outdated)]
-              (write-zipper! path new-loc settings))))))))
+        (or
+          (when-let [outdated (seq 
+                                (->> artifacts
+                                  (c/get-outdated-artifacts! repos settings)
+                                  (filter-artifacts-with-prompt! settings)))]
+            (when-let [map-loc (read-zipper-fn path)]
+              (when-let [new-loc (upgrade-artifact-map! map-loc settings outdated)]
+                (when (write-zipper! path new-loc settings)
+                  (println (count outdated) "artifact(s) were upgraded.")
+                  true))))
+          (println "Nothing was upgraded."))))))
 
 (def ^:private upgrade-project-file!*
   "Upgrade the project file (containing 'defproject') at the given path using the given
@@ -176,7 +180,7 @@
   (if-not root
     (println "'upgrade' can only be run inside of project.")
     (let [settings (parse-cli args)]
-      (upgrade-project-file! (io/file root "project.clj") settings))))
+      (upgrade-project-file! settings (io/file root "project.clj")))))
 
 (defn run-upgrade-global-task!
   "Run plugin upgrade on global profiles."

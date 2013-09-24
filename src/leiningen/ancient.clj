@@ -55,7 +55,8 @@
   [project & args]
   (let [^String t (when-let [^String t (first args)]
                     (when-not (.startsWith t ":") t))
-        run-task! (get dispatch-table t)]
+        run-task! (get dispatch-table t)
+        args (if t (rest args) args)]
     (when-not run-task!
       (println (red "unknown task:") (str "'" t "'") "with parameters" (pr-str (vec (rest args))))
       (System/exit 1))
