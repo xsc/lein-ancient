@@ -2,7 +2,8 @@
   leiningen.ancient.utils.io
   (:require [clojure.java.io :as io :only [file writer]]
             [leiningen.core.project :as prj]
-            [ancient-clj.verbose :refer :all])
+            [ancient-clj.verbose :refer :all]
+            [clojure.tools.reader.edn :as edn])
   (:import java.io.File))
 
 ;; ## Console Interaction
@@ -61,6 +62,7 @@
 ;; ## Project Map
 
 (defn read-project-map!
+  "Read project map from given file."
   [path]
   (try
     (locking read-project-map!
@@ -72,3 +74,16 @@
     (catch Exception ex
       (println "ERROR: Could not read project map from file:" path)
       (println "ERROR:" (.getMessage ex))))) 
+
+;; ## Profiles File
+
+(defn read-profiles-map!
+  [path]
+  (try
+    (when-let [form  (edn/read-string (slurp path))]
+      (when-not (map? form)
+        (throw (Exception. (str "Not a map: " form))))
+      form)
+    (catch Exception ex
+      (println "ERROR: Could not read profiles map from file:" path)
+      (println "ERROR:" (.getMessage ex)))))

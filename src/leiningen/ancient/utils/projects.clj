@@ -19,6 +19,15 @@
     (map uu/resolve-credentials)
     (map repository)))
 
+(defn collect-profiles-repositories
+  "Collect repositories in a profile map's `:user` profile.
+   (This adds the repositories from the current project, too.)"
+  [project profiles]
+  (collect-repositories 
+    (update-in (:user profiles)
+               [:repositories]
+               concat (:repositories project))))
+
 ;; ## Artifacts
 
 (defn- create-artifact-map
@@ -81,4 +90,13 @@
                         (when plugins? (create-profile-artifact-maps project :plugins)))))]
     (if-not (:check-clojure settings)
       (filter-clojure-maps artifacts)
+      artifacts)))
+
+(defn collect-profiles-artifacts
+  "Collect artifacts in profile map's `:user` profile."
+  [profiles settings]
+  (let [artifacts (collect-artifacts (:user profiles) settings)]
+    (map
+      (fn [artifact]
+        (update-in artifact [::path] #(vec (cons :user %))))
       artifacts)))
