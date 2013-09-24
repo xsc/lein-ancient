@@ -156,16 +156,18 @@
 
 (defn- with-backup
   "Wraps a given function to produce/restore backup files. Returns true
-   if new data was written to disk."
+   if new data was written to disk. Will not create backups if `:print` is specified."
   [upgrade-fn]
   (fn [settings path]
     (let [^File f (io/file path)
           ^String path (.getCanonicalPath f)]
       (verbose "Upgrading artifacts in: " path)
-      (when-let [backup (create-backup-file! f settings)]
-        (if (upgrade-fn settings path)
-          (do (delete-backup-file! backup) true)
-          (do (replace-with-backup! f backup) nil))))))
+      (if (:print settings)
+        (upgrade-fn settings path)
+        (when-let [backup (create-backup-file! f settings)]
+          (if (upgrade-fn settings path)
+            (do (delete-backup-file! backup) true)
+            (do (replace-with-backup! f backup) nil)))))))
 
 (def upgrade-project-file!
   "Run upgrade on the given project file using the given settings."
