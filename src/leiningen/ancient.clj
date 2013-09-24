@@ -41,9 +41,10 @@
      :all                 Check Dependencies and Plugins.
      :allow-qualified     Allow '*-alpha*' versions & co. to be reported as new.
      :allow-snapshots     Allow '*-SNAPSHOT' versions to be reported as new.
+     :allow-all           Allow SNAPSHOT and qualified versions to be reported as new.
      :check-clojure       Include Clojure (org.clojure/clojure) in checks.
      :dependencies        Check Dependencies. (default)
-     :interactive         Run ':upgrade' in interactive mode, prompting whether to apply changes.
+     :interactive         Run 'upgrade' in interactive mode, prompting whether to apply changes.
      :no-colors           Disable colorized output.
      :no-profiles         Do not check Dependencies/Plugins in Profiles.
      :no-tests            Do not run tests after upgrading a project.

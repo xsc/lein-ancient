@@ -10,6 +10,8 @@
                        :dependencies     false]
    ":allow-snapshots" [:snapshots?       true]
    ":allow-qualified" [:qualified?       true]
+   ":allow-all"       [:snapshots?       true
+                       :qualified?       true]
    ":no-profiles"     [:profiles         false]
    ":check-clojure"   [:check-clojure    true]
    ":verbose"         [:verbose          true]
