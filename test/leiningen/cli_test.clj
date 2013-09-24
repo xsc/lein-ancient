@@ -29,6 +29,7 @@
   [":interactive"]          [:interactive true]
   [":allow-snapshots"
    ":allow-qualified"]      [:snapshots? true :qualified? true]
+  [":allow-all"]            [:snapshots? true :qualified? true]
   [":aggressive"]           [:aggressive? true]
   [":overwrite-backup"]     [:overwrite-backup true]
   [":no-tests"]             [:tests false]
