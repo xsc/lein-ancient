@@ -21,186 +21,152 @@
 ;; check functions to find the artifacts that need updating and rewrite-clj to 
 ;; create the updated project map.
 
-(defn upgrade-project-file!*
-  [settings path]
-  (when-let [project (read-project-map! path)]
-    (let [repos (collect-repositories project)
-          artifacts (collect-artifacts project settings)]
-      (with-settings settings
-        (let [outdated (c/get-outdated-artifacts! repos settings artifacts)]
-          ;; TODO: Use Zipper to update
-          )))))
-
 ;; ## Prompt
 
-(defn- prompt-for-upgrade 
+(defn- prompt-for-upgrade!
   "If the `:interactive` flag in the given settings map is set, this function will ask the
    user (on stdout/stdin) whether he wants to upgrade the given artifact and return a boolean
    value indicating the user's choice."
-  [settings group-id artifact-id latest version]
-  (or 
-    (not (:interactive settings))
-    (do
-      (println)
-      (println (artifact-string group-id artifact-id latest) 
-               "is available but we use"
-               (yellow (version-string version)))
-      (prompt "Do you want to upgrade?"))))
+  [settings {:keys [group-id artifact-id latest version]}]
+  (when latest
+    (or 
+      (not (:interactive settings))
+      (do
+        (println)
+        (println (artifact-string group-id artifact-id latest) 
+                 "is available but we use"
+                 (yellow (version-string version)))
+        (prompt "Do you want to upgrade?")))))
 
-;; ## Upgrade
+(defn- filter-artifacts-with-prompt!
+  "Given a seq of artifacts (with the ':latest' key set), retain only those
+   that should be upgraded. If ':interactive' is set in the settings map
+   this is decided by prompting the user."
+  [settings artifacts]
+  (filter
+    (partial prompt-for-upgrade! settings)
+    artifacts))
 
-(defn- upgrade-dependency!
-  "Given a zipper node containing a single artifact's dependency vector `[artifact version]`
-   check if newer versions are available and replace if so."
-  [zloc repos settings]
-  (or 
-    (let [prompt! (partial prompt-for-upgrade settings)]
-      (when (z/vector? zloc)
-        (let [{:keys [group-id artifact-id version] :as artifact} (anc/artifact-map (z/sexpr zloc)) ]
-          (when (or (:check-clojure settings)
-                    (not= (str group-id "/" artifact-id) "org.clojure/clojure"))
-            (when-let [latest (anc/artifact-outdated? settings repos artifact)]
-              (when (prompt! group-id artifact-id latest version)
-                (println "Upgrade to" (artifact-string group-id artifact-id latest) 
-                         "from" (yellow (version-string version)))
-                (z/subedit-> zloc z/down z/right (z/replace (first latest)))))))))
-    zloc))
+;; ## Zipper Helpers
 
-(defn- upgrade-dependencies!
-  "Given a zipper node containing a vector of artifact vectors `[[artifact version] ...]`, perform
-   upgrading mechanism on each one of them."
-  [zloc repos settings]
-  (if-not (z/vector? zloc)
-    zloc
-    (z/map #(upgrade-dependency! % repos settings) zloc)))
+(defn- move-to-value-or-index
+  "This goes to the value preceded by a given keyword or the node
+   at a given position right of the current one."
+  [zloc p]
+  (cond (not zloc) nil
+        (integer? p) (nth (iterate z/right zloc) p)
+        (keyword? p) (when-let [floc (z/find-value zloc p)]
+                       (when-let [floc (z/right floc)]
+                         (z/down floc)))
+        :else nil))
 
-(defn- upgrade-project-key!
-  "Given a zipper node containing the 'defproject' structure, find a given key and upgrade the
-   dependencies following it."
-  [repos settings proj k]
-  (or
-    (when-let [n (z/find-value (z/down proj) k)]
-      (when-let [v (z/right n)]
-        (when-let [r (upgrade-dependencies! v repos settings)]
-          (z/up r))))
-    proj))
+(defn- move-to-path
+  "Given a path seq (consisting of map keys and indices) move to a zipper location
+   represented by the given path."
+  [zloc ps]
+  (reduce move-to-value-or-index zloc ps))
 
-(defn- upgrade-profiles-key!
-  "Given a zipper node containing the 'defproject' structure, find a given key in each profile
-   and upgrade the dependencies following it."
-  [repos settings proj k]
-  (or
-    (when-let [profiles-key (-> proj z/down (z/find-value :profiles))]
-      (when-let [profiles (z/right profiles-key)]
-        (when (z/map? profiles)
-          (->> profiles
-            (z/map 
-              (fn [loc]
-                (when (z/map? loc)
-                  (if-let [n (z/get loc k)]
-                    (z/up (upgrade-dependencies! n repos settings))
-                    loc))))
-            z/up))))
-    proj))
+(defn- read-project-zipper!
+  "Read rewrite-clj zipper from project file."
+  [path]
+  (try
+    (when-let [loc (z/of-file path)]
+      (when-let [loc (z/find-value loc z/next 'defproject)]
+        (z/up loc)))
+    (catch Exception ex
+      (println (red "ERROR:") "could not create zipper from file at:" path)
+      nil)))
 
-(defn- upgrade-project!
-  "Given a zipper representing the contents of the `project.clj` file, upgrade everytihng allowed 
-   in the given settings map using the given retrievers."
-  [repos settings zloc]
-  (let [upgrade-proj! (partial upgrade-project-key! repos settings)
-        upgrade-prof! (partial upgrade-profiles-key! repos settings)
-        deps? (:dependencies settings)
-        plugins? (:plugins settings)
-        upgrading-steps (concat
-                          (when deps? [#(upgrade-proj! % :dependencies)])
-                          (when plugins? [#(upgrade-proj! % :plugins)])
-                          (when (:profiles settings)
-                            (concat
-                              (when deps? [#(upgrade-prof! % :dependencies)])
-                              (when plugins? [#(upgrade-prof! % :plugins)]))))]
-    (or
-      (if-let [proj (z/find-value zloc z/next 'defproject)]
-        (reduce 
-          (fn [proj f] 
-            (f proj)) 
-          (z/up proj) upgrading-steps)
-        (println "Could not find valid project map '(defproject ...)'."))
-      zloc)))
-
-(defn- upgrade-profiles-plugins!
-  "Given a zipper location containing a map of profiles, update the profile plugins."
-  [repos settings zloc]
-  (when-let [zloc (z/find-tag zloc z/next :map)] 
-    (z/map
-      (fn [loc]
-        (or
-          (when (z/map? loc)
-            (when-let [plugins (z/get loc :plugins)]
-              (-> plugins 
-                (upgrade-dependencies! repos settings)
-                z/up)))
-          loc))
-      zloc)))
-
-;; ## Handle Files
-
-(defn- write-clojure-file!
-  "Write Clojure File. Returns `::ok` if data was written to disk, and `::failure`
-   if something fails."
-  [^File f data settings]
+(defn- write-zipper!
+  "Write zipper back to file. Returns true if data was written to disk."
+  [^String path zloc settings]
   (try
     (if (:print settings)
       (do 
         (println) 
-        (z/print-root data) 
+        (z/print-root zloc)
         (println))
-      (binding [*out* (io/writer f)]
-        (z/print-root data)
+      (binding [*out* (io/writer path)]
+        (z/print-root zloc)
         (.flush ^java.io.Writer *out*)
-        ::ok))
+        true))
     (catch Exception ex
-      (println (red "An error occured while writing the generated data:") (.getMessage ex))
-      ::failure)))
+      (println (red "An error occured while writing the generated data:") (.getMessage ex)))))
 
-(defn- read-clojure-file!
-  "Read Clojure File. Prints errors and returns `nil` if a failure occurs;
-   otherwise a rewrite-clj zipper is returned."
-  [^File f]
-  (try
-    (z/of-file f)
-    (catch Exception ex
-      (println (red "Could not read artifacts from file:") (.getMessage ex))
-      nil)))
+;; ## Zipper Update
 
-(defn- upgrade-file-with-backup!
-  "Given a Clojure file and an upgrade function, upgrade everything allowed
-   in the given settings map using the given repositories and write result back
-   to file, creating a backup file first."
-  [upgrade-fn ^File f project repos settings]
-  (verbose "Upgrading artifacts in: " (.getCanonicalPath f))
-  (when-let [backup (create-backup-file! f settings)]
-    (when-let [src-data (read-clojure-file! f)]
-      (when-let [data (upgrade-fn repos settings src-data)]
-        (condp = (write-clojure-file! f data settings)
-          ::failure (replace-with-backup! f backup)
-          ::ok (if (or (not (:tests settings)) (t/run-tests-with-refresh! project))
-                 (delete-backup-file! backup)
-                 (replace-with-backup! f backup))
-          (delete-backup-file! backup))))))
+(defn- upgrade-artifact-node!
+  "Use the path stored in the artifact map to find it in the zipper and
+   upgrade its version."
+  [map-loc settings {:keys [group-id artifact-id version latest] :as artifact}]
+  (or
+    (when-let [zloc (when map-loc (z/down map-loc))]
+      (when-let [path (artifact-path artifact)]
+        (when-let [artifact-loc (move-to-path zloc path)]
+          (when (z/vector? artifact-loc) 
+            (z/assoc artifact-loc 1 (first latest))))))
+    map-loc))
 
-(defn- upgrade-file!
-  "Given a Clojure file (as `java.io.File`) and a upgrade function, upgrade everything allowed in 
-   the given settings map using the given retrievers and write result back to the file."
-  [upgrade-fn ^File f project repos settings]
-  (if-not (and (.isFile f) (.exists f))
-    (println "No such file:" (.getPath f))
-    (upgrade-file-with-backup! upgrade-fn f project repos settings)))
+(defn- upgrade-artifact-map!
+  "Given a zipper residing on a map (or map-like structure, e.g. defproject s-expr) and
+   a seq of outdated artifacts (containing the `:latest` key with the version to upgrade to),
+   upgrade the zipper to contain the respective versions."
+  [map-loc settings artifacts]
+  (reduce
+    (fn [map-loc artifact]
+      (z/subedit-> map-loc (upgrade-artifact-node! settings artifact)))
+    map-loc artifacts))
 
-(def ^:private upgrade-project-file! 
-  (partial upgrade-file! upgrade-project!))
+(defn upgrade-artifact-file!
+  "Upgrade an artifact file. We need:
+   - a function that produces the data contained in the file
+   - two collect functions that retrieve repositories and artifact maps from that data
+   - a function that creates a rewrite-clj zipper from the file
+   These parts depend on whether you want to read a project or profiles file.
+   Behaviour can be modified by supplying different settings maps.
 
-(def ^:private upgrade-profiles-file!
-  (partial upgrade-file! upgrade-profiles-plugins!))
+   This will return true, if changes were made; nil otherwise."
+  [read-map-fn collect-repo-fn collect-artifact-fn read-zipper-fn settings path]
+  (when-let [artifact-map (read-map-fn path)]
+    (let [repos (collect-repo-fn artifact-map)
+          artifacts (collect-artifact-fn artifact-map settings)]
+      (with-settings settings
+        (when-let [outdated (seq 
+                              (->> artifacts
+                                (c/get-outdated-artifacts! repos settings)
+                                (filter-artifacts-with-prompt! settings)))]
+          (when-let [map-loc (read-zipper-fn path)]
+            (when-let [new-loc (upgrade-artifact-map! map-loc settings outdated)]
+              (write-zipper! path new-loc settings))))))))
+
+(def ^:private upgrade-project-file!*
+  "Upgrade the project file (containing 'defproject') at the given path using the given
+   settings."
+  (partial upgrade-artifact-file!
+           read-project-map!
+           collect-repositories
+           collect-artifacts
+           read-project-zipper!))
+
+;; ## Upgrade w/ Backup
+
+(defn- with-backup
+  "Wraps a given function to produce/restore backup files. Returns true
+   if new data was written to disk."
+  [upgrade-fn]
+  (fn [settings path]
+    (let [^File f (io/file path)
+          ^String path (.getCanonicalPath f)]
+      (verbose "Upgrading artifacts in: " path)
+      (when-let [backup (create-backup-file! f settings)]
+        (if (upgrade-fn settings path)
+          (do (delete-backup-file! backup) true)
+          (do (replace-with-backup! f backup) nil))))))
+
+(def upgrade-project-file!
+  "Run upgrade on the given project file using the given settings."
+  (-> upgrade-project-file!*
+    with-backup))
 
 ;; ## Task
 
@@ -209,16 +175,13 @@
   [{:keys [root] :as project} args]
   (if-not root
     (println "'upgrade' can only be run inside of project.")
-    (let [project-file (io/file root "project.clj")
-          settings (parse-cli args)
-          repos (collect-repositories project)]
-      (with-settings settings
-        (upgrade-project-file! project-file project repos settings)))))
+    (let [settings (parse-cli args)]
+      (upgrade-project-file! (io/file root "project.clj") settings))))
 
 (defn run-upgrade-global-task!
   "Run plugin upgrade on global profiles."
   [project args]
-  (let [profiles-file (io/file (System/getProperty "user.home") ".lein" "profiles.clj")
+  #_(let [profiles-file (io/file (System/getProperty "user.home") ".lein" "profiles.clj")
         settings (parse-cli args)
         repos (collect-repositories project)]
     (with-settings settings
