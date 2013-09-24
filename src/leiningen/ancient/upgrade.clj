@@ -29,14 +29,13 @@
    value indicating the user's choice."
   [settings {:keys [group-id artifact-id latest version]}]
   (when latest
-    (or 
-      (not (:interactive settings))
-      (do
+    (when (:interactive settings) (println))
+    (println (artifact-string group-id artifact-id latest) 
+             "is available but we use"
+             (yellow (version-string version)))
+    (or (not (:interactive settings))
         (println)
-        (println (artifact-string group-id artifact-id latest) 
-                 "is available but we use"
-                 (yellow (version-string version)))
-        (prompt "Do you want to upgrade?")))))
+        (prompt "Do you want to upgrade?"))))
 
 (defn- filter-artifacts-with-prompt!
   "Given a seq of artifacts (with the ':latest' key set), retain only those
@@ -131,16 +130,18 @@
     (let [repos (collect-repo-fn artifact-map)
           artifacts (collect-artifact-fn artifact-map settings)]
       (with-settings settings
-        (or
-          (when-let [outdated (seq 
-                                (->> artifacts
-                                  (c/get-outdated-artifacts! repos settings)
-                                  (filter-artifacts-with-prompt! settings)))]
-            (when-let [map-loc (read-zipper-fn path)]
-              (when-let [new-loc (upgrade-artifact-map! map-loc settings outdated)]
-                (when (write-zipper! path new-loc settings)
-                  (println (count outdated) "artifact(s) were upgraded.")
-                  true))))
+        (if-let [outdated (seq 
+                            (->> artifacts
+                              (c/get-outdated-artifacts! repos settings)
+                              (filter-artifacts-with-prompt! settings)))]
+          (when-let [map-loc (read-zipper-fn path)]
+            (when-let [new-loc (upgrade-artifact-map! map-loc settings outdated)]
+              (println (count outdated) 
+                       (if (= (count outdated) 1) 
+                         "artifact was"
+                         "artifacts were")
+                       "upgraded.")
+              (write-zipper! path new-loc settings)))
           (println "Nothing was upgraded."))))))
 
 (def ^:private upgrade-project-file!*
