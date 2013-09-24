@@ -52,6 +52,6 @@
 
 (defn run-file-check-task!
   "Run project/plugin checker on the given file."
-  [project [_ path & args]]
+  [project [path & args]]
   (when-let [project (read-project-map! path)]
     (run-check-task! project args)))
