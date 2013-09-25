@@ -17,8 +17,7 @@
        :profiles         true
        :qualified?       false
        :snapshots?       false
-       :tests            true
-       :verbose          false})
+       :tests            true})
 
 (tabular
   (fact "about flag effects"
@@ -35,6 +34,5 @@
   [":no-tests"]             [:tests false]
   [":no-profiles"]          [:profiles false]
   [":no-colors"]            [:no-colors true]
-  [":verbose" 
-   ":check-clojure"
-   ":print"]                [:verbose true :check-clojure true :print true])
+  [":check-clojure"
+   ":print"]                [:check-clojure true :print true])
