@@ -14,15 +14,19 @@ search index. Version comparison is done using [version-clj](https://github.com/
 
 __Leiningen__ ([via Clojars](https://clojars.org/lein-ancient))
 
-Put the following into the `:plugins` vector of the `:user` profile in your `~/.lein/profiles.clj`:
+Put one of the following into the `:plugins` vector of the `:user` profile in your `~/.lein/profiles.clj`:
 
 ```clojure
-[lein-ancient "0.5.0"]
+[lein-ancient "0.4.4"]          ;; stable
+[lein-ancient "0.5.0-alpha1"]   ;; unstable
 ```
 
 This plugin is destined for Leiningen >= 2.0.0.
 
 __Command Line__
+
+_Note:_ The following paragraphs use the tasks/command line options for `lein-ancient` >= 0.5.0-alpha1. To
+see the ones applying to your version, call `lein help ancient`.
 
 You can use `lein-ancient` to check the dependencies/plugins of a project and those specified
 in `~/.lein/profiles.clj`.
@@ -75,43 +79,9 @@ Upgrade to [pandect "0.3.0"] from "0.2.3"
 Omit `:interactive` if lein-ancient should just do its thing; use `:print` for a dry-run, 
 printing out the resulting file instead of writing back to disk.
 
-To see all available options, call `lein help ancient`:
+To see all available options, call:
 
-```bash
-$ lein help ancient
-Check your Projects for outdated Dependencies. 
-  
-   Usage:
-
-     lein ancient [<options>]
-     lein ancient get <package> [<options>]
-     lein ancient upgrade [<options>]
-     lein ancient upgrade-global [<options>]
-
-   Tasks:
-
-     get                 Retrieve artifact information from Maven repositories.
-     upgrade             Replace artifacts in your 'project.clj' with newer versions.
-     upgrade-global      Replace plugins in '~/.lein/profiles.clj' with newer versions.
-
-   Commandline Options:
-  
-     :all                 Check Dependencies and Plugins.
-     :dependencies        Check Dependencies. (default)
-     :plugins             Check Plugins.
-     :no-profiles         Do not check Dependencies/Plugins in Profiles.
-     :allow-qualified     Allow '*-alpha*' versions & co. to be reported as new.
-     :allow-snapshots     Allow '*-SNAPSHOT' versions to be reported as new.
-     :check-clojure       Include Clojure (org.clojure/clojure) in checks.
-     :aggressive          Check all available repositories (= Do not stop after first artifact match).
-     :interactive         Run ':upgrade' in interactive mode, prompting whether to apply changes.
-     :print               Print result of ':upgrade' task instead of writing it to 'project.clj'.
-     :verbose             Produce progress indicating messages.
-     :no-colors           Disable colorized output.
-  
-
-Arguments: ([& args])
-```
+```lein help ancient```
 
 ## Supported Repository Types
 
