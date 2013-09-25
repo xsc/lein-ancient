@@ -24,12 +24,16 @@
 
 (def ^:dynamic *verbose* nil)
 
+(def ^:dynamic *println* 
+  (fn [& msg]
+    (binding [*out* *err*]
+      (apply println msg))))
+
 (defn verbose
   "Write Log Message."
   [& msg]
   (when *verbose*
-    (binding [*out* *err*]
-      (println "(verbose)" (apply str msg)))))
+    (apply *println* "(verbose)" (apply str msg))))
 
 ;; ## String Creation
 
@@ -50,5 +54,10 @@
   [settings & body]
   `(let [s# ~settings]
      (binding [*verbose* (:verbose s#)
-               *colors* (not (:no-colors s#))]
+               *colors* (and (:colors s# true) (not (:no-colors s# false)))]
        ~@body)))
+
+(defmacro with-verbose
+  [f & body]
+  `(binding [*println* ~f]
+     ~@body))
