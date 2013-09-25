@@ -33,7 +33,7 @@
 (defn verbose
   "Write Log Message."
   [& msg]
-  (apply *println* "(verbose)" (apply str msg)))
+  (*println* "(verbose)" (apply str msg)))
 
 ;; ## String Creation
 
