@@ -16,8 +16,8 @@
       (binding [main/*exit-process?* false]
         (doseq [[framework {:keys [test]}] tasks]
           (main/info "Running" (count test) (str "[" framework "]") "Test Cycle(s) ...")
-          (doseq [[task-name & task-args] test] 
-            (main/debug "Test Call:" (pr-str test))
+          (doseq [[task-name & task-args :as tt] test] 
+            (main/debug "Test Call:" (pr-str tt))
             (binding [main/*debug* false
                       main/*info* false]
               (main/apply-task task-name project task-args))))
