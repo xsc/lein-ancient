@@ -10,13 +10,13 @@
   [project]
   (let [tasks (or
                 (when-let [t (get-in project [:aliases "test-ancient"])]
-                  [[:user-specified {:test t}]])
-                (testem/create-test-tasks project))]
+                  [[:user-specified {:test [t]}]])
+                (testem/create-single-test-tasks project))]
     (try
       (binding [main/*exit-process?* false]
         (doseq [[framework {:keys [test]}] tasks]
-          (let [[task-name & task-args] test] 
-            (main/info "Running" (str "[" framework "]") "Tests ...")
+          (main/info "Running" (str "[" framework "]") "Tests ...")
+          (doseq [[task-name & task-args] test] 
             (main/debug "Test Call:" (pr-str test))
             (binding [main/*debug* false
                       main/*info* false]
