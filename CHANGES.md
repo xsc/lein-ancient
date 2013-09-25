@@ -1,8 +1,25 @@
 # CHANGES: `lein-ancient`
 
+## 0.5.0
+
+- Removed colon from tasks (e.g. `upgrade` instead of `:upgrade`).
+- Warnings when using invalid/deprecated options/tasks.
+- Added `check` task to check a specific project file.
+- Added `:allow-all` to CLI.
+- Added backup file creation for `upgrade`/`upgrade-global`.
+- Added `:overwrite-backup` to CLI to not prompt if a backup file exists.
+- Replaced `println` with `leiningen.core.main/info`.
+- Output in `verbose` using `leiningen.core.main/debug`.
+- Removed `:verbose` from CLI.
+- Refactored codebase (e.g. CLI handling, upgrade mechanism) for simplicity.
+- Using [lein-testem](https://github.com/xsc/lein-testem) for regression testing after project file upgrade.
+- Let user specify test call in `"test-ancient"` alias.
+- Using [ancient-clj](https://github.com/xsc/ancient-clj) 0.1.4.
+- Using [rewrite-clj](https://github.com/xsc/rewrite-clj) 0.3.0
+
 ## 0.4.4
 
-- Fix for Amazon S3 Repositories (missing credentials)
+- Fix for Amazon S3 Repositories (missing credentials).
 - Using [ancient-clj](https://github.com/xsc/ancient-clj) 0.1.3.
 
 ## 0.4.3
