@@ -7,9 +7,7 @@
             [leiningen.ancient.utils.cli :refer :all]
             [leiningen.ancient.utils.io :refer :all]
             [leiningen.core.project :as prj]
-            [leiningen.core.main :as main]
             [ancient-clj.verbose :refer :all]
-            [ancient-clj.core :as anc]
             [rewrite-clj.zip :as z]
             [clojure.java.io :as io :only [file writer]])
   (:import java.io.File))
@@ -27,12 +25,10 @@
   "If the `:interactive` flag in the given settings map is set, this function will ask the
    user (on stdout/stdin) whether he wants to upgrade the given artifact and return a boolean
    value indicating the user's choice."
-  [settings {:keys [group-id artifact-id latest version]}]
-  (when latest
+  [settings artifact]
+  (when (:latest artifact)
     (when (:interactive settings) (println))
-    (println (artifact-string group-id artifact-id latest) 
-             "is available but we use"
-             (yellow (version-string version)))
+    (c/print-outdated-message artifact)
     (or (not (:interactive settings))
         (prompt "Do you want to upgrade?"))))
 
