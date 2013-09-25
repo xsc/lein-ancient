@@ -4,14 +4,13 @@
   (:require [leiningen.ancient.check :refer [run-check-task! run-file-check-task!]]
             [leiningen.ancient.get :refer [run-get-task!]]
             [leiningen.ancient.upgrade :refer [run-upgrade-task! run-upgrade-global-task!]]
-            [leiningen.ancient.test :refer [run-test-task!]]
+            [leiningen.core.main :as main]
             [ancient-clj.verbose :refer :all]))
 
 (def ^:private dispatch-table
   {"get"            run-get-task!
    "upgrade"        run-upgrade-task!
    "upgrade-global" run-upgrade-global-task!
-   "test"           run-test-task!
    "check"          run-file-check-task!
    nil              run-check-task!})
 
@@ -23,7 +22,6 @@
      lein ancient [<options>]
      lein ancient check <project-file> [<option>]
      lein ancient get <package> [<options>]
-     lein ancient test [<options>]
      lein ancient upgrade [<options>]
      lein ancient upgrade-global [<options>]
 
@@ -31,7 +29,6 @@
 
      check                Check a given project file.
      get                  Retrieve artifact information from Maven repositories.
-     test                 Auto-detect test framework (clojure.test, midje, ...) and run tests.
      upgrade              Replace artifacts in your 'project.clj' with newer versions.
      upgrade-global       Replace plugins in '~/.lein/profiles.clj' with newer versions.
 
@@ -51,7 +48,6 @@
      :overwrite-backup    Do not prompt if a backup file exists when upgrading a project.
      :plugins             Check Plugins.
      :print               Print result of ':upgrade' task instead of writing it to 'project.clj'.
-     :verbose             Produce progress indicating messages.
   "
   [project & args]
   (let [^String t (when-let [^String t (first args)]
@@ -59,6 +55,6 @@
         run-task! (get dispatch-table t)
         args (if t (rest args) args)]
     (when-not run-task!
-      (println (red "unknown task:") (str "'" t "'") "with parameters" (pr-str (vec (rest args))))
+      (main/abort (red "unknown task:") (str "'" t "'") "with parameters" (pr-str (vec (rest args))))
       (System/exit 1))
     (run-task! project args)))

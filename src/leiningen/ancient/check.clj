@@ -4,6 +4,7 @@
   (:require [leiningen.ancient.utils.projects :refer :all]
             [leiningen.ancient.utils.cli :refer :all]
             [leiningen.ancient.utils.io :refer :all]
+            [leiningen.core.main :as main]
             [ancient-clj.verbose :refer :all]
             [ancient-clj.core :as anc]))
 
@@ -30,7 +31,7 @@
   "Takes an artifact map (containing the `:latest` element) and prints 
    the \"[...] is available but we use ...\" message to stdout."
   [{:keys [group-id artifact-id version latest]}]
-  (println
+  (main/info
     (artifact-string group-id artifact-id latest)
     "is available but we use"
     (yellow (version-string version))))
@@ -41,7 +42,7 @@
   "Run project/plugin checker."
   [project args]
   (let [settings (parse-cli args)]
-    (with-settings settings
+    (with-output-settings settings
       (let [repos (collect-repositories project)
             artifacts (collect-artifacts project settings)
             outdated (get-outdated-artifacts! repos settings artifacts)]

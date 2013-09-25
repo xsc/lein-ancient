@@ -2,9 +2,19 @@
   leiningen.ancient.utils.io
   (:require [clojure.java.io :as io :only [file writer]]
             [leiningen.core.project :as prj]
+            [leiningen.core.main :as main]
             [ancient-clj.verbose :refer :all]
             [clojure.tools.reader.edn :as edn])
   (:import java.io.File))
+
+;; ## Configure Logging
+
+(defmacro with-output-settings
+  "Configure Output/Verbose."
+  [settings & body]
+  `(with-settings ~settings
+     (with-verbose main/debug
+       ~@body)))
 
 ;; ## Console Interaction
 
@@ -38,7 +48,7 @@
         (io/copy f backup) 
         backup)
       (catch Exception ex
-        (println (red "Could not create backup file:") (.getMessage ex))
+        (main/info (red "Could not create backup file:") (.getMessage ex))
         nil))))
 
 (defn delete-backup-file!
@@ -47,7 +57,7 @@
     (verbose "Deleting backup file ...")
     (.delete backup)
     (catch Exception ex 
-      (println (red "Could not delete backup file " (.getPath backup) ":") (.getMessage ex)))))
+      (main/info (red "Could not delete backup file " (.getPath backup) ":") (.getMessage ex)))))
 
 (defn replace-with-backup!
   [^File f ^File backup]
@@ -57,7 +67,7 @@
     (io/copy backup f)
     (.delete backup)
     (catch Exception ex
-      (println (red "Could not replace original file " (.getPath f) ":") (.getMessage ex)))))
+      (main/info (red "Could not replace original file " (.getPath f) ":") (.getMessage ex)))))
 
 ;; ## Project Map
 
@@ -72,8 +82,8 @@
           (ns-unmap 'leiningen.core.project 'project)
           @project)))
     (catch Exception ex
-      (println "ERROR: Could not read project map from file:" path)
-      (println "ERROR:" (.getMessage ex))))) 
+      (main/info "ERROR: Could not read project map from file:" path)
+      (main/info "ERROR:" (.getMessage ex))))) 
 
 ;; ## Profiles File
 
@@ -85,5 +95,5 @@
         (throw (Exception. (str "Not a map: " form))))
       form)
     (catch Exception ex
-      (println "ERROR: Could not read profiles map from file:" path)
-      (println "ERROR:" (.getMessage ex)))))
+      (main/info "ERROR: Could not read profiles map from file:" path)
+      (main/info "ERROR:" (.getMessage ex)))))

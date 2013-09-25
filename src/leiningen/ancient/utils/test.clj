@@ -1,18 +1,17 @@
 (ns ^{ :doc "Regression Testing for lein-ancient"
        :author "Yannick Scherer" }
-  leiningen.ancient.test
-  (:require [leiningen.ancient.utils.cli :refer [parse-cli]]
-            [leiningen.core.project :as prj]
-            [leiningen.core.main :as main]
+  leiningen.ancient.utils.test
+  (:require [leiningen.core.main :as main]
             [testem.core :as testem :only [create-test-tasks]]
             [ancient-clj.verbose :refer :all]))
-
-;; ## Run Tests
 
 (defn run-tests!
   "Run regression tests (using lein-testem) on the given project map."
   [project]
-  (let [tasks (testem/create-test-tasks project)]
+  (let [tasks (or
+                (when-let [t (get-in project [:aliases "test-ancient"])]
+                  [[:user-specified {:test t}]])
+                (testem/create-test-tasks project))]
     (try
       (binding [main/*exit-process?* false]
         (doseq [[framework {:keys [test]}] tasks]
@@ -26,21 +25,3 @@
       (catch Exception ex 
         (main/info "Tests failed (use ':no-tests' if you want to surpress testing).")
         false))))
-
-(defn run-tests-with-refresh!
-  "Run regression tests (using lein-testem) after reloading the given project map."
-  [project]
-  (if-not (:root project)
-    true
-    (let [project (prj/read (str (:root project) "/project.clj"))]
-      (run-tests! project))))
-
-;; ## Task
-
-(defn run-test-task!
-  "Run auto-detected test framework."
-  [project args]
-  (let [settings (parse-cli args)]
-    (with-settings settings
-      (when-not (run-tests! project)
-        (main/abort)))))

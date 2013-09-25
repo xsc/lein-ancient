@@ -3,6 +3,7 @@
   leiningen.ancient.get
   (:require [leiningen.ancient.utils.projects :refer [collect-repositories]]
             [leiningen.ancient.utils.cli :refer [parse-cli]]
+            [leiningen.ancient.utils.io :refer [with-output-settings]]
             [ancient-clj.verbose :refer :all]
             [ancient-clj.core :as anc]
             [version-clj.core :as v]))
@@ -37,13 +38,13 @@
       (println "]"))))
 
 (defn run-get-task!
-  [project [_ package & args]]
+  [project [package & args]]
   (if-not package
     (println "':get' expects an artifact to retrieve version information for.")
     (let [settings (-> (parse-cli args) (assoc :aggressive? true))
           {:keys [artifact-id group-id] :as artifact} (anc/artifact-map [package "RELEASE"])
           artifact-str (str group-id "/" artifact-id)]
-      (with-settings settings
+      (with-output-settings settings
         (let [repos (collect-repositories project)]
           (println "Getting Version Information for" (yellow artifact-str) 
                    "from" (count repos) "Repositories ...")

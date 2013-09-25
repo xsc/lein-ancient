@@ -1,12 +1,13 @@
 (ns ^{ :doc "Rewrite project.clj to include latest versions of dependencies." 
        :author "Yannick Scherer" }
   leiningen.ancient.upgrade
-  (:require [leiningen.ancient.test :as t]
-            [leiningen.ancient.check :as c]
+  (:require [leiningen.ancient.utils.test :as t]
             [leiningen.ancient.utils.projects :refer :all]
             [leiningen.ancient.utils.cli :refer :all]
             [leiningen.ancient.utils.io :refer :all]
+            [leiningen.ancient.check :as c]
             [leiningen.core.project :as prj]
+            [leiningen.core.main :as main]
             [ancient-clj.verbose :refer :all]
             [rewrite-clj.zip :as z]
             [clojure.java.io :as io :only [file writer]])
@@ -27,7 +28,7 @@
    value indicating the user's choice."
   [settings artifact]
   (when (:latest artifact)
-    (when (:interactive settings) (println))
+    (when (:interactive settings) (main/info))
     (c/print-outdated-message artifact)
     (or (not (:interactive settings))
         (prompt "Do you want to upgrade?"))))
@@ -68,7 +69,7 @@
       (when-let [loc (z/find-value loc z/next 'defproject)]
         (z/up loc)))
     (catch Exception ex
-      (println (red "ERROR:") "could not create zipper from file at:" path)
+      (main/info (red "ERROR:") "could not create zipper from file at:" path)
       nil)))
 
 (defn read-profiles-zipper!
@@ -78,24 +79,25 @@
     (when-let [loc (z/of-file path)]
       (z/find-tag loc z/next :map))
     (catch Exception ex
-      (println (red "ERROR:") "could not create zipper from file at:" path)
+      (main/info (red "ERROR:") "could not create zipper from file at:" path)
       nil)))
 
 (defn- write-zipper!
-  "Write zipper back to file. Returns true if data was written to disk."
+  "Write zipper back to file. Returns true if everything worked correctly."
   [^String path zloc settings]
   (try
-    (if (:print settings)
-      (do 
-        (println) 
-        (z/print-root zloc)
-        (println))
-      (binding [*out* (io/writer path)]
-        (z/print-root zloc)
-        (.flush ^java.io.Writer *out*)
-        true))
+    (do
+      (if (:print settings)
+        (do 
+          (main/info) 
+          (z/print-root zloc)
+          (main/info))
+        (binding [*out* (io/writer path)]
+          (z/print-root zloc)
+          (.flush ^java.io.Writer *out*)))
+      true)
     (catch Exception ex
-      (println (red "An error occured while writing the generated data:") (.getMessage ex)))))
+      (main/info (red "An error occured while writing the generated data:") (.getMessage ex)))))
 
 ;; ## Zipper Update
 
@@ -129,26 +131,26 @@
    These parts depend on whether you want to read a project or profiles file.
    Behaviour can be modified by supplying different settings maps.
 
-   This will return true, if changes were made; nil otherwise."
+   This will return true if the upgrade was successful or no changes were made; nil otherwise."
   [read-map-fn collect-repo-fn collect-artifact-fn read-zipper-fn project settings path]
   (when-let [artifact-map (read-map-fn path)]
     (let [repos (collect-repo-fn project artifact-map)
           artifacts (collect-artifact-fn artifact-map settings)]
-      (with-settings settings
+      (with-output-settings settings
         (if-let [outdated (seq 
                             (->> artifacts
                               (c/get-outdated-artifacts! repos settings)
                               (filter-artifacts-with-prompt! settings)))]
           (when-let [map-loc (read-zipper-fn path)]
             (when-let [new-loc (upgrade-artifact-map! map-loc settings outdated)]
-              (when (:interactive settings) (println))
-              (println (count outdated) 
+              (when (:interactive settings) (main/info))
+              (main/info (count outdated) 
                        (if (= (count outdated) 1) 
                          "artifact was"
                          "artifacts were")
                        "upgraded.")
               (write-zipper! path new-loc settings)))
-          (println "Nothing was upgraded."))))))
+          (do (main/info "Nothing was upgraded.") true))))))
 
 ;; ## Upgrade Mechanisms
 
@@ -172,25 +174,28 @@
 
 (defn- with-backup
   "Wraps a given function to produce/restore backup files. Returns true
-   if new data was written to disk. Will not create backups if `:print` is specified."
+   if upgrade was successful or no changes were written to disk. Will not 
+   create backups if `:print` is specified."
   [upgrade-fn]
   (fn [project settings path]
-    (let [^File f (io/file path)
-          ^String path (.getCanonicalPath f)]
-      (verbose "Upgrading artifacts in: " path)
-      (if (:print settings)
-        (upgrade-fn project settings path)
-        (when-let [backup (create-backup-file! f settings)]
-          (if (upgrade-fn project settings path)
-            (do (delete-backup-file! backup) true)
-            (do (replace-with-backup! f backup) nil)))))))
+    (with-output-settings settings
+      (let [^File f (io/file path)
+            ^String path (.getCanonicalPath f)]
+        (verbose "Upgrading artifacts in: " path)
+        (if (:print settings)
+          (upgrade-fn project settings path)
+          (when-let [backup (create-backup-file! f settings)]
+            (if (upgrade-fn project settings path)
+              (do (delete-backup-file! backup) true)
+              (do (replace-with-backup! f backup) nil))))))))
 
 ;; ## Tests
 
 (defn- run-regression-tests!
   [path]
-  ;; TODO: Run Tests
-  true)
+  (main/info)
+  (when-let [project (prj/read path)]
+    (t/run-tests! project)))
 
 (defn- with-tests
   "Wrap a given function to run tests when new data was written to disk. Returns true
@@ -198,8 +203,18 @@
   [upgrade-fn]
   (fn [project settings path]
     (when (upgrade-fn project settings path)
-      (or (not (:tests settings))
+      (or (not (:root project))
+          (not (:tests settings))
+          (:print settings)
           (run-regression-tests! path)))))
+
+(defn- with-abort
+  "Wrap a given function to call Leiningen's 'abort' if upgrading failed."
+  [upgrade-fn]
+  (fn [& args]
+    (when-not (apply upgrade-fn args)
+      (main/abort "Upgrade failed."))
+    true))
 
 ;; Combine
 
@@ -207,12 +222,14 @@
   "Run upgrade on the given project file using the given settings."
   (-> upgrade-project-file!*
     with-tests
-    with-backup))
+    with-backup
+    with-abort))
 
 (def upgrade-profiles-file!
   "Run upgrade on the given profiles file using the given settings."
   (-> upgrade-profiles-file!*
-    with-backup))
+    with-backup
+    with-abort))
 
 ;; ## Task
 
@@ -220,7 +237,7 @@
   "Run artifact upgrade on project file."
   [{:keys [root] :as project} args]
   (if-not root
-    (println "'upgrade' can only be run inside of project.")
+    (main/abort "'upgrade' can only be run inside of project.")
     (let [settings (parse-cli args)]
       (upgrade-project-file! project settings (io/file root "project.clj")))))
 
