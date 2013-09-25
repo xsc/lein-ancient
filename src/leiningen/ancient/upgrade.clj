@@ -150,7 +150,7 @@
                          "artifacts were")
                        "upgraded.")
               (write-zipper! path new-loc settings)))
-          (do (main/info "Nothing was upgraded.") true))))))
+          (do (main/info "Nothing was upgraded.") ::nothing))))))
 
 ;; ## Upgrade Mechanisms
 
@@ -202,8 +202,9 @@
    if tests succeeded, false otherwise."
   [upgrade-fn]
   (fn [project settings path]
-    (when (upgrade-fn project settings path)
-      (or (not (:root project))
+    (when-let [r (upgrade-fn project settings path)]
+      (or (= r ::nothing)
+          (not (:root project))
           (not (:tests settings))
           (:print settings)
           (run-regression-tests! path)))))
