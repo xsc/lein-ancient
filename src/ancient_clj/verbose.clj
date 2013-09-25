@@ -26,14 +26,14 @@
 
 (def ^:dynamic *println* 
   (fn [& msg]
-    (binding [*out* *err*]
-      (apply println msg))))
+    (when *verbose*
+      (binding [*out* *err*]
+        (apply println msg)))))
 
 (defn verbose
   "Write Log Message."
   [& msg]
-  (when *verbose*
-    (apply *println* "(verbose)" (apply str msg))))
+  (apply *println* "(verbose)" (apply str msg)))
 
 ;; ## String Creation
 
