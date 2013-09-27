@@ -1,27 +1,31 @@
 (ns ^{ :doc "Regression Testing for lein-ancient"
        :author "Yannick Scherer" }
   leiningen.ancient.utils.test
-  (:require [leiningen.core.main :as main]
-            [testem.core :as testem :only [create-test-tasks]]
-            [ancient-clj.verbose :refer :all]))
+  (:require [leiningen.core.main :as main]))
+
+(defn- run-test-task!
+  "Run a single test task, surpressing output and returnin a boolean value indicating
+   whether the task finished without calling `main/abort`."
+  [project task]
+  (try
+    (let [[task-name & task-args] task]
+      (main/info "Running Test Task" (pr-str task) "...")
+      (binding [main/*exit-process?* false
+                main/*info* false
+                main/*debug* false]
+        (main/apply-task task-name project task-args)
+        true))
+    (catch Exception ex false)))
 
 (defn run-tests!
-  "Run regression tests (using lein-testem) on the given project map."
+  "Run regression tests (using the alias \"test-ancient\" in the project map)."
   [project]
-  (let [tasks (or
-                (when-let [t (get-in project [:aliases "test-ancient"])]
-                  [[:user-specified {:test [t]}]])
-                (testem/create-single-test-tasks project))]
-    (try
-      (binding [main/*exit-process?* false]
-        (doseq [[framework {:keys [test]}] tasks]
-          (main/info "Running" (count test) (str "[" framework "]") "Test Cycle(s) ...")
-          (doseq [[task-name & task-args :as tt] test] 
-            (main/debug "Test Call:" (pr-str tt))
-            (binding [main/*debug* false
-                      main/*info* false]
-              (main/apply-task task-name project task-args))))
-        true)
-      (catch Exception ex 
-        (main/info "Tests failed (use ':no-tests' if you want to surpress testing).")
-        false))))
+  (if-let [task (get-in project [:aliases "test-ancient"])]
+    (let [r (run-test-task! project task)]
+      (when-not r
+        (main/info "Tests failed (use ':no-tests' if you want to surpress testing)."))
+      r)
+    (do
+      (main/info "No regression test task given.")
+      (main/info "(Use the alias 'test-ancient' to specify one or the option ':no-tests' to surpress testing.)")
+      true)))

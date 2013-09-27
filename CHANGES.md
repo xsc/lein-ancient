@@ -12,8 +12,8 @@
 - Output in `verbose` using `leiningen.core.main/debug`.
 - Removed `:verbose` from CLI.
 - Refactored codebase (e.g. CLI handling, upgrade mechanism) for simplicity.
-- Using [lein-testem](https://github.com/xsc/lein-testem) for regression testing after project file upgrade.
-- Let user specify test call in `"test-ancient"` alias.
+- Let user specify regression test call in `"test-ancient"` alias.
+- Added `:no-tests` to CLI.
 - Using [ancient-clj](https://github.com/xsc/ancient-clj) 0.1.4.
 - Using [rewrite-clj](https://github.com/xsc/rewrite-clj) 0.3.0
 
