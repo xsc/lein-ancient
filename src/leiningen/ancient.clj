@@ -3,15 +3,15 @@
   leiningen.ancient
   (:require [leiningen.ancient.check :refer [run-check-task! run-profiles-task!]]
             [leiningen.ancient.get :refer [run-get-task!]]
-            [leiningen.ancient.upgrade :refer [run-upgrade-task! run-upgrade-global-task!]]
+            [leiningen.ancient.upgrade :refer [run-upgrade-task! run-upgrade-profiles-task!]]
             [leiningen.core.main :as main]
             [ancient-clj.verbose :refer :all]))
 
 (def ^:private dispatch-table
-  {"get"            run-get-task!
-   "profiles"       run-profiles-task!
-   "upgrade"        run-upgrade-task!
-   "upgrade-global" run-upgrade-global-task! })
+  {"get"              run-get-task!
+   "profiles"         run-profiles-task!
+   "upgrade"          run-upgrade-task!
+   "upgrade-profiles" run-upgrade-profiles-task! })
 
 (defn ^:higher-order ^:no-project-needed ancient
   "Check your Projects for outdated Dependencies. 
@@ -21,15 +21,15 @@
      lein ancient [<options>] [<path>]
      lein ancient profiles [<options>]
      lein ancient get <package> [<options>]
-     lein ancient upgrade [<options>] 
-     lein ancient upgrade-global [<options>]
+     lein ancient upgrade [<options>] [<path>]
+     lein ancient upgrade-profiles [<options>]
 
    Tasks:
 
      get                  Retrieve artifact information from Maven repositories.
      profiles             Check artifacts in '~/.lein/profiles.clj'.
-     upgrade              Replace artifacts in your 'project.clj' with newer versions.
-     upgrade-global       Replace plugins in '~/.lein/profiles.clj' with newer versions.
+     upgrade              Replace artifacts in the given file (default: './project.clj') with newer versions.
+     upgrade-profiles     Replace plugins in '~/.lein/profiles.clj' with newer versions.
 
    Commandline Options:
   

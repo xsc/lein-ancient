@@ -232,17 +232,47 @@
     with-backup
     with-abort))
 
+;; ## Wrappers
+
+(defn- upgrade-file!
+  "Upgrade file at the given location, either 'project.clj' or 'profiles.clj'."
+  [project ^java.io.File f settings]
+  (let [path (.getPath f)]
+    (when (.isFile f)
+      (when (:recursive settings) (main/info "--" path))
+      (cond (= (.getName f) "project.clj") (upgrade-project-file! project settings path)
+            (= (.getName f) "profiles.clj") (upgrade-profiles-file! project settings path)
+            :else (main/abort "ERROR: Can only upgrade either 'project.clj' or 'profiles.clj'."))
+      (when (:recursive settings) (main/info)))))
+
+(defn- upgrade-directory!
+  "Upgrade directory, possibly recursively."
+  [project ^java.io.File path settings]
+  (let [top-file (io/file path "project.clj")]
+    (cond (:recursive settings) (let [project-files (find-files-recursive! path "project.clj")]
+                                  (doseq [^java.io.File project-file project-files]
+                                    (upgrade-file! project project-file settings)))
+          (.isFile top-file) (upgrade-file! project top-file settings)
+          :else (main/abort "No file at:" (.getPath top-file)))))
+
+(defn- upgrade-path!
+  "Upgrade file/directory at the given path."
+  [project path settings]
+  (let [^java.io.File f (io/file path)]
+    (cond (.isFile f) (upgrade-file! project f settings)
+          (.isDirectory f) (upgrade-directory! project f settings)
+          :else (main/abort "No such file or directory:" path))))
+
 ;; ## Task
 
 (defn run-upgrade-task!
   "Run artifact upgrade on project file."
   [{:keys [root] :as project} args]
-  (if-not root
-    (main/abort "'upgrade' can only be run inside of project.")
-    (let [settings (parse-cli args)]
-      (upgrade-project-file! project settings (io/file root "project.clj")))))
+  (if (exists? (last args)) 
+    (upgrade-path! project (last args) (parse-cli (butlast args)))
+    (upgrade-path! project (or root ".") (parse-cli args))))
 
-(defn run-upgrade-global-task!
+(defn run-upgrade-profiles-task!
   "Run plugin upgrade on global profiles."
   [project args]
   (let [profiles-file (io/file (System/getProperty "user.home") ".lein" "profiles.clj")
