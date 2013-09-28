@@ -18,7 +18,7 @@ Put one of the following into the `:plugins` vector of the `:user` profile in yo
 
 ```clojure
 [lein-ancient "0.4.4"]          ;; stable
-[lein-ancient "0.5.0-alpha2"]   ;; unstable
+[lein-ancient "0.5.0-alpha3"]   ;; unstable
 ```
 
 This plugin is destined for Leiningen >= 2.0.0.
@@ -66,14 +66,14 @@ $ lein ancient upgrade :interactive
 
 [com.taoensso/timbre "2.4.1"] is available but we use "2.1.2"
 Do you want to upgrade? [yes/no] yes
-Upgrade to [com.taoensso/timbre "2.4.1"] from "2.1.2"
 
 [potemkin "0.3.1"] is available but we use "0.3.0"
 Do you want to upgrade? [yes/no] no
 
 [pandect "0.3.0"] is available but we use "0.2.3"
 Do you want to upgrade? [yes/no] yes
-Upgrade to [pandect "0.3.0"] from "0.2.3"
+
+2 artifacts upgraded.
 ```
 
 Omit `:interactive` if lein-ancient should just do its thing; use `:print` for a dry-run, 
@@ -81,7 +81,9 @@ printing out the resulting file instead of writing back to disk.
 
 To see all available options, call:
 
-```lein help ancient```
+```
+lein help ancient
+```
 
 ## Supported Repository Types
 
