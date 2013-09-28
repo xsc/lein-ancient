@@ -6,6 +6,8 @@
 - Warnings when using invalid/deprecated options/tasks.
 - Added possibility to specify a file (either `project.clj` or `profiles.clj`) for the default task.
 - Added `:allow-all` to CLI.
+- Replaced `upgrade-global` with `upgrade-profiles`.
+- Added `profiles` task.
 - Added backup file creation for `upgrade`/`upgrade-global`.
 - Added `:overwrite-backup` to CLI to not prompt if a backup file exists.
 - Replaced `println` with `leiningen.core.main/info`.

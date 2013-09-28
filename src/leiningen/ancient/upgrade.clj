@@ -259,7 +259,7 @@
   "Upgrade file/directory at the given path."
   [project path settings]
   (let [^java.io.File f (io/file path)]
-    (cond (.isFile f) (upgrade-file! project f settings)
+    (cond (.isFile f) (upgrade-file! project f (assoc settings :recursive false))
           (.isDirectory f) (upgrade-directory! project f settings)
           :else (main/abort "No such file or directory:" path))))
 

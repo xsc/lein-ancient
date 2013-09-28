@@ -83,9 +83,10 @@
   [repositories path args]
   (let [^java.io.File f (io/file path)
         settings (parse-cli args)]
-    (cond (.isFile f) (cond (= (.getName f) "project.clj") (check-project-file! path settings)
-                            (= (.getName f) "profiles.clj") (check-profiles-file! repositories path settings)
-                            :else (main/abort "Can only check 'project.clj' or 'profiles.clj'."))
+    (cond (.isFile f) (let [settings (assoc settings :recursive false)]
+                        (cond (= (.getName f) "project.clj") (check-project-file! path settings)
+                              (= (.getName f) "profiles.clj") (check-profiles-file! repositories path settings)
+                              :else (main/abort "Can only check 'project.clj' or 'profiles.clj'.")))
           (.isDirectory f) (check-project-directory! path settings)
           :else (main/abort "No such file or directory:" path))))
 
