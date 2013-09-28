@@ -101,6 +101,7 @@
 ;; ## File Search
 
 (defn find-files-recursive!
+  "Find all files with a given name in a directory and its children."
   [base-path filename]
   (letfn [(lazy-find [^java.io.File dir]
             (lazy-seq
@@ -111,3 +112,8 @@
                     (cons f (mapcat lazy-find rst))
                     (mapcat lazy-find rst))))))]
     (lazy-find (io/file base-path))))
+
+(defn exists?
+  "Check if the given path exists."
+  [path]
+  (and path (.exists (io/file path))))

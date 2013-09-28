@@ -39,7 +39,7 @@
 
 ;; ## Check Logic
 
-(defn check-project-map!
+(defn- check-project-map!
   "Run project/plugin checker on the given project/settings maps."
   [project settings]
   (with-output-settings settings
@@ -51,35 +51,57 @@
         (print-outdated-message artifact))
       (verbose "Done."))))
 
-(defn check-project-file!
+(defn- check-profiles-file!
+  "Check a single profiles file."
+  [repositories path settings]
+  (when-let [profiles (read-profiles-map! path)]
+    (check-project-map! {:repositories repositories :profiles profiles}
+                        (-> settings
+                          (assoc :profiles true)
+                          (assoc :plugins true)))))
+
+(defn- check-project-file!
+  "Check a single project file."
   [path settings]
   (when-let [project (read-project-map! path)]
     (when (:recursive settings) (main/info "--" path))
     (check-project-map! project settings)
     (when (:recursive settings) (main/info))))
 
-(defn check-project-directory!
+(defn- check-project-directory!
+  "Check files in directory, possibly recursively."
   [path settings]
   (if (:recursive settings)
     (let [project-files (find-files-recursive! path "project.clj")]
       (doseq [^java.io.File project-file project-files]
+        (prn project-file)
         (check-project-file! (.getPath project-file) settings)))
     (check-project-file! (.getPath (io/file path "project.clj")) settings)))
 
-;; Tasks
-
-(defn run-file-check-task!
-  "Run project/plugin checker on the given file."
-  [project [path & args]]
+(defn- check-path!
+  "Run project/plugin checker on the given path."
+  [repositories path args]
   (let [^java.io.File f (io/file path)
         settings (parse-cli args)]
-    (cond (.isFile f) (check-project-file! path settings)
+    (cond (.isFile f) (cond (= (.getName f) "project.clj") (check-project-file! path settings)
+                            (= (.getName f) "profiles.clj") (check-profiles-file! repositories path settings)
+                            :else (main/abort "Can only check 'project.clj' or 'profiles.clj'."))
           (.isDirectory f) (check-project-directory! path settings)
           :else (main/abort "No such file or directory:" path))))
 
+;; Tasks
+
 (defn run-check-task!
   "Run project/plugin checker."
-  [project args]
-  (check-project-directory! 
-    (or (:root project) ".")
-    (parse-cli args)))
+  [{:keys [repositories root]} args]
+  (if (exists? (last args))
+    (check-path! repositories (last args) (butlast args))
+    (check-path! repositories (or root ".") args)))
+
+(defn run-profiles-task!
+  "Run plugin checker on global profiles file."
+  [{:keys [repositories]} args]
+  (let [f (java.io.File. (System/getProperty "user.home") ".lein/profiles.clj")]
+    (if (.isFile f)
+      (check-path! repositories f args)
+      (main/info "No file at: ~/.lein/profiles.clj"))))
