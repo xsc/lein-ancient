@@ -85,6 +85,21 @@ To see all available options, call:
 lein help ancient
 ```
 
+## Regression Testing
+
+You'd want to make sure that the upgraded dependencies don't mess with your library or application,
+wouldn't you? Unit tests are your friend and lein-ancient offers a mechanism to automatically run
+them after an upgrade - and revert to the original state if they fail. Simply create an alias
+`test-ancient` in your `project.clj`:
+
+```clojure
+...
+  :aliases {"test-ancient" ["with-profile" "..." "midje"]}
+...
+```
+
+(Note that, currently, referencing other aliases does not work.)
+
 ## Supported Repository Types
 
 - HTTP/HTTPS Repositories
