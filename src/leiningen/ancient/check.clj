@@ -71,12 +71,12 @@
 (defn- check-project-directory!
   "Check files in directory, possibly recursively."
   [path settings]
-  (if (:recursive settings)
-    (let [project-files (find-files-recursive! path "project.clj")]
-      (doseq [^java.io.File project-file project-files]
-        (prn project-file)
-        (check-project-file! (.getPath project-file) settings)))
-    (check-project-file! (.getPath (io/file path "project.clj")) settings)))
+  (let [top-file (io/file path "project.clj")]
+    (cond (:recursive settings) (let [project-files (find-files-recursive! path "project.clj")]
+                                  (doseq [^java.io.File project-file project-files]
+                                    (check-project-file! (.getPath project-file) settings)))
+          (.isFile top-file) (check-project-file! (.getPath top-file) settings)
+          :else (main/abort "No file at:" (.getPath top-file)))))
 
 (defn- check-path!
   "Run project/plugin checker on the given path."

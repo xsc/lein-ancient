@@ -18,14 +18,16 @@
   
    Usage:
 
-     lein ancient [<path>] [<options>]
+     lein ancient [<options>] [<path>]
+     lein ancient profiles [<options>]
      lein ancient get <package> [<options>]
-     lein ancient upgrade [<options>]
+     lein ancient upgrade [<options>] 
      lein ancient upgrade-global [<options>]
 
    Tasks:
 
      get                  Retrieve artifact information from Maven repositories.
+     profiles             Check artifacts in '~/.lein/profiles.clj'.
      upgrade              Replace artifacts in your 'project.clj' with newer versions.
      upgrade-global       Replace plugins in '~/.lein/profiles.clj' with newer versions.
 

@@ -4,7 +4,7 @@
 
 - Removed colon from tasks (e.g. `upgrade` instead of `:upgrade`).
 - Warnings when using invalid/deprecated options/tasks.
-- Added `check` task to check a specific project file.
+- Added possibility to specify a file (either `project.clj` or `profiles.clj`) for the default task.
 - Added `:allow-all` to CLI.
 - Added backup file creation for `upgrade`/`upgrade-global`.
 - Added `:overwrite-backup` to CLI to not prompt if a backup file exists.
