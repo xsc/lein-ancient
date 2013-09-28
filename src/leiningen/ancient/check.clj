@@ -55,7 +55,8 @@
   [path settings]
   (when-let [project (read-project-map! path)]
     (when (:recursive settings) (main/info "--" path))
-    (check-project-map! project settings)))
+    (check-project-map! project settings)
+    (when (:recursive settings) (main/info))))
 
 (defn check-project-directory!
   [path settings]
