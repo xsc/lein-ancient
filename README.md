@@ -18,71 +18,88 @@ Put one of the following into the `:plugins` vector of the `:user` profile in yo
 
 ```clojure
 [lein-ancient "0.4.4"]          ;; stable
-[lein-ancient "0.5.0-alpha3"]   ;; unstable
+[lein-ancient "0.5.0-RC1"]      ;; unstable
 ```
 
 This plugin is destined for Leiningen >= 2.0.0.
 
-__Command Line__
+## Check Artifacts
 
-_Note:_ The following paragraphs use the tasks/command line options for `lein-ancient` >= 0.5.0-alpha1. To
-see the ones applying to your version, call `lein help ancient`.
-
-You can use `lein-ancient` to check the dependencies/plugins of a project and those specified
-in `~/.lein/profiles.clj`.
+`lein-ancients` default behaviour is to check your current project (or a given file/directory) for
+artifacts that have newer versions available, e.g.:
 
 ```bash
 $ lein ancient
-[com.taoensso/timbre "2.4.1"] is available but we use "2.1.2"
-[potemkin "0.3.1"] is available but we use "0.3.0"
+[com.taoensso/timbre "2.6.2"] is available but we use "2.1.2"
+[potemkin "0.3.3"] is available but we use "0.3.0"
 [pandect "0.3.0"] is available but we use "0.2.3"
+```
 
-$ lein ancient :allow-qualified
-[com.taoensso/timbre "2.4.1"] is available but we use "2.1.2"
-[potemkin "0.3.1"] is available but we use "0.3.0"
-[pandect "0.3.0"] is available but we use "0.2.3"
-[midje "1.6-alpha3"] is available but we use "1.5.1"
+You can specify the type of versions to check with `:allow-snapshots`, `:allow-qualified` and 
+`:allow-all`, and the kind of artifacts with `:plugins` and `:all`:
 
+```bash
 $ lein ancient :allow-snapshots
-[com.taoensso/timbre "2.4.1"] is available but we use "2.1.2"
-[potemkin "0.3.2-SNAPSHOT"] is available but we use "0.3.0"
+[com.taoensso/timbre "2.6.2"] is available but we use "2.1.2"
+[potemkin "0.3.4-SNAPSHOT"] is available but we use "0.3.0"
 [pandect "0.3.0"] is available but we use "0.2.3"
 [midje "1.6-SNAPSHOT"] is available but we use "1.5.1"
 
 $ lein ancient :plugins
-[lein-tarsier/lein-tarsier "0.10.0"] is available but we use "0.9.4"
-
-$ lein ancient :all
-[com.taoensso/timbre "2.4.1"] is available but we use "2.1.2"
-[potemkin "0.3.1"] is available but we use "0.3.0"
-[pandect "0.3.0"] is available but we use "0.2.3"
-[lein-tarsier/lein-tarsier "0.10.0"] is available but we use "0.9.4"
+[lein-midje "3.1.2"] is available but we use "3.0.1"
 ```
 
-You can automatically and iteractively upgrade dependencies in need:
+It works recursively, too:
+
+```bash
+$ lein ancient :recursive
+-- ./panoptic/project.clj
+[com.taoensso/timbre "2.6.2"] is available but we use "2.1.2"
+[potemkin "0.3.3"] is available but we use "0.3.0"
+[pandect "0.3.0"] is available but we use "0.2.3"
+
+-- ./rewrite-clj/project.clj
+[org.clojure/tools.reader "0.7.8"] is available but we use "0.7.5"
+[potemkin "0.3.3"] is available but we use "0.3.2"
+```
+
+To let `lein-ancient` perform the same checks for the profiles in `~/.lein/profiles.clj`, run
+it using:
+
+```bash
+$ lein ancient profiles [<options>]
+...
+```
+
+## Upgrade Artifacts
+
+`lein-ancient` lets you upgrade artifacts automatically and interactively, accepting
+the same options as the default and `profiles` tasks:
 
 ```bash
 $ lein ancient upgrade :interactive
 
-[com.taoensso/timbre "2.4.1"] is available but we use "2.1.2"
+[com.taoensso/timbre "2.6.2"] is available but we use "2.1.2"
 Do you want to upgrade? [yes/no] yes
 
-[potemkin "0.3.1"] is available but we use "0.3.0"
+[potemkin "0.3.3"] is available but we use "0.3.0"
 Do you want to upgrade? [yes/no] no
 
 [pandect "0.3.0"] is available but we use "0.2.3"
 Do you want to upgrade? [yes/no] yes
 
-2 artifacts upgraded.
+2 artifacts were upgraded.
 ```
 
 Omit `:interactive` if lein-ancient should just do its thing; use `:print` for a dry-run, 
-printing out the resulting file instead of writing back to disk.
+printing out the resulting file instead of writing back to disk. You can even perform a
+recursive upgrade run by supplying `:recursive`.
 
-To see all available options, call:
+You can upgrade the global user profiles by running:
 
-```
-lein help ancient
+```bash
+$ lein ancient upgrade-profiles [<options>]
+...
 ```
 
 ## Regression Testing
@@ -98,7 +115,7 @@ them after an upgrade - and revert to the original state if they fail. Simply cr
 ...
 ```
 
-(Note that, currently, referencing other aliases does not work.)
+(Note that referencing other aliases does not work yet.)
 
 ## Supported Repository Types
 
