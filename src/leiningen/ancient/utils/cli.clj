@@ -9,6 +9,7 @@
                        :plugins          true]
    ":plugins"         [:plugins          true
                        :dependencies     false]
+   ":recursive"       [:recursive        true]
    ":allow-snapshots" [:snapshots?       true]
    ":allow-qualified" [:qualified?       true]
    ":allow-all"       [:snapshots?       true

@@ -15,6 +15,7 @@
        :plugins          false
        :print            false
        :profiles         true
+       :recursive        false
        :qualified?       false
        :snapshots?       false
        :tests            true})
@@ -30,6 +31,7 @@
    ":allow-qualified"]      [:snapshots? true :qualified? true]
   [":allow-all"]            [:snapshots? true :qualified? true]
   [":aggressive"]           [:aggressive? true]
+  [":recursive"]            [:recursive true]
   [":overwrite-backup"]     [:overwrite-backup true]
   [":no-tests"]             [:tests false]
   [":no-profiles"]          [:profiles false]

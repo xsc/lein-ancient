@@ -6,7 +6,8 @@
             [leiningen.ancient.utils.io :refer :all]
             [leiningen.core.main :as main]
             [ancient-clj.verbose :refer :all]
-            [ancient-clj.core :as anc]))
+            [ancient-clj.core :as anc]
+            [clojure.java.io :as io]))
 
 ;; ## Check/Update
 
@@ -36,23 +37,51 @@
     "is available but we use"
     (yellow (version-string version))))
 
-;; ## Task
+;; ## Check Logic
 
-(defn run-check-task!
-  "Run project/plugin checker."
-  [project args]
-  (let [settings (parse-cli args)]
-    (with-output-settings settings
-      (let [repos (collect-repositories project)
-            artifacts (collect-artifacts project settings)
-            outdated (get-outdated-artifacts! repos settings artifacts)]
-        (verbose "Checking " (count artifacts) " Dependencies using " (count repos) " Repositories ...")
-        (doseq [artifact outdated]
-          (print-outdated-message artifact))
-        (verbose "Done.")))))
+(defn check-project-map!
+  "Run project/plugin checker on the given project/settings maps."
+  [project settings]
+  (with-output-settings settings
+    (let [repos (collect-repositories project)
+          artifacts (collect-artifacts project settings)
+          outdated (get-outdated-artifacts! repos settings artifacts)]
+      (verbose "Checking " (count artifacts) " Dependencies using " (count repos) " Repositories ...")
+      (doseq [artifact outdated]
+        (print-outdated-message artifact))
+      (verbose "Done."))))
+
+(defn check-project-file!
+  [path settings]
+  (when-let [project (read-project-map! path)]
+    (when (:recursive settings) (main/info "--" path))
+    (check-project-map! project settings)))
+
+(defn check-project-directory!
+  [path settings]
+  (let [^java.io.File f (io/file path "project.clj")]
+    (when (.isFile f)
+      (check-project-file! (.getPath f) settings))
+    (when (:recursive settings)
+      (let [children (.listFiles (io/file path))]
+        (doseq [^java.io.File f children]
+          (when (.isDirectory f) 
+            (check-project-directory! (.getPath f) settings)))))))
+
+;; Tasks
 
 (defn run-file-check-task!
   "Run project/plugin checker on the given file."
   [project [path & args]]
-  (when-let [project (read-project-map! path)]
-    (run-check-task! project args)))
+  (let [^java.io.File f (io/file path)
+        settings (parse-cli args)]
+    (cond (.isFile f) (check-project-file! path settings)
+          (.isDirectory f) (check-project-directory! path settings)
+          :else (main/abort "No such file or directory:" path))))
+
+(defn run-check-task!
+  "Run project/plugin checker."
+  [project args]
+  (check-project-directory! 
+    (or (:root project) ".")
+    (parse-cli args)))
