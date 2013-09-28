@@ -60,14 +60,11 @@
 
 (defn check-project-directory!
   [path settings]
-  (let [^java.io.File f (io/file path "project.clj")]
-    (when (.isFile f)
-      (check-project-file! (.getPath f) settings))
-    (when (:recursive settings)
-      (let [children (.listFiles (io/file path))]
-        (doseq [^java.io.File f children]
-          (when (.isDirectory f) 
-            (check-project-directory! (.getPath f) settings)))))))
+  (if (:recursive settings)
+    (let [project-files (find-files-recursive! path "project.clj")]
+      (doseq [^java.io.File project-file project-files]
+        (check-project-file! (.getPath project-file) settings)))
+    (check-project-file! (.getPath (io/file path "project.clj")) settings)))
 
 ;; Tasks
 

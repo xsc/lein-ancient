@@ -97,3 +97,17 @@
     (catch Exception ex
       (main/info "ERROR: Could not read profiles map from file:" path)
       (main/info "ERROR:" (.getMessage ex)))))
+
+;; ## File Search
+
+(defn find-files-recursive!
+  [base-path filename]
+  (letfn [(lazy-find [^java.io.File dir]
+            (lazy-seq
+              (when (.isDirectory dir)
+                (let [f (io/file dir filename)
+                      rst (filter #(.isDirectory ^java.io.File %) (.listFiles dir))]
+                  (if (.isFile f)
+                    (cons f (mapcat lazy-find rst))
+                    (mapcat lazy-find rst))))))]
+    (lazy-find (io/file base-path))))
