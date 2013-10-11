@@ -2,7 +2,7 @@
       :author "Yannick Scherer"}
   leiningen.ancient
   (:require [leiningen.ancient.check :refer [run-check-task! run-profiles-task!]]
-            [leiningen.ancient.get :refer [run-get-task!]]
+            [leiningen.ancient.get :refer [run-get-task! run-latest-vector-task!]]
             [leiningen.ancient.upgrade :refer [run-upgrade-task! run-upgrade-profiles-task!]]
             [leiningen.core.main :as main]
             [ancient-clj.verbose :refer :all]))
@@ -11,7 +11,8 @@
   {"get"              run-get-task!
    "profiles"         run-profiles-task!
    "upgrade"          run-upgrade-task!
-   "upgrade-profiles" run-upgrade-profiles-task! })
+   "upgrade-profiles" run-upgrade-profiles-task!
+   "latest"           run-latest-vector-task!})
 
 (defn ^:higher-order ^:no-project-needed ancient
   "Check your Projects for outdated Dependencies. 

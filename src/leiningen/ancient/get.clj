@@ -6,7 +6,8 @@
             [leiningen.ancient.utils.io :refer [with-output-settings]]
             [ancient-clj.verbose :refer :all]
             [ancient-clj.core :as anc]
-            [version-clj.core :as v]))
+            [version-clj.core :as v]
+            [ancient-clj.repository :refer [retrieve-latest-version-string!]]))
 
 (def ^:private ^:const WIDTH
   "Maximum width of labels for `:get`."
@@ -63,3 +64,14 @@
                 (print-version-seq "all releases" releases)
                 (print-version-seq "all SNAPSHOTs" snapshots)
                 (print-version-seq "all qualified versions" qualified)))))))))
+
+(defn run-latest-vector-task!
+  [project [package & args]]
+  (if-not package
+    (println "Expected an artifact to retrieve version information for")
+    (let [settings (assoc (parse-cli args) :aggressive? true)
+          artifact (anc/artifact-map [package "RELEASE"])]
+      (with-output-settings settings
+        (if-let [latest (retrieve-latest-version-string! settings (collect-repositories project) (:group-id artifact) (:artifact-id artifact))]
+          (println (str  "[" package " \"" latest "\"]") )
+          (println "No versions found"))))))

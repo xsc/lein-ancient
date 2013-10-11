@@ -117,6 +117,19 @@ them after an upgrade - and revert to the original state if they fail. Simply cr
 
 (Note that referencing other aliases does not work yet.)
 
+## Latest library vector
+
+`lein-ancient` lets you check for the latest available version of a
+library and gives you the exact vector to paste into your new
+project.clj
+
+```bash
+$ lein ancient latest com.taoensso/timbre
+[com.taoensso/timbre "2.6.2"]
+```
+
+This can be used programatically from editors to automatically insert dependency vectors
+
 ## Supported Repository Types
 
 - HTTP/HTTPS Repositories
