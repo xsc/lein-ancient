@@ -63,3 +63,20 @@
                 (print-version-seq "all releases" releases)
                 (print-version-seq "all SNAPSHOTs" snapshots)
                 (print-version-seq "all qualified versions" qualified)))))))))
+
+(defn run-latest-vector-task!
+  [project [package & args]]
+  (if-not package
+    (println "':get' expects an artifact to retrieve version information for.")
+    (let [settings (-> (parse-cli args) (assoc :aggressive? true))
+          {:keys [artifact-id group-id] :as artifact} (anc/artifact-map [package "RELEASE"])
+          artifact-str (str group-id "/" artifact-id)]
+      (with-output-settings settings
+        (let [repos (collect-repositories project)]
+          (let [vs (->> (anc/versions! settings repos artifact)
+                     (sort #(v/version-seq-compare (second %1) (second %2)))
+                     (reverse))]
+            (if-not (seq vs)
+              (println "No versions found.")
+              (let [releases (filter (complement (comp v/qualified? second)) vs)]
+                (println (str  "[" package " \""  (ffirst releases) "\"]") )))))))))
