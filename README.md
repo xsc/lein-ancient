@@ -117,18 +117,26 @@ them after an upgrade - and revert to the original state if they fail. Simply cr
 
 (Note that referencing other aliases does not work yet.)
 
-## Latest library vector
+## Inspect Artifact Versions
 
-`lein-ancient` lets you check for the latest available version of a
-library and gives you the exact vector to paste into your new
-project.clj
+If you do not have access to a browser or are just too lazy/annoyed to leave the command line, the tasks
+`get` and `latest` might be just the thing for you! The former prints some human-readable artifact data
+to your console while the latter only retrieves the artifact vector, e.g. destined for your `project.clj`.
 
 ```bash
-$ lein ancient latest com.taoensso/timbre
+$ lein ancient get com.taoensso/timbre :allow-all
+Getting Version Information for com.taoensso/timbre from 2 Repositories ...
+  * 39 version(s) found.
+  * latest release:          "2.6.2"
+  * latest SNAPSHOT:         "2.0.0-SNAPSHOT"
+  * latest qualified:        "1.4.0-alpha1"
+  * all releases:            [ "2.6.2" "2.6.1" "2.6.0" "2.5.0" "2.4.1" ...
+...
+
+$ lein ancient latest com.taoensso/timbre :allow-all
 [com.taoensso/timbre "2.6.2"]
 ```
 
-This can be used programatically from editors to automatically insert dependency vectors
 
 ## Supported Repository Types
 

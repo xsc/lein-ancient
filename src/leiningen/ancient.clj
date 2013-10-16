@@ -22,12 +22,14 @@
      lein ancient [<options>] [<path>]
      lein ancient profiles [<options>]
      lein ancient get <package> [<options>]
+     lein ancient latest <package> [<options>]
      lein ancient upgrade [<options>] [<path>]
      lein ancient upgrade-profiles [<options>]
 
    Tasks:
 
      get                  Retrieve artifact information from Maven repositories.
+     latest               Print the latest version of the given artifact as a Clojure vector.
      profiles             Check artifacts in '~/.lein/profiles.clj'.
      upgrade              Replace artifacts in the given file (default: './project.clj') with newer versions.
      upgrade-profiles     Replace plugins in '~/.lein/profiles.clj' with newer versions.
