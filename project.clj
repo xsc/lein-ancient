@@ -6,7 +6,7 @@
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.clojure/data.xml "0.0.7"]
                  [colorize "0.1.1" :exclusions [org.clojure/clojure]]
-                 [clj-aws-s3 "0.3.6"]
+                 [clj-aws-s3 "0.3.7"]
                  [version-clj "0.1.0"]]
   :repositories  {"sonatype-oss-public" "https://oss.sonatype.org/content/groups/public/"}
   :profiles {:dev {:dependencies [[midje "1.5.1"]]
