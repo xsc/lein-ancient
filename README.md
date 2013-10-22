@@ -137,6 +137,9 @@ $ lein ancient latest com.taoensso/timbre :allow-all
 [com.taoensso/timbre "2.6.2"]
 ```
 
+If you're using Emacs you can access this functionality using Adam Clement's 
+[latest-clojure-libraries](https://github.com/AdamClements/latest-clojure-libraries)
+plugin without leaving your buffer.
 
 ## Supported Repository Types
 
