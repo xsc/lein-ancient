@@ -19,7 +19,8 @@
 - Implemented recursive artifact checking and upgrading.
 - Added `:recursive` to CLI.
 - Using [ancient-clj](https://github.com/xsc/ancient-clj) 0.1.4.
-- Using [rewrite-clj](https://github.com/xsc/rewrite-clj) 0.3.0
+- Using [rewrite-clj](https://github.com/xsc/rewrite-clj) 0.3.1
+- Added `latest` task to print latest artifact vector.
 
 ## 0.4.4
 
