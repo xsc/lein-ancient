@@ -1,5 +1,10 @@
 # CHANGES: `lein-ancient`
 
+## 0.5.2
+
+- Using [rewrite-clj](https://github.com/xsc/rewrite-clj) 0.3.3
+- Fixes #18: problems with some "non-symbol" keywords, e.g. `:1.5.1`.
+
 ## 0.5.1
 
 - Removed colon from tasks (e.g. `upgrade` instead of `:upgrade`).
@@ -19,7 +24,7 @@
 - Implemented recursive artifact checking and upgrading.
 - Added `:recursive` to CLI.
 - Using [ancient-clj](https://github.com/xsc/ancient-clj) 0.1.4.
-- Using [rewrite-clj](https://github.com/xsc/rewrite-clj) 0.3.1
+- Using [rewrite-clj](https://github.com/xsc/rewrite-clj) 0.3.2
 - Added `latest` task to print latest artifact vector.
 
 ## 0.5.0
