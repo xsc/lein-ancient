@@ -1,8 +1,9 @@
-(defproject lein-ancient "0.5.2"
+(defproject lein-ancient "0.5.3-SNAPSHOT"
   :description "Check your Projects for outdated Dependencies."
   :url "https://github.com/xsc/lein-ancient"
-  :dependencies [[rewrite-clj "0.3.3"]
-                 [ancient-clj "0.1.4"]]
+  :dependencies [[rewrite-clj "0.3.3" :exclusions [org.clojure/tools.reader]]
+                 [ancient-clj "0.1.4"]
+                 [org.clojure/tools.reader "0.7.10"]]
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :profiles {:midje {:dependencies [[midje "1.5.1"]]
