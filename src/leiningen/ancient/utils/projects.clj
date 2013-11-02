@@ -2,7 +2,7 @@
       :author "Yannick Scherer"}
   leiningen.ancient.utils.projects
   (:require [leiningen.core.project :as project :only [defaults]]
-            [leiningen.core.user :as uu :only [resolve-credentials]]
+            [leiningen.core.user :as uu :only [profile-auth resolve-credentials]]
             [ancient-clj.core :refer [artifact-map]]
             [ancient-clj.repository :refer [repository]]))
 
@@ -16,6 +16,7 @@
     (map second)
     (map #(if (string? %) { :url % } %))
     (filter (complement nil?))
+    (map uu/profile-auth)
     (map uu/resolve-credentials)
     (map repository)))
 
