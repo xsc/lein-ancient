@@ -4,7 +4,7 @@
             [leiningen.core.project :as prj]
             [leiningen.core.main :as main]
             [ancient-clj.verbose :refer :all]
-            [clojure.tools.reader.edn :as edn])
+            [clojure.tools.reader :as reader])
   (:import java.io.File))
 
 ;; ## Configure Logging
@@ -90,7 +90,7 @@
 (defn read-profiles-map!
   [path]
   (try
-    (when-let [form  (edn/read-string (slurp path))]
+    (when-let [form  (reader/read-string (slurp path))]
       (when-not (map? form)
         (throw (Exception. (str "Not a map: " form))))
       form)
