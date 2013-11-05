@@ -1,5 +1,11 @@
 # CHANGES: `lein-ancient`
 
+## 0.5.3
+
+- Using [rewrite-clj](https://github.com/xsc/rewrite-clj) 0.3.4
+- Fixes #19: regular expressions let parsing of profiles map fail
+- Fixes #20: S3 repository not checked if credentials supplied using `:auth` profile.
+
 ## 0.5.2
 
 - Using [rewrite-clj](https://github.com/xsc/rewrite-clj) 0.3.3
