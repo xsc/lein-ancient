@@ -24,16 +24,24 @@
 
 (def ^:dynamic *verbose* nil)
 
-(def ^:dynamic *println* 
+(def ^:dynamic *println*
   (fn [& msg]
     (when *verbose*
       (binding [*out* *err*]
         (apply println msg)))))
 
+(def ^:dynamic *print-warn*
+  println)
+
 (defn verbose
   "Write Log Message."
   [& msg]
   (*println* "(verbose)" (apply str msg)))
+
+(defn warn
+  "Write Warn Message."
+  [& msg]
+  (*print-warn* "(warning)" (apply str msg)))
 
 ;; ## String Creation
 
@@ -60,4 +68,9 @@
 (defmacro with-verbose
   [f & body]
   `(binding [*println* ~f]
+     ~@body))
+
+(defmacro with-warnings
+  [f & body]
+  `(binding [*print-warn* ~f]
      ~@body))
