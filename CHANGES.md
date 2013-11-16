@@ -1,5 +1,10 @@
 # CHANGES: `lein-ancient`
 
+## 0.5.4
+
+- Using [ancient-clj](https://github.com/xsc/ancient-clj) 0.1.5
+- Fixes #21: warnings when anything other than a HTTP 404 response lets metadata lookup fail
+
 ## 0.5.3
 
 - Using [rewrite-clj](https://github.com/xsc/rewrite-clj) 0.3.4
