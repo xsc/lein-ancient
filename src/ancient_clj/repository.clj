@@ -5,7 +5,7 @@
             [ancient-clj.repository.http]
             [ancient-clj.repository.local]
             [ancient-clj.repository.s3p]
-            [ancient-clj.verbose :refer [verbose]]
+            [ancient-clj.verbose :refer [verbose warn]]
             [clojure.data.xml :as xml :only [parse-str]]
             [version-clj.core :as v]))
 
@@ -40,53 +40,61 @@
 
 ;; ## Access Functions
 
-(defn retrieve-metadata-xml! 
-  "Retrieve the version metadata XML file as a String searching the given 
+(defn- retrieve-single-metadata-xml!
+  [repo group-id artifact-id]
+  (try
+    (r/retrieve-metadata-xml! repo group-id artifact-id)
+    (catch java.io.FileNotFoundException _ nil)
+    (catch javax.net.ssl.SSLException ex
+      (warn "An SSL error occured when retrieving '" group-id "/" artifact-id "':\n"
+            (.getMessage ex)))
+    (catch Exception ex
+      (warn "An unexpected error occured when retrieving '" group-id "/" artifact-id "':\n"
+            (.getMessage ex)))))
+
+(defn retrieve-metadata-xml!
+  "Retrieve the version metadata XML file as a String searching the given
    repositories. The first found result will be returned."
-  ([group-id artifact-id] 
+  ([group-id artifact-id]
    (retrieve-metadata-xml! *repositories* group-id artifact-id))
   ([repos group-id artifact-id]
    (loop [repos repos]
      (when (seq repos)
-       (or 
-         (try  
-           (r/retrieve-metadata-xml! (first repos) group-id artifact-id)
-           (catch Exception _ nil))
+       (or
+         (retrieve-single-metadata-xml! (first repos) group-id artifact-id)
          (recur (rest repos)))))))
 
 (defn retrieve-versions!
-  "Retrieve a seq of version pairs (`[version-string version-seq]`) for the given artifact 
-   from the given repositories. The following calls are possible (using an optional 
+  "Retrieve a seq of version pairs (`[version-string version-seq]`) for the given artifact
+   from the given repositories. The following calls are possible (using an optional
    settings map):
-  
+
      (retrieve-versions! [r1 r2] group artifact)
      (retrieve-versions! {:aggressive? true} [r1 r2] group artifact)
-  
+
    The second call will not stop after the first metadata match. By default, the keys
    `:snapshots?` and `:qualified` of the settings map are set to `true`."
   ([artifact-id] (retrieve-versions! nil *repositories* artifact-id artifact-id))
   ([group-id artifact-id]
    (retrieve-versions! nil *repositories* group-id artifact-id))
   ([repos group-id artifact-id]
-   (retrieve-versions! 
+   (retrieve-versions!
      (if (map? repos) repos nil)
      (if (map? repos) *repositories* repos)
      group-id artifact-id))
   ([{:keys [aggressive? snapshots? qualified?] :as settings} repos group-id artifact-id]
    (let [aggressive? (:aggressive? settings true)
          snapshots? (:snapshots? settings true)
-         qualified? (:qualified? settings true)] 
+         qualified? (:qualified? settings true)]
      (->>
        (loop [repos repos
               versions nil]
          (if-not (seq repos)
            versions
            (let [[repo & rst] repos]
-             (if-let [repo-versions (when-let [mta (try
-                                                     (r/retrieve-metadata-xml! repo group-id artifact-id)
-                                                     (catch Exception _ nil))]
+             (if-let [repo-versions (when-let [mta (retrieve-single-metadata-xml! repo group-id artifact-id)]
                                       (when (string? mta)
-                                        (for [t (try 
+                                        (for [t (try
                                                   (xml-seq (xml/parse-str mta))
                                                   (catch Exception e
                                                     (verbose "Could not read XML: " (.getMessage e))))
@@ -118,6 +126,6 @@
       (last))))
 
 (def retrieve-latest-version-string!
-  "Retrieve the latest version's version string. Arguments are the same as for 
+  "Retrieve the latest version's version string. Arguments are the same as for
    `retrieve-latest-version!`."
   (comp first retrieve-latest-version!))
