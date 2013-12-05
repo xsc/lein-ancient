@@ -1,6 +1,6 @@
 # ancient-clj
 
-__ancient-clj__ is a library for accessing versioning metadata in Maven repositories. 
+__ancient-clj__ is a library for accessing versioning metadata in Maven repositories.
 It is the base for the Leiningen plugin [lein-ancient](https://github.com/xsc/lein-ancient).
 
 [![Build Status](https://travis-ci.org/xsc/ancient-clj.png)](https://travis-ci.org/xsc/ancient-clj)
@@ -25,17 +25,17 @@ __REPL__
 (anc/artifact-map '[ancient-clj "0.1.0"]) ;; => { :group-id "ancient-clj" ... }
 
 ;; artifact metadata can either be retrieved using the artifact ID ...
-(anc/versions! 'ancient-clj)              
+(anc/versions! 'ancient-clj)
 ;;   => (["0.1.0-SNAPSHOT" [(0 1 0) ("snapshot")]])
-(anc/version-strings! 'ancient-clj)       
+(anc/version-strings! 'ancient-clj)
 ;;   => ("0.1.0-SNAPSHOT")
-(anc/latest-version! 'ancient-clj)        
+(anc/latest-version! 'ancient-clj)
 ;;   => ["0.1.0-SNAPSHOT" [(0 1 0) ("snapshot")]]
-(anc/latest-version-string! 'ancient-clj) 
+(anc/latest-version-string! 'ancient-clj)
 ;;   => "0.1.0-SNAPSHOT"
 
 ;; ... the artifact vector, ...
-(anc/versions! '[ancient-clj "0.1.0"])    
+(anc/versions! '[ancient-clj "0.1.0"])
 ;;   => (["0.1.0-SNAPSHOT" [(0 1 0) ("snapshot")]])
 
 ;; ... or the artifact map.
@@ -56,24 +56,24 @@ __REPL__
 (anc/latest-version-string! repos 'org.clojure/clojure) ;; => "1.6.0-master-SNAPSHOT"
 
 ;; ... or both.
-(anc/latest-version-string! {:snapshots? false} repos 'org.clojure/clojure)  
+(anc/latest-version-string! {:snapshots? false} repos 'org.clojure/clojure)
 ;;   => "1.5.1"
 
 ;; By default, all operations are "aggressive", i.e. they check all given repositories;
 ;; you can make metadata retrieval stop after the first repository that returns a valid
 ;; result (in our case "http://clojars.org/repo" with a rather old Clojure version):
-(anc/latest-version-string! {:aggressive? false} repos 'org.clojure/clojure) 
+(anc/latest-version-string! {:aggressive? false} repos 'org.clojure/clojure)
 ;;   => "1.5.0-alpha3"
 
-;; The function 'artifact-outdated?' can check whether a given artifact has newer 
-;; versions available. It has to be called with an artifact vector and takes a settings 
-;; map or repository seq as well, returning either `[version-string version-seq]` 
+;; The function 'artifact-outdated?' can check whether a given artifact has newer
+;; versions available. It has to be called with an artifact vector and takes a settings
+;; map or repository seq as well, returning either `[version-string version-seq]`
 ;; (see version-clj) or `nil`:
-(anc/artifact-outdated? '[lein-ancient "0.4.2"])                     
+(anc/artifact-outdated? '[lein-ancient "0.4.2"])
 ;;   => ["0.4.3-SNAPSHOT" ...]
-(anc/artifact-outdated? {:snapshots? false} '[lein-ancient "0.4.2"]) 
+(anc/artifact-outdated? {:snapshots? false} '[lein-ancient "0.4.2"])
 ;;   => nil
-(anc/artifact-outdated-string? repos '[org.clojure/clojure "1.5.1"]) 
+(anc/artifact-outdated-string? repos '[org.clojure/clojure "1.5.1"])
 ;;   => "1.6.0-master-SNAPSHOT"
 
 ;; Repositories that need authentication can be represented as maps. They have the
