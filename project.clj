@@ -7,10 +7,11 @@
                  [org.clojure/data.xml "0.0.7"]
                  [colorize "0.1.1" :exclusions [org.clojure/clojure]]
                  [version-clj "0.1.0" :exclusions [org.clojure/clojure]]
-                 [clj-aws-s3 "0.3.7" :exclusions [org.clojure/clojure clj-time]]
-                 [clj-time "0.6.0" :exclusions [org.clojure/clojure]]]
+                 [clj-aws-s3 "0.3.7" :exclusions [org.clojure/clojure clj-time commons-codec]]
+                 [clj-time "0.6.0" :exclusions [org.clojure/clojure]]
+                 [commons-codec "1.6"]]
   :repositories  {"sonatype-oss-public" "https://oss.sonatype.org/content/groups/public/"}
-  :profiles {:dev {:dependencies [[midje "1.6.0" :exclusions [clj-time]]]
+  :profiles {:dev {:dependencies [[midje "1.6.0" :exclusions [clj-time commons-codec]]]
                    :plugins [[lein-midje "3.1.3"]]}
              :1.4 {:dependencies [[org.clojure/clojure "1.4.0"]]}
              :1.5 {:dependencies [[org.clojure/clojure "1.5.1"]]}
