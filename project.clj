@@ -7,8 +7,7 @@
                  [org.clojure/data.xml "0.0.7"]
                  [colorize "0.1.1" :exclusions [org.clojure/clojure]]
                  [version-clj "0.1.0" :exclusions [org.clojure/clojure]]
-                 [clj-aws-s3 "0.3.7" :exclusions [org.clojure/clojure]]
-                 ;; Override old clj-aws-s3 dependencies for plugin use.
+                 [clj-aws-s3 "0.3.7" :exclusions [org.clojure/clojure org.apache.httpcomponents/httpclient commons-codec]]
                  [org.apache.httpcomponents/httpclient "4.3.1"]
                  [commons-codec "1.8"]]
   :repositories  {"sonatype-oss-public" "https://oss.sonatype.org/content/groups/public/"}
