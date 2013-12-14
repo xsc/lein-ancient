@@ -1,14 +1,12 @@
 (defproject lein-ancient "0.5.4"
   :description "Check your Projects for outdated Dependencies."
   :url "https://github.com/xsc/lein-ancient"
-  :dependencies [[rewrite-clj "0.3.4"]
+  :dependencies [[rewrite-clj "0.3.5"]
                  [ancient-clj "0.1.6"]]
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :profiles {:midje {:dependencies [[midje "1.6.0"]]
-                     :plugins [[lein-midje "3.1.1"]]
-                     :test-paths ["test"]}}
-  :aliases {"midje-dev" ["with-profile" "midje" "midje"]
-            "deps-dev" ["with-profile" "midje" "deps"]}
+  :profiles {:dev {:dependencies [[midje "1.6.0"]]
+                   :plugins [[lein-midje "3.1.1"]]
+                   :test-paths ["test"]}}
   :eval-in-leiningen true
   :pedantic? :abort)
