@@ -1,14 +1,14 @@
-(ns ^{ :doc "HTTP Repository Handling" 
+(ns ^{ :doc "HTTP Repository Handling"
        :author "Yannick Scherer" }
   ancient-clj.repository.http
   (:require [ancient-clj.verbose :refer [verbose]]
             [ancient-clj.repository.core :refer [create-repository build-metadata-url]]
             [aws.sdk.s3 :as s3 :only [get-object]]))
 
-(defmethod create-repository "s3p" 
+(defmethod create-repository "s3p"
   [{:keys [url username passphrase] :as m}]
   (let [url (.substring ^String url 6)
-        [bucket key-prefix] (.split ^String url "/" 2) 
+        [bucket key-prefix] (.split ^String url "/" 2)
         creds { :access-key username :secret-key passphrase }
         get! (partial s3/get-object creds bucket)]
     (when-not (or (= bucket "") (not key-prefix) (= key-prefix ""))

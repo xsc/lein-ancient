@@ -1,4 +1,4 @@
-(ns ^{ :doc "Repository Handling" 
+(ns ^{ :doc "Repository Handling"
        :author "Yannick Scherer" }
   ancient-clj.repository.core
   (:require [ancient-clj.verbose :refer [verbose]]))
@@ -43,10 +43,10 @@
   ([^String repository-url ^String group-id ^String artifact-id]
    (build-metadata-url repository-url group-id artifact-id nil))
   ([^String repository-url ^String group-id ^String artifact-id ^String file-name]
-   (str repository-url 
+   (str repository-url
         (if (.endsWith repository-url "/") "" "/")
         (id->path group-id) "/" artifact-id
-        "/" 
+        "/"
         (or file-name "maven-metadata.xml"))))
 
 (defn slurp-metadata!

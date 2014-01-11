@@ -12,7 +12,7 @@
   (let [dep (str dep)
         [g a] (if (.contains dep "/")
                 (.split dep "/" 2)
-                [dep dep])] 
+                [dep dep])]
     (-> {}
       (assoc :group-id g)
       (assoc :artifact-id a)
@@ -31,7 +31,7 @@
     `(defn ~id ~docstring
        ([~a] (~id nil r/*repositories* ~a))
        ([~r ~a] (~id (when (map? ~r) ~r) (if (map? ~r) r/*repositories* ~r) ~a))
-       ([~s ~r ~a] (let [m# (if-not (map? ~a) 
+       ([~s ~r ~a] (let [m# (if-not (map? ~a)
                               (artifact-map (if (symbol? ~a) [~a "RELEASE"] ~a))
                               ~a)]
                      (~f ~s ~r (:group-id m#) (:artifact-id m#)))))))
@@ -64,7 +64,7 @@
      (if (map? repos) r/*repositories* repos)
      artifact))
   ([settings repos artifact]
-   (let [{:keys [group-id artifact-id version]} (if-not (map? artifact) 
+   (let [{:keys [group-id artifact-id version]} (if-not (map? artifact)
                                                   (artifact-map artifact)
                                                   artifact)
          _ (when-not (and group-id artifact-id version)
