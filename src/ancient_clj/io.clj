@@ -7,12 +7,14 @@
 (defn fetch-url!
   "Fetch the given URL using `slurp` or `clj-http.client/get`."
   [url username password]
-  (let [msg (format "  Trying to retrieve '%s' ..." url)]
+  (let [msg (format "  Trying to retrieve '%s' ..." url)
+        username (when (seq username) username)]
     (if username
       (verbose msg)
       (verbose msg "(with authentication)"))
     (if-not username
-      (slurp url) (try
+      (slurp url)
+      (try
         (when-let [response (client/get url {:basic-auth [username password] :as :stream})]
           (with-open [data-stream (:body response)]
             (slurp data-stream)))
