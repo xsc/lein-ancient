@@ -12,18 +12,16 @@
     (if username
       (verbose msg "(with authentication)")
       (verbose msg))
-    (if-not username
-      (slurp url)
-      (try
-        (when-let [response (client/get url {:basic-auth [username password] :as :stream})]
-          (with-open [data-stream (:body response)]
-            (slurp data-stream)))
-        (catch Exception ex
-          (let [{:keys [status] :as data} (:object (ex-data ex))]
-            (condp = status
-              404 (throw (java.io.FileNotFoundException. url))
-              401 (throw (ex-info "Invalid or missing Credentials!" data))
-              (throw ex))))))))
+    (try
+      (when-let [response (client/get url {:basic-auth [username password] :as :stream})]
+        (with-open [data-stream (:body response)]
+          (slurp data-stream)))
+      (catch Exception ex
+        (let [{:keys [status] :as data} (:object (ex-data ex))]
+          (condp = status
+            404 (throw (java.io.FileNotFoundException. url))
+            401 (throw (ex-info "Invalid or missing Credentials!" data))
+            (throw ex)))))))
 
 (defn- id->path
   "Convert ID to URL path by replacing dots with slashes."

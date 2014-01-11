@@ -65,8 +65,8 @@
 (tabular
   (tabular
     (fact "about simple repositories (using 'slurp')"
-      (against-background [(slurp (io/build-metadata-url ?url "pandect" "pandect" "maven-metadata.xml")) => METADATA
-                           (slurp (io/build-metadata-url ?url "pandect" "pandect" "maven-metadata-local.xml")) => nil])
+      (against-background [(io/fetch-url! (io/build-metadata-url ?url "pandect" "pandect" "maven-metadata.xml") nil nil) => METADATA
+                           (io/fetch-url! (io/build-metadata-url ?url "pandect" "pandect" "maven-metadata-local.xml") nil nil) => nil])
       (every? #(satisfies? rc/Repository %) ?repos) => truthy
       (r/retrieve-metadata-xml!    ?repos "pandect" "pandect") => METADATA
       (r/retrieve-version-strings! ?repos "pandect" "pandect") => (just VERSIONS)
@@ -104,10 +104,10 @@
 (tabular
   (tabular
     (fact "about multiple repository analysis"
-      (against-background [(slurp (io/build-metadata-url ?url1 "pandect" "pandect" "maven-metadata.xml")) => METADATA
-                           (slurp (io/build-metadata-url ?url1 "pandect" "pandect" "maven-metadata-local.xml")) => nil
-                           (slurp (io/build-metadata-url ?url2 "pandect" "pandect" "maven-metadata.xml")) => METADATA2
-                           (slurp (io/build-metadata-url ?url2 "pandect" "pandect" "maven-metadata-local.xml")) => nil])
+      (against-background [(io/fetch-url! (io/build-metadata-url ?url1 "pandect" "pandect" "maven-metadata.xml") nil nil) => METADATA
+                           (io/fetch-url! (io/build-metadata-url ?url1 "pandect" "pandect" "maven-metadata-local.xml") nil nil) => nil
+                           (io/fetch-url! (io/build-metadata-url ?url2 "pandect" "pandect" "maven-metadata.xml") nil nil) => METADATA2
+                           (io/fetch-url! (io/build-metadata-url ?url2 "pandect" "pandect" "maven-metadata-local.xml") nil nil) => nil])
       (when (not= ?url1 ?url2)
         (r/retrieve-version-strings! [?url1 ?url2] "pandect" "pandect") => (just (concat VERSIONS VERSIONS2))
         (r/retrieve-latest-version-string!
