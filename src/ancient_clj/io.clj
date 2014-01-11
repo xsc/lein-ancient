@@ -48,7 +48,6 @@
                                            url-or-map
                                            {:url url-or-map})
          u (build-metadata-url url group-id artifact-id file-name)]
-     (verbose "  Trying to retrieve " u " ...")
      (when-let [xml (fetch-url! u username password)]
        (verbose "  Got " (count xml) " byte(s) of data.")
        xml))))
