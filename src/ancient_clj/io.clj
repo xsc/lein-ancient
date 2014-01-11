@@ -10,8 +10,8 @@
   (let [msg (format "  Trying to retrieve '%s' ..." url)
         username (when (seq username) username)]
     (if username
-      (verbose msg)
-      (verbose msg "(with authentication)"))
+      (verbose msg "(with authentication)")
+      (verbose msg))
     (if-not username
       (slurp url)
       (try
