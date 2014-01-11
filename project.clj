@@ -12,10 +12,10 @@
                  [clj-http "0.7.8"]
                  [commons-codec "1.8"]
                  [commons-logging "1.1.3"]]
+  :exclusions [org.clojure/clojure]
   :repositories  {"sonatype-oss-public" "https://oss.sonatype.org/content/groups/public/"}
   :profiles {:dev {:dependencies [[midje "1.6.0" :exclusions [clj-time commons-codec]]]
-                   :plugins [[lein-midje "3.1.3"]]
-                   :exclusions [org.clojure/clojure]}
+                   :plugins [[lein-midje "3.1.3"]]}
              :1.4 {:dependencies [[org.clojure/clojure "1.4.0"]]}
              :1.5 {:dependencies [[org.clojure/clojure "1.5.1"]]}
              :1.6 {:dependencies [[org.clojure/clojure "1.6.0-master-SNAPSHOT"]]}}
