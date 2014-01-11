@@ -20,7 +20,7 @@
         (let [{:keys [status] :as data} (:object (ex-data ex))]
           (condp = status
             404 (throw (java.io.FileNotFoundException. url))
-            401 (throw (ex-info "Invalid or missing Credentials!" data))
+            401 (throw (ex-info (str "invalid or missing credentials: " url) data))
             (throw ex)))))))
 
 (defn- id->path
