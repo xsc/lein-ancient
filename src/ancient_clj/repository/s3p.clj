@@ -2,7 +2,8 @@
        :author "Yannick Scherer" }
   ancient-clj.repository.http
   (:require [ancient-clj.verbose :refer [verbose]]
-            [ancient-clj.repository.core :refer [create-repository build-metadata-url]]
+            [ancient-clj.io :refer [build-metadata-url]]
+            [ancient-clj.repository.core :refer [create-repository]]
             [aws.sdk.s3 :as s3 :only [get-object]]))
 
 (defmethod create-repository "s3p"

@@ -1,7 +1,8 @@
 (ns ^{ :doc "HTTP Repository Handling"
        :author "Yannick Scherer" }
   ancient-clj.repository.http
-  (:require [ancient-clj.repository.core :refer [create-repository slurp-metadata!]]))
+  (:require [ancient-clj.repository.core :refer [create-repository]]
+            [ancient-clj.io :refer [slurp-metadata!]]))
 
 (defmethod create-repository "file" [m]
   (let [url (:url m)]

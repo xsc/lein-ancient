@@ -4,6 +4,7 @@
   (:require [midje.sweet :refer :all]
             [ancient-clj.repository :as r]
             [ancient-clj.repository.core :as rc]
+            [ancient-clj.io :as io]
             [aws.sdk.s3 :as s3 :only [get-object]]))
 
 ;; ## Fixtures
@@ -52,20 +53,20 @@
 ;; ## Tests
 
 (fact "about metadata URL creation"
-  (rc/build-metadata-url "http://clojars.org/repo" "pandect" "pandect")
+  (io/build-metadata-url "http://clojars.org/repo" "pandect" "pandect")
       => "http://clojars.org/repo/pandect/pandect/maven-metadata.xml"
-  (rc/build-metadata-url "http://clojars.org/repo" "pandect" "pandect" "maven-metadata-local.xml")
+  (io/build-metadata-url "http://clojars.org/repo" "pandect" "pandect" "maven-metadata-local.xml")
       => "http://clojars.org/repo/pandect/pandect/maven-metadata-local.xml"
-  (rc/build-metadata-url "http://clojars.org/repo/" "pandect" "pandect")
+  (io/build-metadata-url "http://clojars.org/repo/" "pandect" "pandect")
       => "http://clojars.org/repo/pandect/pandect/maven-metadata.xml"
-  (rc/build-metadata-url "http://clojars.org/repo" "org.clojure" "data.codec")
+  (io/build-metadata-url "http://clojars.org/repo" "org.clojure" "data.codec")
       => "http://clojars.org/repo/org/clojure/data.codec/maven-metadata.xml")
 
 (tabular
   (tabular
     (fact "about simple repositories (using 'slurp')"
-      (against-background [(slurp (rc/build-metadata-url ?url "pandect" "pandect" "maven-metadata.xml")) => METADATA
-                           (slurp (rc/build-metadata-url ?url "pandect" "pandect" "maven-metadata-local.xml")) => nil])
+      (against-background [(slurp (io/build-metadata-url ?url "pandect" "pandect" "maven-metadata.xml")) => METADATA
+                           (slurp (io/build-metadata-url ?url "pandect" "pandect" "maven-metadata-local.xml")) => nil])
       (every? #(satisfies? rc/Repository %) ?repos) => truthy
       (r/retrieve-metadata-xml!    ?repos "pandect" "pandect") => METADATA
       (r/retrieve-version-strings! ?repos "pandect" "pandect") => (just VERSIONS)
@@ -103,10 +104,10 @@
 (tabular
   (tabular
     (fact "about multiple repository analysis"
-      (against-background [(slurp (rc/build-metadata-url ?url1 "pandect" "pandect" "maven-metadata.xml")) => METADATA
-                           (slurp (rc/build-metadata-url ?url1 "pandect" "pandect" "maven-metadata-local.xml")) => nil
-                           (slurp (rc/build-metadata-url ?url2 "pandect" "pandect" "maven-metadata.xml")) => METADATA2
-                           (slurp (rc/build-metadata-url ?url2 "pandect" "pandect" "maven-metadata-local.xml")) => nil])
+      (against-background [(slurp (io/build-metadata-url ?url1 "pandect" "pandect" "maven-metadata.xml")) => METADATA
+                           (slurp (io/build-metadata-url ?url1 "pandect" "pandect" "maven-metadata-local.xml")) => nil
+                           (slurp (io/build-metadata-url ?url2 "pandect" "pandect" "maven-metadata.xml")) => METADATA2
+                           (slurp (io/build-metadata-url ?url2 "pandect" "pandect" "maven-metadata-local.xml")) => nil])
       (when (not= ?url1 ?url2)
         (r/retrieve-version-strings! [?url1 ?url2] "pandect" "pandect") => (just (concat VERSIONS VERSIONS2))
         (r/retrieve-latest-version-string!
