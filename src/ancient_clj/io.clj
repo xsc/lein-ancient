@@ -44,10 +44,10 @@
   ([url-or-map group-id artifact-id]
    (slurp-metadata! url-or-map nil group-id artifact-id))
   ([url-or-map file-name group-id artifact-id]
-   (let [{:keys [url username password]} (if (map? url-or-map)
-                                           url-or-map
-                                           {:url url-or-map})
+   (let [{:keys [url username password passphrase]} (if (map? url-or-map)
+                                                      url-or-map
+                                                      {:url url-or-map})
          u (build-metadata-url url group-id artifact-id file-name)]
-     (when-let [xml (fetch-url! u username password)]
+     (when-let [xml (fetch-url! u username (or password passphrase))]
        (verbose "  Got " (count xml) " byte(s) of data.")
        xml))))
