@@ -4,7 +4,6 @@ A [Leiningen](https://github.com/technomancy/leiningen) plugin to check your pro
 dependencies and plugins.
 
 [![Build Status](https://travis-ci.org/xsc/lein-ancient.png)](https://travis-ci.org/xsc/lein-ancient)
-[![Dependencies Status](http://jarkeeper.com/xsc/lein-ancient/status.png)](http://jarkeeper.com/xsc/lein-ancient)
 [![endorse](https://api.coderwall.com/xsc/endorsecount.png)](https://coderwall.com/xsc)
 
 This plugin supersedes [lein-outdated](https://github.com/ato/lein-outdated) and uses metadata
