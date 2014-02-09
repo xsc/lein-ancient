@@ -1,7 +1,7 @@
 # lein-ancient
 
 A [Leiningen](https://github.com/technomancy/leiningen) plugin to check your project for outdated
-dependencies and plugins. 
+dependencies and plugins.
 
 [![Build Status](https://travis-ci.org/xsc/lein-ancient.png)](https://travis-ci.org/xsc/lein-ancient)
 [![Dependencies Status](http://jarkeeper.com/xsc/lein-ancient/status.png)](http://jarkeeper.com/xsc/lein-ancient)
@@ -18,7 +18,8 @@ __Leiningen__ ([via Clojars](https://clojars.org/lein-ancient))
 Put one of the following into the `:plugins` vector of the `:user` profile in your `~/.lein/profiles.clj`:
 
 ```clojure
-[lein-ancient "0.5.4"]
+[lein-ancient "0.5.4"]          ;; stable
+[lein-ancient "0.5.5-SNAPSHOT"] ;; unstable
 ```
 
 This plugin is destined for Leiningen >= 2.0.0.
@@ -35,7 +36,7 @@ $ lein ancient
 [pandect "0.3.0"] is available but we use "0.2.3"
 ```
 
-You can specify the type of versions to check with `:allow-snapshots`, `:allow-qualified` and 
+You can specify the type of versions to check with `:allow-snapshots`, `:allow-qualified` and
 `:allow-all`, and the kind of artifacts with `:plugins` and `:all`:
 
 ```bash
@@ -91,7 +92,7 @@ Do you want to upgrade? [yes/no] yes
 2 artifacts were upgraded.
 ```
 
-Omit `:interactive` if lein-ancient should just do its thing; use `:print` for a dry-run, 
+Omit `:interactive` if lein-ancient should just do its thing; use `:print` for a dry-run,
 printing out the resulting file instead of writing back to disk. You can even perform a
 recursive upgrade run by supplying `:recursive`.
 
@@ -137,7 +138,7 @@ $ lein ancient latest com.taoensso/timbre :allow-all
 [com.taoensso/timbre "2.6.2"]
 ```
 
-If you're using Emacs you can access this functionality using Adam Clement's 
+If you're using Emacs you can access this functionality using Adam Clement's
 [latest-clojure-libraries](https://github.com/AdamClements/latest-clojure-libraries)
 plugin without leaving your buffer.
 
