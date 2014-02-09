@@ -1,4 +1,4 @@
-(ns ^{ :doc "Rewrite project.clj to include latest versions of dependencies." 
+(ns ^{ :doc "Rewrite project.clj to include latest versions of dependencies."
        :author "Yannick Scherer" }
   leiningen.ancient.upgrade
   (:require [leiningen.ancient.utils.test :as t]
@@ -17,7 +17,7 @@
 ;;
 ;; We use Leiningen's built-in functions to read the project map from a file,
 ;; and rewrite-clj's zipper to access said file. We can use lein-ancient's existing
-;; check functions to find the artifacts that need updating and rewrite-clj to 
+;; check functions to find the artifacts that need updating and rewrite-clj to
 ;; create the updated project map.
 
 ;; ## Prompt
@@ -70,6 +70,7 @@
         (z/up loc)))
     (catch Exception ex
       (main/info (red "ERROR:") "could not create zipper from file at:" path)
+      (main/info (red "ERROR:") (.getMessage ex))
       nil)))
 
 (defn read-profiles-zipper!
@@ -80,6 +81,7 @@
       (z/find-tag loc z/next :map))
     (catch Exception ex
       (main/info (red "ERROR:") "could not create zipper from file at:" path)
+      (main/info (red "ERROR:") (.getMessage ex))
       nil)))
 
 (defn- write-zipper!
@@ -88,8 +90,8 @@
   (try
     (do
       (if (:print settings)
-        (do 
-          (main/info) 
+        (do
+          (main/info)
           (z/print-root zloc)
           (main/info))
         (binding [*out* (io/writer path)]
@@ -109,7 +111,7 @@
     (when-let [zloc (when map-loc (z/down map-loc))]
       (when-let [path (artifact-path artifact)]
         (when-let [artifact-loc (move-to-path zloc path)]
-          (when (z/vector? artifact-loc) 
+          (when (z/vector? artifact-loc)
             (z/assoc artifact-loc 1 (first latest))))))
     map-loc))
 
@@ -137,15 +139,15 @@
     (let [repos (collect-repo-fn project artifact-map)
           artifacts (collect-artifact-fn artifact-map settings)]
       (with-output-settings settings
-        (if-let [outdated (seq 
+        (if-let [outdated (seq
                             (->> artifacts
                               (c/get-outdated-artifacts! repos settings)
                               (filter-artifacts-with-prompt! settings)))]
           (when-let [map-loc (read-zipper-fn path)]
             (when-let [new-loc (upgrade-artifact-map! map-loc settings outdated)]
               (when (:interactive settings) (main/info))
-              (main/info (count outdated) 
-                       (if (= (count outdated) 1) 
+              (main/info (count outdated)
+                       (if (= (count outdated) 1)
                          "artifact was"
                          "artifacts were")
                        "upgraded.")
@@ -174,7 +176,7 @@
 
 (defn- with-backup
   "Wraps a given function to produce/restore backup files. Returns true
-   if upgrade was successful or no changes were written to disk. Will not 
+   if upgrade was successful or no changes were written to disk. Will not
    create backups if `:print` is specified."
   [upgrade-fn]
   (fn [project settings path]
@@ -267,7 +269,7 @@
 (defn run-upgrade-task!
   "Run artifact upgrade on project file."
   [{:keys [root] :as project} args]
-  (if (exists? (last args)) 
+  (if (exists? (last args))
     (upgrade-path! project (last args) (parse-cli (butlast args)))
     (upgrade-path! project (or root ".") (parse-cli args))))
 

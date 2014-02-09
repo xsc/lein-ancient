@@ -1,4 +1,4 @@
-(ns 
+(ns
   leiningen.ancient.utils.io
   (:require [clojure.java.io :as io :only [file writer]]
             [leiningen.core.project :as prj]
@@ -43,9 +43,9 @@
     (try
       (when (or (:overwrite-backup settings)
                 (not (.exists backup))
-                (prompt "Do you want to overwrite the existing backup file?")) 
+                (prompt "Do you want to overwrite the existing backup file?"))
         (verbose "Creating backup at: " (.getCanonicalPath backup))
-        (io/copy f backup) 
+        (io/copy f backup)
         backup)
       (catch Exception ex
         (main/info (red "Could not create backup file:") (.getMessage ex))
@@ -56,7 +56,7 @@
   (try
     (verbose "Deleting backup file ...")
     (.delete backup)
-    (catch Exception ex 
+    (catch Exception ex
       (main/info (red "Could not delete backup file " (.getPath backup) ":") (.getMessage ex)))))
 
 (defn replace-with-backup!
@@ -83,7 +83,7 @@
           @project)))
     (catch Exception ex
       (main/info "ERROR: Could not read project map from file:" path)
-      (main/info "ERROR:" (.getMessage ex))))) 
+      (main/info "ERROR:" (.getMessage ex)))))
 
 ;; ## Profiles File
 
