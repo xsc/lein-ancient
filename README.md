@@ -13,7 +13,7 @@ Version comparison is done using [version-clj](https://github.com/xsc/version-cl
 __Leiningen ([via Clojars](https://clojars.org/ancient-clj))__
 
 ```clojure
-[ancient-clj "0.1.8"]
+[ancient-clj "0.1.9"]
 ```
 
 __REPL__
