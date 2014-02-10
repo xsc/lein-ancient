@@ -13,7 +13,11 @@
       (verbose msg "(with authentication)")
       (verbose msg))
     (try
-      (when-let [response (client/get url {:basic-auth [username password] :as :stream})]
+      (when-let [response (->> {:as :stream}
+                               (merge
+                                 (when username
+                                   {:basic-auth [username password]}))
+                               (client/get url))]
         (with-open [data-stream (:body response)]
           (slurp data-stream)))
       (catch Exception ex
