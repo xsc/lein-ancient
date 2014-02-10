@@ -1,4 +1,4 @@
-(defproject ancient-clj "0.1.8"
+(defproject ancient-clj "0.1.9-SNAPSHOT"
   :description "Maven Version Utilities for Clojure"
   :url "https://github.com/xsc/ancient-clj"
   :license {:name "Eclipse Public License"
