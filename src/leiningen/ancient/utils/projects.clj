@@ -94,10 +94,12 @@
       artifacts)))
 
 (defn collect-profiles-artifacts
-  "Collect artifacts in profile map's `:user` profile."
+  "Collect artifacts in profile map."
   [profiles settings]
-  (let [artifacts (collect-artifacts (:user profiles) settings)]
-    (map
-      (fn [artifact]
-        (update-in artifact [::path] #(vec (cons :user %))))
-      artifacts)))
+  (mapcat
+    (fn [[profile-key profile]]
+      (->> (collect-artifacts profile settings)
+           (map
+             (fn [artifact]
+               (update-in artifact [::path] #(vec (cons profile-key %)))))))
+    profiles))
