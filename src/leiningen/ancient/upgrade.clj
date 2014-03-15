@@ -49,7 +49,10 @@
    at a given position right of the current one."
   [zloc p]
   (cond (not zloc) nil
-        (integer? p) (nth (iterate z/right zloc) p)
+        (integer? p) (nth
+                       (->> (iterate z/right zloc)
+                            (remove #(= (z/tag %) :uneval)))
+                       p)
         (keyword? p) (when-let [floc (z/find-value zloc p)]
                        (when-let [floc (z/right floc)]
                          (z/down floc)))
