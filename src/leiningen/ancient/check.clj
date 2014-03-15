@@ -1,4 +1,4 @@
-(ns ^{ :doc "Check for outdated dependencies." 
+(ns ^{ :doc "Check for outdated dependencies."
        :author "Yannick Scherer" }
   leiningen.ancient.check
   (:require [leiningen.ancient.utils.projects :refer :all]
@@ -15,7 +15,7 @@
   "Checks the given artifact and stores the latest version in `:latest`."
   [repos settings {:keys [group-id artifact-id version] :as artifact}]
   (let [path (artifact-path artifact)]
-    (verbose "Checking " group-id "/" artifact-id " (current version: " (version-string version) 
+    (verbose "Checking " group-id "/" artifact-id " (current version: " (version-string version)
              " at " (artifact-path artifact) ") ...")
     (assoc artifact :latest (anc/artifact-outdated? settings repos artifact))))
 
@@ -29,7 +29,7 @@
 ;; ## Console Interaction
 
 (defn print-outdated-message
-  "Takes an artifact map (containing the `:latest` element) and prints 
+  "Takes an artifact map (containing the `:latest` element) and prints
    the \"[...] is available but we use ...\" message to stdout."
   [{:keys [group-id artifact-id version latest]}]
   (main/info
