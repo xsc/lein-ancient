@@ -5,7 +5,8 @@
             [leiningen.ancient.get :refer [run-get-task! run-latest-vector-task!]]
             [leiningen.ancient.upgrade :refer [run-upgrade-task! run-upgrade-profiles-task!]]
             [leiningen.core.main :as main]
-            [ancient-clj.verbose :refer :all]))
+            [ancient-clj.verbose :refer :all]
+            [jansi-clj.auto]))
 
 (def ^:private dispatch-table
   {"get"              run-get-task!
@@ -15,8 +16,8 @@
    "latest"           run-latest-vector-task!})
 
 (defn ^:higher-order ^:no-project-needed ancient
-  "Check your Projects for outdated Dependencies. 
-  
+  "Check your Projects for outdated Dependencies.
+
    Usage:
 
      lein ancient [<options>] [<path>]
@@ -35,7 +36,7 @@
      upgrade-profiles     Replace plugins in '~/.lein/profiles.clj' with newer versions.
 
    Commandline Options:
-  
+
      :aggressive          Check all available repositories (= Do not stop after first artifact match).
      :all                 Check Dependencies and Plugins.
      :allow-all           Allow SNAPSHOT and qualified versions to be reported as new.
