@@ -1,5 +1,16 @@
 # CHANGES: `lein-ancient`
 
+## 0.5.5
+
+- Using [ancient-clj](https://github.com/xsc/ancient-clj) 0.1.9
+- Using [rewrite-clj](https://github.com/xsc/rewrite-clj) 0.3.8
+- Fixes #23: support HTTP/HTTPS authentication.
+- Fixes #24: handle UTF-8 files correctly.
+- Fixes #25: upgrade non-`:user` profiles, too.
+- Fixes #26: colorization on Windows.
+- Fixes #27: upgrade artifact lists that contain forms prefixed with `#_`.
+- add error message to failed zipper creation in upgrade.
+
 ## 0.5.4
 
 - Using [ancient-clj](https://github.com/xsc/ancient-clj) 0.1.5
