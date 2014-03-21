@@ -3,7 +3,7 @@
 A [Leiningen](https://github.com/technomancy/leiningen) plugin to check your project for outdated
 dependencies and plugins.
 
-[![Build Status](https://travis-ci.org/xsc/lein-ancient.png)](https://travis-ci.org/xsc/lein-ancient)
+[![Build Status](https://travis-ci.org/xsc/lein-ancient.svg?branch=master)](https://travis-ci.org/xsc/lein-ancient)
 [![endorse](https://api.coderwall.com/xsc/endorsecount.png)](https://coderwall.com/xsc)
 
 This plugin supersedes [lein-outdated](https://github.com/ato/lein-outdated) and uses metadata
