@@ -1,5 +1,10 @@
 # CHANGES: `lein-ancient`
 
+## 0.6.0
+
+- Implements #30: `test` is now fallback alias if `test-ancient` does not exist.
+- Implements #33: Do not follow symlinks in recursive upgrade.
+
 ## 0.5.5
 
 - Using [ancient-clj](https://github.com/xsc/ancient-clj) 0.1.9
