@@ -4,7 +4,7 @@
   (:require [leiningen.core.main :as main]))
 
 (defn- run-test-task!
-  "Run a single test task, surpressing output and returnin a boolean value indicating
+  "Run a single test task, suppressing output and returnin a boolean value indicating
    whether the task finished without calling `main/abort`."
   [project task]
   (try
@@ -23,9 +23,9 @@
   (if-let [task (get-in project [:aliases "test-ancient"])]
     (let [r (run-test-task! project task)]
       (when-not r
-        (main/info "Tests failed (use ':no-tests' if you want to surpress testing)."))
+        (main/info "Tests failed (use ':no-tests' if you want to suppess testing)."))
       r)
     (do
       (main/info "No regression test task given.")
-      (main/info "(Use the alias 'test-ancient' to specify one or the option ':no-tests' to surpress testing.)")
+      (main/info "(Use the alias 'test-ancient' to specify one or the option ':no-tests' to suppress testing.)")
       true)))
