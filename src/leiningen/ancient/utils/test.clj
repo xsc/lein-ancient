@@ -18,14 +18,12 @@
     (catch Exception ex false)))
 
 (defn run-tests!
-  "Run regression tests (using the alias \"test-ancient\" in the project map)."
+  "Run regression tests (using the alias \"test-ancient\" in the project map or \"test\")."
   [project]
-  (if-let [task (get-in project [:aliases "test-ancient"])]
-    (let [r (run-test-task! project task)]
-      (when-not r
-        (main/info "Tests failed (use ':no-tests' if you want to suppress testing)."))
-      r)
-    (do
-      (main/info "No regression test task given.")
-      (main/info "(Use the alias 'test-ancient' to specify one or the option ':no-tests' to suppress testing.)")
-      true)))
+  (let [task (or (get-in project [:aliases "test-ancient"])
+                 (get-in project [:aliases "test"])
+                 "test")
+        r (run-test-task! project task)]
+    (when-not r
+      (main/info "Tests failed (use ':no-tests' if you want to suppress testing)."))
+    r))
