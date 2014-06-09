@@ -5,7 +5,8 @@
             [leiningen.core.main :as main]
             [ancient-clj.verbose :refer :all]
             [clojure.tools.reader :as reader])
-  (:import java.io.File))
+  (:import java.io.File
+           org.apache.commons.io.FileUtils))
 
 ;; ## Configure Logging
 
@@ -105,12 +106,13 @@
   [base-path filename]
   (letfn [(lazy-find [^java.io.File dir]
             (lazy-seq
-              (when (.isDirectory dir)
-                (let [f (io/file dir filename)
-                      rst (filter #(.isDirectory ^java.io.File %) (.listFiles dir))]
-                  (if (.isFile f)
-                    (cons f (mapcat lazy-find rst))
-                    (mapcat lazy-find rst))))))]
+              (when-not (FileUtils/isSymlink dir)
+                (when (.isDirectory dir)
+                  (let [f (io/file dir filename)
+                        rst (filter #(.isDirectory ^java.io.File %) (.listFiles dir))]
+                    (if (.isFile f)
+                      (cons f (mapcat lazy-find rst))
+                      (mapcat lazy-find rst)))))))]
     (lazy-find (io/file base-path))))
 
 (defn exists?
