@@ -6,8 +6,9 @@
                  [jansi-clj "0.1.0"]]
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :profiles {:dev {:dependencies [[midje "1.6.3"]]
-                   :plugins [[lein-midje "3.1.1"]]
-                   :test-paths ["test"]}}
+  :profiles {:test {:dependencies [[midje "1.6.3"]]
+                    :plugins [[lein-midje "3.1.1"]]
+                    :test-paths ["test"]}}
+  :aliases {"test" ["with-profile" "+test" "midje"]}
   :eval-in-leiningen true
   :pedantic? :abort)
