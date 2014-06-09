@@ -107,12 +107,13 @@ $ lein ancient upgrade-profiles [<options>]
 
 You'd want to make sure that the upgraded dependencies don't mess with your library or application,
 wouldn't you? Unit tests are your friend and lein-ancient offers a mechanism to automatically run
-them after an upgrade - and revert to the original state if they fail. Simply create an alias
-`test-ancient` in your `project.clj`:
+them after an upgrade - and revert to the original state if they fail. By default, `lein test` is
+used for testing; if you want a specific command to be run simply create an alias `test` in your
+`project.clj`:
 
 ```clojure
 ...
-  :aliases {"test-ancient" ["with-profile" "..." "midje"]}
+  :aliases {"test" ["with-profile" "..." "midje"]}
 ...
 ```
 
