@@ -23,7 +23,7 @@
   (if-let [task (get-in project [:aliases "test-ancient"])]
     (let [r (run-test-task! project task)]
       (when-not r
-        (main/info "Tests failed (use ':no-tests' if you want to suppess testing)."))
+        (main/info "Tests failed (use ':no-tests' if you want to suppress testing)."))
       r)
     (do
       (main/info "No regression test task given.")
