@@ -19,7 +19,7 @@ Put one of the following into the `:plugins` vector of the `:user` profile in yo
 
 ```clojure
 [lein-ancient "0.5.5"]          ;; stable
-[lein-ancient "0.5.6-SNAPSHOT"] ;; unstable
+[lein-ancient "0.6.0-SNAPSHOT"] ;; unstable
 ```
 
 This plugin is destined for Leiningen >= 2.0.0.
