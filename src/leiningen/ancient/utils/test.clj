@@ -23,6 +23,7 @@
   (let [task (or (get-in project [:aliases "test-ancient"])
                  (get-in project [:aliases "test"])
                  "test")
+        task (if (sequential? task) task [task])
         r (run-test-task! project task)]
     (when-not r
       (main/info "Tests failed (use ':no-tests' if you want to suppress testing)."))
