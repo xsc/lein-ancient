@@ -1,4 +1,4 @@
-(ns ^{ :doc "List artifact version information." 
+(ns ^{ :doc "List artifact version information."
        :author "Yannick Scherer" }
   leiningen.ancient.get
   (:require [leiningen.ancient.utils.projects :refer [collect-repositories]]
@@ -32,7 +32,7 @@
       (print (str "  * " label " [ "))
       (let [vps (partition 5 5 nil (map first vs))]
         (doseq [v (first vps)] (print (pr-str v) ""))
-        (doseq [vp (rest vps)] 
+        (doseq [vp (rest vps)]
           (println)
           (print indent)
           (doseq [v vp] (print (pr-str v) ""))))
@@ -53,8 +53,9 @@
 (def run-get-task!
   (->
     (fn [settings repos package {:keys [group-id artifact-id] :as artifact}]
-      (let [artifact-str (str group-id "/" artifact-id)] 
-        (println "Getting Version Information for" (yellow artifact-str) 
+      (let [artifact-str (str group-id "/" artifact-id)
+            settings (assoc settings :snapshots? true :qualified? true)]
+        (println "Getting Version Information for" (yellow artifact-str)
                  "from" (count repos) "Repositories ...")
         (let [vs (->> (anc/versions! settings repos artifact)
                       (sort #(v/version-seq-compare (second %1) (second %2)))
