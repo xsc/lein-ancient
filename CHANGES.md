@@ -4,6 +4,7 @@
 
 - Implements #30: `test` is now fallback alias if `test-ancient` does not exist.
 - Implements #33: Do not follow symlinks in recursive upgrade.
+- include SNAPSHOTs and qualified versions in output of `lein ancient get ...`.
 
 ## 0.5.5
 
