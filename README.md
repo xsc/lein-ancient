@@ -26,7 +26,7 @@ This plugin is destined for Leiningen >= 2.0.0.
 
 ## Check Artifacts
 
-`lein-ancients` default behaviour is to check your current project (or a given file/directory) for
+`lein-ancient`'s default behaviour is to check your current project (or a given file/directory) for
 artifacts that have newer versions available, e.g.:
 
 ```bash
