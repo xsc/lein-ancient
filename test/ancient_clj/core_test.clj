@@ -7,11 +7,15 @@
 
 (tabular
   (fact "about artifact map creation"
-    (let [[_ v :as a] ?artifact-vector
+    (let [a ?artifact-vector
           m (r/artifact-map a)]
       (:group-id m) => ?group
       (:artifact-id m) => ?artifact
-      (:version m) => [v (v/version->seq v)]))
-  ?artifact-vector                ?group         ?artifact
-  '[pandect "0.3.0"]              "pandect"      "pandect"
-  '[org.clojure/clojure "1.5.1"]  "org.clojure"  "clojure")
+      (:version m) => [?v (v/version->seq ?v)]))
+  ?artifact-vector                ?group         ?artifact      ?v
+  '[pandect "0.3.0"]              "pandect"      "pandect"      "0.3.0"
+  '[org.clojure/clojure "1.5.1"]  "org.clojure"  "clojure"      "1.5.1"
+  '[ancient-clj ""]               "ancient-clj"  "ancient-clj"  ""
+  '[ancient-clj]                  "ancient-clj"  "ancient-clj"  ""
+  'org.clojure/clojure            "org.clojure"  "clojure"      ""
+  'ancient-clj                    "ancient-clj"  "ancient-clj"  "")

@@ -8,15 +8,18 @@
 
 (defn artifact-map
   "Create artifact map (:group-id, :artifact-id, :version)."
-  [[dep version & _]]
-  (let [dep (str dep)
-        [g a] (if (.contains dep "/")
-                (.split dep "/" 2)
-                [dep dep])]
-    (-> {}
-      (assoc :group-id g)
-      (assoc :artifact-id a)
-      (assoc :version [version (v/version->seq version)]))))
+  [artifact]
+  (cond (not (sequential? artifact)) (recur [artifact ""])
+        (= (count artifact) 1) (recur [(first artifact) ""])
+        :else (let [[dep version] artifact
+                    dep (str dep)
+                    [g a] (if (.contains dep "/")
+                            (.split dep "/" 2)
+                            [dep dep])]
+                (-> {}
+                    (assoc :group-id g)
+                    (assoc :artifact-id a)
+                    (assoc :version [version (v/version->seq version)])))))
 
 ;; ## Core Functionality
 ;;
