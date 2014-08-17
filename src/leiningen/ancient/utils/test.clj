@@ -10,9 +10,7 @@
   (try
     (let [[task-name & task-args] task]
       (main/info "Running Test Task" (pr-str task) "...")
-      (binding [main/*exit-process?* false
-                main/*info* false
-                main/*debug* false]
+      (binding [main/*exit-process?* false]
         (main/apply-task task-name project task-args)
         true))
     (catch Exception ex false)))
