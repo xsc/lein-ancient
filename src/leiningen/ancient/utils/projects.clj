@@ -34,7 +34,7 @@
   "Create artifact map (see ancient-clj.core/artifact-map), extended by the path
    (destined for `get-in`) to the artifact vector in the project map."
   [get-in-path artifact]
-  (-> (artifact-map artifact)
+  (-> (artifact-map (filter identity (take 2 artifact)))
       (assoc ::path get-in-path)))
 
 (defn artifact-path

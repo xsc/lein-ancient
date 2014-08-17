@@ -115,7 +115,10 @@
       (when-let [path (artifact-path artifact)]
         (when-let [artifact-loc (move-to-path zloc path)]
           (when (z/vector? artifact-loc)
-            (z/assoc artifact-loc 1 (first latest))))))
+            (let [loc (z/down artifact-loc)]
+              (if-let [version-loc (z/right loc)]
+                (z/replace version-loc (first latest))
+                (z/insert-right loc (first latest))))))))
     map-loc))
 
 (defn- upgrade-artifact-map!
