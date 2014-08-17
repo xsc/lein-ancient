@@ -11,20 +11,19 @@
 (defn collect-repositories
   "Get seq of repository maps from project map."
   [project]
-  (->>
-    (:repositories project (:repositories project/defaults))
-    (map second)
-    (map #(if (string? %) { :url % } %))
-    (filter (complement nil?))
-    (map uu/profile-auth)
-    (map uu/resolve-credentials)
-    (map repository)))
+  (->> (:repositories project (:repositories project/defaults))
+       (map second)
+       (map #(if (string? %) { :url % } %))
+       (filter (complement nil?))
+       (map uu/profile-auth)
+       (map uu/resolve-credentials)
+       (map repository)))
 
 (defn collect-profiles-repositories
   "Collect repositories in a profile map's `:user` profile.
    (This adds the repositories from the current project, too.)"
   [project profiles]
-  (collect-repositories 
+  (collect-repositories
     (update-in (:user profiles)
                [:repositories]
                concat (:repositories project))))
@@ -36,7 +35,7 @@
    (destined for `get-in`) to the artifact vector in the project map."
   [get-in-path artifact]
   (-> (artifact-map artifact)
-    (assoc ::path get-in-path)))
+      (assoc ::path get-in-path)))
 
 (defn artifact-path
   "Get artifact path."
