@@ -1,5 +1,5 @@
-(ns ^{ :doc "Rewrite project.clj to include latest versions of dependencies."
-       :author "Yannick Scherer" }
+(ns ^{:doc "Rewrite project.clj to include latest versions of dependencies."
+      :author "Yannick Scherer"}
   leiningen.ancient.upgrade
   (:require [leiningen.ancient.utils.test :as t]
             [leiningen.ancient.utils.projects :refer :all]
@@ -147,16 +147,16 @@
       (with-output-settings settings
         (if-let [outdated (seq
                             (->> artifacts
-                              (c/get-outdated-artifacts! repos settings)
-                              (filter-artifacts-with-prompt! settings)))]
+                                 (c/get-outdated-artifacts! repos settings)
+                                 (filter-artifacts-with-prompt! settings)))]
           (when-let [map-loc (read-zipper-fn path)]
             (when-let [new-loc (upgrade-artifact-map! map-loc settings outdated)]
               (when (:interactive settings) (main/info))
               (main/info (count outdated)
-                       (if (= (count outdated) 1)
-                         "artifact was"
-                         "artifacts were")
-                       "upgraded.")
+                         (if (= (count outdated) 1)
+                           "artifact was"
+                           "artifacts were")
+                         "upgraded.")
               (write-zipper! path new-loc settings)))
           (do (main/info "Nothing was upgraded.") ::nothing))))))
 
@@ -229,15 +229,15 @@
 (def upgrade-project-file!
   "Run upgrade on the given project file using the given settings."
   (-> upgrade-project-file!*
-    with-tests
-    with-backup
-    with-abort))
+      with-tests
+      with-backup
+      with-abort))
 
 (def upgrade-profiles-file!
   "Run upgrade on the given profiles file using the given settings."
   (-> upgrade-profiles-file!*
-    with-backup
-    with-abort))
+      with-backup
+      with-abort))
 
 ;; ## Wrappers
 
@@ -284,5 +284,5 @@
   [project args]
   (let [profiles-file (io/file (System/getProperty "user.home") ".lein" "profiles.clj")
         settings (-> (parse-cli args)
-                   (assoc :plugins true))]
+                     (assoc :plugins true))]
     (upgrade-profiles-file! project settings profiles-file)))
