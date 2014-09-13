@@ -285,4 +285,6 @@
   (let [profiles-file (find-default-profiles-file)
         settings (-> (parse-cli args)
                      (assoc :plugins true))]
-    (upgrade-profiles-file! project settings profiles-file)))
+    (if (.isFile profiles-file)
+      (upgrade-profiles-file! project settings profiles-file)
+      (main/info (yellow "No such file:") (.getPath profiles-file)))))
