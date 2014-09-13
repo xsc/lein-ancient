@@ -282,7 +282,7 @@
 (defn run-upgrade-profiles-task!
   "Run plugin upgrade on global profiles."
   [project args]
-  (let [profiles-file (io/file (System/getProperty "user.home") ".lein" "profiles.clj")
+  (let [profiles-file (find-default-profiles-file)
         settings (-> (parse-cli args)
                      (assoc :plugins true))]
     (upgrade-profiles-file! project settings profiles-file)))

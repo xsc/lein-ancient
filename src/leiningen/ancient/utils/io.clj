@@ -88,6 +88,14 @@
 
 ;; ## Profiles File
 
+(defn find-default-profiles-file
+  ^File
+  []
+  (io/file
+    (or (System/getenv "LEIN_HOME")
+        (io/file (System/getProperty "user.home") ".lein"))
+    "profiles.clj"))
+
 (defn read-profiles-map!
   [path]
   (try
