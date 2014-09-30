@@ -29,7 +29,7 @@ as one of the following:
 - a map of `:uri` and repository-specific settings (`:username`, `:passphrase`, ...),
 - a two-parameter function returning a seq of version strings based on artifact group and ID.
 
-Example:
+__Example:__
 
 ```clojure
 {"central"   "http://repo1.maven.org/maven2"
