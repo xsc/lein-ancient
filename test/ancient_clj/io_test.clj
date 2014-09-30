@@ -12,7 +12,10 @@
   {:uri "http://localhost:12343" :username "abc" :passphrase "def"}
   {:uri "https://localhost:12343" :username "abc" :passphrase "def"}
   {:uri "file:///tmp/repo"}
-  {:uri "s3p://maven/bucket" :username "abc" :passphrase "def"})
+  {:url "file:///tmp/repo"}
+  {:uri "s3p://maven/bucket" :username "abc" :passphrase "def"}
+  {:uri "s3p://maven/bucket" :username "abc" :password "def"}
+  {:url "s3p://maven/bucket" :username "abc" :passphrase "def"})
 
 (tabular
   (fact "about invalid loader specifications."

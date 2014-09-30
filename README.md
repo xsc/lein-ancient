@@ -29,6 +29,8 @@ as one of the following:
 - a map of `:uri` and repository-specific settings (`:username`, `:passphrase`, ...),
 - a two-parameter function returning a seq of version strings based on artifact group and ID.
 
+(`:uri` and `:url`, as well as `:passphrase` and `:password` are interchangeable.)
+
 __Example:__
 
 ```clojure

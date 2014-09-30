@@ -3,6 +3,7 @@
              [http :refer [http-loader]]
              [local :refer [local-loader]]
              [s3 :refer [s3-loader]]]
+            [clojure.set :refer [rename-keys]]
             [clojure.java.io :as io])
   (:import [java.net URL URISyntaxException]))
 
@@ -21,7 +22,8 @@
   [v]
   (cond (fn? v) v
         (string? v) (loader-for* {:uri v})
-        (and (map? v) (string? (:uri v))) (loader-for* v)
+        (map? v)  (loader-for*
+                    (rename-keys v {:url :uri :password :passphrase}))
         :else (throw
                 (Exception.
                   (format "cannot create loader from: %s" (pr-str v))))))
