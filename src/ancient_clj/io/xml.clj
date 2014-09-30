@@ -11,10 +11,9 @@
     (let [elements (->> (xml/parse-str xml-string)
                         (xml-seq)
                         (vec))]
-      (->> (for [{:keys [tag content]} elements
-                 :when (= tag :version)]
-             (first content))
-           (distinct)))
+      (for [{:keys [tag content]} elements
+            :when (= tag :version)]
+        (first content)))
     (catch Throwable ex
       (throw
         (Exception.

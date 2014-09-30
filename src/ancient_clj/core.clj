@@ -62,7 +62,7 @@
          snapshots? true
          qualified? true}}
    versions]
-  (cond->> versions
+  (cond->> (distinct versions)
     (not snapshots?)  remove-snapshots
     (not qualified?)  remove-qualified
     (not= sort :none) sort-versions
