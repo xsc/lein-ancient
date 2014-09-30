@@ -17,70 +17,74 @@ __Leiningen ([via Clojars](https://clojars.org/ancient-clj))__
 __REPL__
 
 ```clojure
-(require '[ancient-clj.core :as anc])
-
-;; an artifact can be split into its parts (:group-id, :artifact-id, :version)
-(anc/artifact-map '[ancient-clj "0.1.0"]) ;; => { :group-id "ancient-clj" ... }
-
-;; artifact metadata can either be retrieved using the artifact ID ...
-(anc/versions! 'ancient-clj)
-;;   => (["0.1.0-SNAPSHOT" [(0 1 0) ("snapshot")]])
-(anc/version-strings! 'ancient-clj)
-;;   => ("0.1.0-SNAPSHOT")
-(anc/latest-version! 'ancient-clj)
-;;   => ["0.1.0-SNAPSHOT" [(0 1 0) ("snapshot")]]
-(anc/latest-version-string! 'ancient-clj)
-;;   => "0.1.0-SNAPSHOT"
-
-;; ... the artifact vector, ...
-(anc/versions! '[ancient-clj "0.1.0"])
-;;   => (["0.1.0-SNAPSHOT" [(0 1 0) ("snapshot")]])
-
-;; ... or the artifact map.
-(anc/latest-version-string! (anc/artifact-map '[ancient-clj "0.1.0-SNAPSHOT"]))
-;;   => "0.1.0-SNAPSHOT"
-
-;; You can use an optional settings map with all the above functions, ...
-(anc/latest-version-string! 'lein-ancient)                     ;; => "0.4.3-SNAPSHOT"
-(anc/latest-version-string! {:snapshots? false} 'lein-ancient) ;; => "0.4.2"
-(anc/latest-version-string! {:qualified? false} 'lein-ancient) ;; => "0.4.3-SNAPSHOT"
-
-;; ... a list of repositories to check ...
-(def repos ["https://clojars.org/repo"
-            "http://repo1.maven.org/maven2"
-            "https://oss.sonatype.org/content/groups/public/"])
-
-(anc/latest-version-string! 'org.clojure/clojure)       ;; => "1.5.1"
-(anc/latest-version-string! repos 'org.clojure/clojure) ;; => "1.6.0-master-SNAPSHOT"
-
-;; ... or both.
-(anc/latest-version-string! {:snapshots? false} repos 'org.clojure/clojure)
-;;   => "1.5.1"
-
-;; By default, all operations are "aggressive", i.e. they check all given repositories;
-;; you can make metadata retrieval stop after the first repository that returns a valid
-;; result (in our case "http://clojars.org/repo" with a rather old Clojure version):
-(anc/latest-version-string! {:aggressive? false} repos 'org.clojure/clojure)
-;;   => "1.5.0-alpha3"
-
-;; The function 'artifact-outdated?' can check whether a given artifact has newer
-;; versions available. It has to be called with an artifact vector and takes a settings
-;; map or repository seq as well, returning either `[version-string version-seq]`
-;; (see version-clj) or `nil`:
-(anc/artifact-outdated? '[lein-ancient "0.4.2"])
-;;   => ["0.4.3-SNAPSHOT" ...]
-(anc/artifact-outdated? {:snapshots? false} '[lein-ancient "0.4.2"])
-;;   => nil
-(anc/artifact-outdated-string? repos '[org.clojure/clojure "1.5.1"])
-;;   => "1.6.0-master-SNAPSHOT"
-
-;; Repositories that need authentication can be represented as maps. They have the
-;; same format as the (expanded) repository maps in Leiningen's `project.clj`.
-(anc/versions!
-  [{:url "s3p://bucket/repo" :username "..." :passphrase "..."}]
-  'my.private/project)
-;;   => ...
+(require '[ancient-clj.core :as ancient])
 ```
+
+### Repositories
+
+The base of all ancient-clj operations is a map associating an ID with a repository specification, given
+as one of the following:
+
+- a URI string (`http://...`, `https://...`, `file://...`, `s3p://...`),
+- a map of `:uri` and repository-specific settings (`:username`, `:passphrase`, ...),
+- a two-parameter function returning a seq of version strings based on artifact group and ID.
+
+Example:
+
+```clojure
+{"central"   "http://repo1.maven.org/maven2"
+ "clojars"   "https://clojars.org/repo"
+ "http-auth" {:uri "https://my.repo.server/releases"
+              :username "HTTP_BASIC_AUTH_USER"
+              :passphrase "HTTP_BASIC_AUTH_PASSWORD"}
+ "s3"        {:uri "s3p://maven/bucket"
+              :username "AWS_ACCESS_KEY"
+              :passphrase "AWS_SECRET_KEY"}}
+```
+
+The default repositories are stored in `ancient-clj.core/default-repositories`.
+
+### Artifacts + Options
+
+Artifacts can be given as everything implementing `ancient-clj.artifact/Artifact`:
+
+- a vector (`[ancient-clj "0.2.0]`, `[ancient-clj]`, `[ancient-clj "0.2.0" :exclusions ...]`)
+_ a symbol/keyword/string (`ancient-clj`, `:ancient-clj/ancient-clj`, `"ancient-clj"`)
+- a map of `:group`, `:id` and `:version-string`..
+
+All ancient-clj functions take one of those as first parameter, as well as an optional map of
+options as second one:
+
+- `:snapshots?`: whether or not to consider SNAPSHOT versions in the results (default: true),
+- `:qualified?`: whether or not to consider alpha/beta/RC/... versions in the results
+  (default: true),
+- `:sort`: how to sort the results (`:desc` (default), `:asc`, `:none`),
+- `:repositories`: see above (default: Maven Central + Clojars).
+
+### Operations
+
+The base of all operations is `versions-per-repository!` which produces a map of either
+a seq of version maps or a Throwable associated with each repository ID:
+
+```clojure
+(ancient/versions-per-repository! 'ancient-clj)
+;; => {"clojars" ({:version [(0 1 10)], :version-string "0.1.10"} ...)
+;;     "central" (...)}
+
+(ancient/versions-per-repository!
+  'ancient-clj
+  {:repositories {"invalid" "http://nosuchpage.maven.org"}})
+;; => {"invalid" #<UnknownHostException java.net.UnknownHostException: ...>}
+```
+
+As you can see, versions are given as a map of `:version-string` and `:version` (a version-clj
+version value).
+
+Flat seqs of version maps/strings can be obtained using `versions!` and `version-strings!`, the
+latest ones are returned by `latest-version!` and `latest-version-string!`.
+
+`artifact-outdated?` and `artifact-outdated-string?` only return a version value if it is
+of a more recent version than the input artifact.
 
 ## Supported Repository Types
 
