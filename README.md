@@ -48,9 +48,9 @@ The default repositories are stored in `ancient-clj.core/default-repositories`.
 
 Artifacts can be given as everything implementing `ancient-clj.artifact/Artifact`:
 
-- a vector (`[ancient-clj "0.2.0]`, `[ancient-clj]`, `[ancient-clj "0.2.0" :exclusions ...]`)
-_ a symbol/keyword/string (`ancient-clj`, `:ancient-clj/ancient-clj`, `"ancient-clj"`)
-- a map of `:group`, `:id` and `:version-string`..
+- a vector (`[ancient-clj "0.2.0"]`, `[ancient-clj]`, ...)
+- a symbol/keyword/string (`ancient-clj`, `:ancient-clj/ancient-clj`, `"ancient-clj"`)
+- a map of `:group`, `:id` and `:version-string`.
 
 All ancient-clj functions take one of those as first parameter, as well as an optional map of
 options as second one:
