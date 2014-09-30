@@ -8,6 +8,7 @@
         (let [m (read-artifact (quote ?artifact))]
           (:group m)          => (name (quote ?group))
           (:id m)             => (name (quote ?id))
+          (:form m)           => [(:symbol m) (:version-string m)]
           (:version-string m) => ?version
           (:version m) => (version->seq ?version)))
   ?artifact                      ?group       ?id         ?version

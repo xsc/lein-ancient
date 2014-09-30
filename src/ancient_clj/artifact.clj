@@ -36,11 +36,12 @@
    {:keys [version-string] :as v-map}]
   {:pre [(string? group)
          (string? id)]}
-  (-> (merge id-map v-map)
-      (assoc :symbol (if (= group id)
-                       (symbol id)
-                       (symbol group id)))
-      (assoc :form [symbol version-string])))
+  (let [sym (if (= group id)
+              (symbol id)
+              (symbol group id))]
+    (-> (merge id-map v-map)
+        (assoc :symbol sym)
+        (assoc :form [sym version-string]))))
 
 ;; ## Implementations
 
