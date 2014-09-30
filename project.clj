@@ -5,7 +5,6 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/data.xml "0.0.8"]
-                 [colorize "0.1.1"]
                  [version-clj "0.1.0"]
                  [clj-aws-s3 "0.3.10"]
                  [clj-time "0.8.0"]
