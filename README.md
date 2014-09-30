@@ -61,6 +61,18 @@ options as second one:
 - `:sort`: how to sort the results (`:desc` (default), `:asc`, `:none`),
 - `:repositories`: see above (default: Maven Central + Clojars).
 
+To analyze an artifact use `ancient-clj.core/read-artifact`:
+
+```clojure
+(ancient/read-artifact '[com.taoensso/timbre "3.3.1"])
+;; => {:form [com.taoensso/timbre "3.3.1"],
+;;     :symbol com.taoensso/timbre,
+;;     :version-string "3.3.1",
+;;     :version [(3 3 1)],
+;;     :id "timbre",
+;;     :group "com.taoensso"}
+```
+
 ### Operations
 
 The base of all operations is `versions-per-repository!` which produces a map of either

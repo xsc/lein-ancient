@@ -1,9 +1,14 @@
 (ns ancient-clj.core
   (:require [ancient-clj
-             [artifact :refer [read-artifact]]
+             [artifact :as artifact]
              [io :refer [loader-for]]
              [load :refer [load-versions!]]]
-            [version-clj.core :as v]))
+            [version-clj.core :as v]
+            [potemkin :refer [import-vars]]))
+
+(import-vars
+  [ancient-clj.artifact
+   read-artifact])
 
 ;; ## Repositories
 
@@ -91,7 +96,7 @@
                      sort         :desc}
                 :as opts}]]
   (let [loaders (create-loaders repositories)
-        artifact' (read-artifact artifact)]
+        artifact' (artifact/read-artifact artifact)]
     (->> (for [[id vs] (load-versions! loaders artifact')]
            (if (sequential? vs)
              (if (seq vs)
@@ -111,7 +116,7 @@
                      sort         :desc}
                 :as opts}]]
   (let [loaders (create-loaders repositories)
-        artifact' (read-artifact artifact)]
+        artifact' (artifact/read-artifact artifact)]
     (->> (for [[id vs] (load-versions! loaders artifact')
                :when (sequential? vs)]
            (versions->maps vs))
