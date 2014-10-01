@@ -3,6 +3,9 @@
              [http :refer [http-loader]]
              [local :refer [local-loader]]
              [s3 :refer [s3-loader]]]
+            [clojure.core
+             [cache :as cache]
+             [memoize :as memo]]
             [clojure.set :refer [rename-keys]]
             [clojure.java.io :as io])
   (:import [java.net URL URISyntaxException]))
@@ -18,12 +21,31 @@
           (keyword))))
   :default nil)
 
+(defn- loader-with-caching-for
+  [{:keys [ttl lru uri f] :as opts}]
+  (let [loader (cond uri (loader-for* opts)
+                     f   f
+                     :else (throw
+                             (Exception.
+                               (format "cannot create loader from: %s"
+                                       (pr-str opts)))))]
+    (cond (and ttl lru) (memo/lru
+                          loader
+                          (cache/ttl-cache-factory {} :ttl ttl)
+                          :lru/threshold lru)
+          ttl (memo/ttl loader :ttl/threshold ttl)
+          lru (memo/lru loader :lru/threshold lru)
+          :else loader)))
+
 (defn loader-for
   [v]
   (cond (fn? v) v
-        (string? v) (loader-for* {:uri v})
-        (map? v)  (loader-for*
-                    (rename-keys v {:url :uri :password :passphrase}))
+        (string? v) (loader-with-caching-for {:uri v})
+        (map? v)  (-> v
+                      (rename-keys
+                        {:url :uri
+                         :password :passphrase})
+                      (loader-with-caching-for))
         :else (throw
                 (Exception.
                   (format "cannot create loader from: %s" (pr-str v))))))
