@@ -20,10 +20,12 @@
 
 (defn create-loaders
   "Create loader map for a seq of ID/settings pairs representing
-   different repositories."
-  [m]
+   different repositories.
+
+   `wrap` will be called on each loader function."
+  [m & {:keys [wrap] :or {wrap identity}}]
   (->> (for [[id v] m]
-         [id (loader-for v)])
+         [id (wrap (loader-for v))])
        (into {})))
 
 ;; ## Result Handling
