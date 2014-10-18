@@ -30,7 +30,7 @@
               (vector repo-id)))
        (into {})))
 
-(defn- prepare-repositories
+(defn prepare-repositories
   "Prepate the repositories for usage with ancient-clj."
   [repositories]
   (-> (for [[k spec] repositories

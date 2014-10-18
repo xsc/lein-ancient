@@ -1,6 +1,7 @@
 (ns leiningen.ancient.artifact.files
   (:require [leiningen.ancient.artifact
              [check :as check]
+             [options :as o]
              [reader :as reader]
              [zip :as z]]
             [leiningen.ancient.verbose :refer :all]
@@ -68,8 +69,11 @@
   (check! [this options]
     {:pre [(map? data)]}
     (with-throwables
-      (->> (check/collect-and-check-artifacts! options data)
-           ((or check-post-fn identity)))))
+      (let [opts (->> (:repositories data)
+                      (o/prepare-repositories)
+                      (update-in options [:repositories] merge))]
+        (->> (check/collect-and-check-artifacts! opts data)
+             ((or check-post-fn identity))))))
   (upgrade! [this outdated]
     {:pre [zipper]}
     (with-throwables
