@@ -2,10 +2,15 @@
 
 ## 0.6.0
 
+- Using [ancient-clj](https://github.com/xsc/ancient-clj) 0.2.0
+- Using [rewrite-clj](https://github.com/xsc/rewrite-clj) 0.3.9
 - Implements #30: `test` is now fallback alias if `test-ancient` does not exist.
 - Implements #33: Do not follow symlinks in recursive upgrade.
-- include SNAPSHOTs and qualified versions in output of `lein ancient get ...`.
-- Fixes #38: `LEIN_HOME` is (if available) used to resolve `profiles.clj`.
+- Implements #34: Generate report at the end of a recursive upgrade.
+- Include SNAPSHOTs and qualified versions in output of `lein ancient get ...`.
+- Fixes #38: `LEIN_HOME` is (if available) used to resolve profiles.
+- Implements #39: process files in `$LEIN_HOME/profiles.d`.
+- A project-local `profiles.clj` is checked.
 
 ## 0.5.5
 
