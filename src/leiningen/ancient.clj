@@ -4,7 +4,6 @@
              [get :as g]
              [upgrade :as u]
              [verbose :refer :all]]
-            [leiningen.core.main :as main]
             [jansi-clj.auto]))
 
 (defn
