@@ -141,8 +141,12 @@
          fx# ~fixed]
      (-> (defn ~sym
            [project# & args#]
-           (when-let [~opts (parse project# args#
+           (when-let [opts# (parse project# args#
                                    :exclude ex#
                                    :fixed fx#)]
-             ~@body))
+             (if (:colors? opts#)
+               (color/enable!)
+               (color/disable!))
+             (let [~opts opts#]
+               ~@body)))
          (cli/doc! ~docstring :exclude ex#))))
