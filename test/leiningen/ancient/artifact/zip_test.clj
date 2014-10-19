@@ -1,7 +1,7 @@
 (ns leiningen.ancient.artifact.zip-test
   (:require [midje.sweet :refer :all]
+            [leiningen.ancient.utils :refer [with-temp-file]]
             [leiningen.ancient.artifact
-             [reader-test :refer :all]
              [check :as check]
              [zip :refer :all]])
   (:import [java.io StringWriter]))

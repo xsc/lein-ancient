@@ -1,9 +1,9 @@
 (ns leiningen.ancient.artifact.files-test
   (:require [midje.sweet :refer :all]
+            [leiningen.ancient.utils :refer [with-temp-file]]
             [leiningen.ancient.artifact
              [files :refer :all]
-             [options :as o]
-             [reader-test :refer :all]])
+             [options :as o]])
   (:import [java.io StringWriter]))
 
 (let [const-opts #(o/options

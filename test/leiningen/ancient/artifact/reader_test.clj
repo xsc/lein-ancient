@@ -1,22 +1,10 @@
 (ns leiningen.ancient.artifact.reader-test
   (:require [midje.sweet :refer :all]
+            [leiningen.ancient.utils :refer [with-temp-file]]
             [leiningen.ancient.artifact
              [reader :refer :all]]
             [clojure.java.io :as io])
   (:import [java.io File]))
-
-;; ## Helper
-
-(defmacro with-temp-file
-  "Create file with the given contents, then run the body."
-  [[sym data] & body]
-  `(let [f# (File/createTempFile "ancient" ".clj")]
-     (try
-       (spit f# ~data)
-       (let [~sym f#]
-         ~@body)
-       (finally
-         (.delete f#)))))
 
 ;; ## Tests
 
