@@ -96,12 +96,13 @@
 
 (def ^:private deprecated
   "Flags that are no longer supported."
-  (->> {:aggressive     "all lookups are now aggressive"
-        :upgrade        "use task 'upgrade' instead"
-        :upgrade-global "use task 'upgrade-global' instead"
-        :get            "use task 'get' instead"
-        :dependencies   "since it is the default behaviour"
-        :verbose        "run 'DEBUG=1 lein ancient ...' instead"}
+  (->> {:aggressive       "all lookups are now aggressive"
+        :overwrite-backup "a backup file is no longer needed"
+        :upgrade          "use task 'upgrade' instead"
+        :upgrade-global   "use task 'upgrade-global' instead"
+        :get              "use task 'get' instead"
+        :dependencies     "since it is the default behaviour"
+        :verbose          "run 'DEBUG=1 lein ancient ...' instead"}
        (keys->strings)))
 
 (defn- unrecognized!
