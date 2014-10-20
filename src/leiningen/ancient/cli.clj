@@ -35,6 +35,20 @@
    :recursive       [#{:recursive?}
                      "recursively process files at the given or current paths."]})
 
+(defn- keys->strings
+  [m]
+  (->> (for [[k v] m]
+         [(str k) v])
+       (into {})))
+
+(def ^:private flag-order
+  "Flag processing order (the higher, the earlier a flag will be processed)."
+  (->> {:no-colors  5
+        :no-colours 5
+        :plugins    4
+        :print      4}
+       (keys->strings)))
+
 (defn- ->effect
   "Create option key and effect from a single keyword optionally
    prefixed with `:no-`."
@@ -88,10 +102,7 @@
         :get            "use task 'get' instead"
         :dependencies   "since it is the default behaviour"
         :verbose        "run 'DEBUG=1 lein ancient ...' instead"}
-       (map
-         (fn [[k v]]
-           [(str k) v]))
-       (into {})))
+       (keys->strings)))
 
 (defn- unrecognized!
   "Print error message and throw Exception."
@@ -132,15 +143,17 @@
    options/remaining."
   [args & {:keys [change-defaults exclude]}]
   (let [exclude? (set (map str exclude))
-        [fls rst] (split-args args)]
-    (-> (reduce
-          (fn [opts flag]
-            (if-let [f (supported? flag exclude?)]
-              (f opts)
-              opts))
-          (merge defaults change-defaults)
-          fls)
-    (vector rst))))
+        [fls rst] (split-args args)
+        opts (->> fls
+                  (sort-by #(flag-order % 0))
+                  (reverse)
+                  (reduce
+                    (fn [opts flag]
+                      (if-let [f (supported? flag exclude?)]
+                        (f opts)
+                        opts))
+                    (merge defaults change-defaults)))]
+    [opts rst]))
 
 ;; ## Documentation
 

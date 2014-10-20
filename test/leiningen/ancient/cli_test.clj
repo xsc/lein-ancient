@@ -73,10 +73,14 @@
     [":check-clojure"]       {:check-clojure? true}
     [":interactive"]         {:interactive? true}
     [":plugins"]             {:dependencies? false, :plugins? true}
+    [":all" ":plugins"]      {:dependencies? true, :plugins? true}
+    [":plugins" ":all"]      {:dependencies? true, :plugins? true}
     [":no-colors"]           {:colors? false}
     [":no-colours"]          {:colors? false}
     [":no-profiles"]         {:profiles? false}
     [":no-tests"]            {:tests? false}
     [":tests"]               {:tests? true}
     [":print"]               {:print? true, :tests? false}
+    [":print" ":tests"]      {:print? true, :tests? true}
+    [":tests" ":print"]      {:print? true, :tests? true}
     [":recursive"]           {:recursive? true}))
