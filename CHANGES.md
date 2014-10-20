@@ -11,6 +11,8 @@
 - Fixes #38: `LEIN_HOME` is (if available) used to resolve profiles.
 - Implements #39: process files in `$LEIN_HOME/profiles.d`.
 - A project-local `profiles.clj` is checked.
+- Parallelized artifact check.
+- deprecated flags: `:overwrite-backup`, `:aggressive`.
 
 ## 0.5.5
 
