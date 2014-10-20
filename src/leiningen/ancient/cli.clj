@@ -22,6 +22,8 @@
                      "check _only_ plugins."]
    :no-colors       [#{:no-colors?}
                      "explicitly disable colorized output."]
+   :no-colours      [#{:no-colors?}
+                     "explicitly disable colorized output."]
    :no-profiles     [#{:no-profiles?}
                      "exclude non-user profiles from processing."]
    :no-tests        [#{:no-tests?}
@@ -73,6 +75,7 @@
       (merge
         {:dependencies? true
          :profiles?     true
+         :colors?       true
          :tests?        true})))
 
 ;; ## Deprecated/Supported

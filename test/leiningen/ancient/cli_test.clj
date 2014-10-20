@@ -16,7 +16,7 @@
   :qualified?       false
   :snapshots?       false
   :interactive?     false
-  :colors?          false
+  :colors?          true
   :print?           false
   :recursive?       false
   :tests?           true)
@@ -74,6 +74,7 @@
     [":interactive"]         {:interactive? true}
     [":plugins"]             {:dependencies? false, :plugins? true}
     [":no-colors"]           {:colors? false}
+    [":no-colours"]          {:colors? false}
     [":no-profiles"]         {:profiles? false}
     [":no-tests"]            {:tests? false}
     [":tests"]               {:tests? true}

@@ -144,9 +144,11 @@
            (when-let [opts# (parse project# args#
                                    :exclude ex#
                                    :fixed fx#)]
-             (if (:colors? opts#)
-               (color/enable!)
-               (color/disable!))
+             (let [cli# (:opts opts#)]
+               (debugf "cli options: %s" (pr-str cli#))
+               (if (:colors? cli#)
+                 (color/enable!)
+                 (color/disable!)))
              (let [~opts opts#]
                ~@body)))
          (cli/doc! ~docstring :exclude ex#))))
