@@ -53,4 +53,20 @@
 
     (str "{:plugins [[xyz \"0.2.0\"]%n"
          "           %s]}")
-    #(profiles-file % [:profiles :prof])))
+    #(profiles-file % [:profiles :prof]))
+  (fact "about project file upgrading failure because of modifications."
+        (let [opts (const-opts "0.1.1")
+              contents (str "(defproject project-x \"0.1.1-SNAPSHOT\"\n"
+                            "  :dependencies [[artifact \"0.1.0\"]])")]
+          (with-temp-file [tmp contents]
+            (let [f (read! (project-file tmp))
+                  outdated (check! f opts)
+                  upgraded (upgrade! f outdated)]
+              (count outdated) =>  1
+              (doto ^java.io.File tmp
+                (spit (str contents "\n\n;; EOF"))
+                (.setLastModified (+ (System/currentTimeMillis) 5000)))
+              (with-open [w (StringWriter.)]
+                (write! upgraded w)
+                (.toString w)) =not=> empty?
+              (write-out! upgraded) => #(instance? Throwable %))))))

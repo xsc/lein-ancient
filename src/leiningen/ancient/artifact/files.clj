@@ -5,7 +5,6 @@
              [reader :as reader]
              [zip :as z]]
             [leiningen.ancient.verbose :refer :all]
-            [pandect.algo.adler32 :refer [adler32-file]]
             [potemkin :refer [defprotocol+]]
             [clojure.java.io :as io]))
 
@@ -47,13 +46,13 @@
 (defn- generate-checksum
   "Generate checksum for file."
   [path]
-  (adler32-file path))
+  (.lastModified (io/file path)))
 
 (defn- assert-checksum
   "Assert that the given file still has the given checksum."
   [path checksum]
-  (when (not= (adler32-file path) checksum)
-    (throw (Exception. "checksum of file changed before attempting upgrade."))))
+  (when (not= (generate-checksum path) checksum)
+    (throw (Exception. "file was modified before attempting upgrade."))))
 
 ;; ## File
 
