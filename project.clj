@@ -2,10 +2,10 @@
   :description "Check your Projects for outdated Dependencies."
   :url "https://github.com/xsc/lein-ancient"
   :dependencies [[rewrite-clj "0.3.9"]
-                 [ancient-clj "0.2.0"]
+                 [ancient-clj "0.2.1"]
                  [jansi-clj "0.1.0"]
                  [pandect "0.4.1"]
-                 [potemkin "0.3.10"]
+                 [potemkin "0.3.11"]
                  [commons-io "2.4"]]
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
