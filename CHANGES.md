@@ -107,7 +107,7 @@
 - Bugfix in version comparison when using different lengths ("1.0.1" was equal to "1.0" because
   the latter was not correctly extended to "1.0.0").
 
-## 0.3.4 
+## 0.3.4
 
 - Modified version comparison algorithm in response to issues encountered when resolving #5.
 - Added verbose message indicating XML parse error.
@@ -124,14 +124,14 @@
 
 ## 0.3.1
 
-- Fixed duplicate artifact handling. 
+- Fixed duplicate artifact handling.
 
 ## 0.3.0
 
 - Removed `tools.cli` from Dependencies.
 - Added `colorize` to Dependencies.
 - Colorizing output.
-- Added `:verbose` (print progress messages), `:check-clojure` (do not exclude Clojure from version check) 
+- Added `:verbose` (print progress messages), `:check-clojure` (do not exclude Clojure from version check)
   and `:no-colors` (disable colorized output) flags.
 - Changed output to omit group ID if artifact and group ID are identical.
 - Generalized metadata retrieval logic to be able to easily add further repository types (e.g. S3).
