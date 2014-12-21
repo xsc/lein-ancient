@@ -44,3 +44,20 @@
         (let [{:keys [latest]} (check-artifact! (const-opts "0.1.1") artifact)]
           latest => map?
           (:version-string latest) => "0.1.1")))
+
+(fact "about artifact collection with duplicates."
+      (let [data '{:dependencies [[group/artifact "1.0.0"]
+                                  [org.clojure/clojure "1.5.1"]
+                                  [head1 "0.1.0"]
+                                  [group/artifact "1.0.0"]
+                                  [rest1 "0.1.0"]
+                                  [rest2 "0.2.0"]]}
+            opts (o/options {})
+            artifacts (->> (collect-artifacts opts data)
+                           (map (juxt (comp :symbol :artifact) :path)))]
+        (count artifacts) => 5
+        artifacts => (contains #{'[group/artifact [:dependencies 0]]})
+        artifacts => (contains #{'[head1 [:dependencies 2]]})
+        artifacts => (contains #{'[group/artifact [:dependencies 3]]})
+        artifacts => (contains #{'[rest1 [:dependencies 4]]})
+        artifacts => (contains #{'[rest2 [:dependencies 5]]})))
