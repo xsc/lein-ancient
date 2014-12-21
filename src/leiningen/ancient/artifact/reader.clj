@@ -2,19 +2,28 @@
   (:require [leiningen.core
              [main :as main]
              project]
+            [rewrite-clj.zip :as z]
             [clojure.tools.reader :as reader]
             [clojure.java.io :as io]))
+
+(defn- find-in-project
+  [root k default]
+  (or (some-> (z/find-value root k)
+              (z/right)
+              (z/sexpr))
+      default))
 
 (defn read-project-map!
   "Read project map from given file."
   [path]
-  (let [f (io/file path)]
-    (locking read-project-map!
-      (binding [*ns* (find-ns 'leiningen.core.project)]
-        (load-file (.getCanonicalPath f))
-        (when-let [project (resolve 'leiningen.core.project/project)]
-          (ns-unmap 'leiningen.core.project 'project)
-          @project)))))
+  (if-let [root (some-> (z/of-file path)
+                        (z/find-value z/next 'defproject))]
+    {:dependencies (find-in-project root :dependencies [])
+     :plugins (find-in-project root :plugins [])
+     :profiles (find-in-project root :profiles {})}
+    (throw
+      (Exception.
+        (str "invalid project file: " path)))))
 
 (defn read-profiles-map!
   [path prefix]

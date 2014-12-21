@@ -15,9 +15,9 @@
                               "  :profiles {:dev {:dependencies [[artifact2 \"0.1.1\"]]}})")]
         (let [m (read-project-map! f)]
           m => map?
-          (:dependencies m) => '[[artifact/artifact "0.1.0"]]
-          (:plugins m) => '[[plugin/plugin "0.1.0"]]
-          (-> m :profiles :dev :dependencies) '[[artifact2/artifact2 "0.1.1"]])))
+          (:dependencies m) => '[[artifact "0.1.0"]]
+          (:plugins m) => '[[plugin "0.1.0"]]
+          (-> m :profiles :dev :dependencies) '[[artifact2 "0.1.1"]])))
 
 (fact "about profiles file parsing."
       (with-temp-file [f "{:prof {:plugins [[plugin \"0.1.0\"]]}}"]
