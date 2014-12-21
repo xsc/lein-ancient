@@ -25,6 +25,13 @@
   (write-out! [this]
     "Write the upgraded data back to the original source."))
 
+(defn write-string!
+  "Write file to string."
+  [file]
+  (with-open [w (java.io.StringWriter.)]
+    (write! file w)
+    (.toString w)))
+
 ;; ## Helpers
 
 (defmacro with-throwables
