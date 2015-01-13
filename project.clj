@@ -9,7 +9,7 @@
                  [clj-aws-s3 "0.3.10"]
                  [clj-time "0.9.0"]
                  [http-kit "2.1.19"]
-                 [joda-time "2.6"]
+                 [joda-time "2.7"]
                  [commons-codec "1.10"]
                  [commons-logging "1.2"]
                  [potemkin "0.3.11"]]
