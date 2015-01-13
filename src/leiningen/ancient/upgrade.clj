@@ -33,7 +33,7 @@
     (->> (:path upgraded)
          (.getParentFile)
          (.getCanonicalPath)
-         (assoc (reader/read-project-map! f) :root))))
+         (assoc (reader/read-project! f) :root))))
 
 (defn- write-back!
   [upgraded {:keys [opts]}]

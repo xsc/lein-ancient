@@ -1,7 +1,7 @@
 (ns leiningen.ancient.artifact.reader
   (:require [leiningen.core
              [main :as main]
-             project]
+             [project :as project]]
             [rewrite-clj.zip :as z]
             [clojure.tools.reader :as reader]
             [clojure.java.io :as io]))
@@ -24,6 +24,16 @@
     (throw
       (Exception.
         (str "invalid project file: " path)))))
+
+(defn read-project!
+  "Read project map using the `defproject` macro."
+  [path]
+  (let [f (io/file path)]
+    (if (.isFile f)
+      (project/read (.getCanonicalPath f))
+      (throw
+        (Exception.
+          (str "not a project file: " path))))))
 
 (defn read-profiles-map!
   [path prefix]
