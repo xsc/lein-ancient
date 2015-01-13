@@ -4,7 +4,9 @@
              [cli :as cli]
              [collect :as collect]
              [verbose :refer :all]]
-            [jansi-clj.core :as color]))
+            [jansi-clj.core :as color]
+            [clojure.string :as string])
+  (:import [java.io StringWriter PrintWriter]))
 
 ;; ## Reporting
 
@@ -35,12 +37,20 @@
            ~@body)))
      (catch Throwable t# t#)))
 
+(defn throwable->stacktrace
+  [^Throwable t]
+  (with-open [sw (StringWriter.)]
+    (with-open [pw (PrintWriter. sw)]
+      (.printStackTrace t pw)
+      (str sw))))
+
 (defmacro call-with-throwables
   "Run the given body but log all Throwables."
   [& body]
   `(let [v# (with-success [r# (do ~@body)] r#)]
      (when (throwable? v#)
-       (errorf "%s" (pr-str v#)))
+       (errorf "%s" (pr-str v#))
+       (debugf "%s" (throwable->stacktrace v#)))
      v#))
 
 (defn call-file
