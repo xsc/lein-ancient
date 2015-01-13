@@ -68,9 +68,9 @@
 (defmethod loader-for* :s3
   [{:keys [^String uri] :as opts}]
   {:pre [(re-matches #"s3p?://.*" uri)]}
-  (let [[bucket path] (-> (re-find #"s3p?://(.*)" uri)
-                          (second)
-                          (.split "/" 2))]
+  (let [[bucket path] (some-> (re-find #"s3p?://(.*)" uri)
+                              ^String (second)
+                              (.split "/" 2))]
     (assert (not (empty? bucket)))
     (assert (not (empty? path)))
     (s3-loader bucket (assoc opts :path path))))

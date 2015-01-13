@@ -15,8 +15,8 @@
 (defn- parse-id
   [s]
   (let [[g a] (if (string? s)
-                (if (.contains s "/")
-                  (.split s "/" 2)
+                (if (.contains ^String s "/")
+                  (.split ^String s "/" 2)
                   [s s])
                 (let [id (name s)]
                   (if-let [n (namespace s)]
