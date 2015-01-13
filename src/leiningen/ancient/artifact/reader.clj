@@ -4,7 +4,8 @@
              [project :as project]]
             [rewrite-clj.zip :as z]
             [clojure.tools.reader :as reader]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io])
+  (:import [java.io File]))
 
 (defn- find-in-project
   [root k default]
@@ -26,14 +27,25 @@
         (str "invalid project file: " path)))))
 
 (defn read-project!
-  "Read project map using the `defproject` macro."
-  [path]
-  (let [f (io/file path)]
-    (if (.isFile f)
-      (project/read (.getCanonicalPath f))
-      (throw
-        (Exception.
-          (str "not a project file: " path))))))
+  [^File f & [only]]
+  (let [root (.getCanonicalPath f)]
+    (or (when (.isFile f)
+          (when-let [m (project/read root)]
+            (if (empty? only)
+              m
+              (select-keys m only))))
+        {:root root})))
+
+(defn read-project-for-tests!
+  "Read project map using the `defproject` macro. Adjust all paths using
+   the given root."
+  [root project-file]
+  (merge
+    (read-project!
+      (io/file root "project.clj"))
+    (read-project!
+      (io/file project-file)
+      [:dependencies :plugins :profiles])))
 
 (defn read-profiles-map!
   [path prefix]

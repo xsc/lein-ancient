@@ -30,10 +30,10 @@
 (defn- as-project-map
   [upgraded]
   (utils/with-temp-file [f (as-string upgraded)]
-    (->> (:path upgraded)
-         (.getParentFile)
-         (.getCanonicalPath)
-         (assoc (reader/read-project! f) :root))))
+    (let [root (->> (:path upgraded)
+                    (.getParentFile)
+                    (.getCanonicalPath))]
+      (reader/read-project-for-tests! root f))))
 
 (defn- write-back!
   [upgraded {:keys [opts]}]
