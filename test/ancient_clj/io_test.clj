@@ -16,7 +16,8 @@
   {:url "file:///tmp/repo"}
   {:uri "s3p://maven/bucket" :username "abc" :passphrase "def"}
   {:uri "s3p://maven/bucket" :username "abc" :password "def"}
-  {:url "s3p://maven/bucket" :username "abc" :passphrase "def"})
+  {:url "s3p://maven/bucket" :username "abc" :passphrase "def"}
+  {:uri "s3://maven/bucket" :username "abc" :passphrase "def"})
 
 (tabular
   (fact "about invalid loader specifications."
@@ -28,5 +29,6 @@
   "s3p://maven/bucket"        AssertionError
   {}                          Exception
   {:uri "s3p://maven/bucket"} AssertionError
+  {:uri "s3://maven/bucket"}  AssertionError
   {:uri "s3p://maven/bucket"
    :username "abc"}           AssertionError)
