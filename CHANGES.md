@@ -2,7 +2,7 @@
 
 ## 0.6.0
 
-- Using [ancient-clj](https://github.com/xsc/ancient-clj) 0.3.1
+- Using [ancient-clj](https://github.com/xsc/ancient-clj) 0.3.2
 - Using [rewrite-clj](https://github.com/xsc/rewrite-clj) 0.4.1
 - Implements #30: `test` is now fallback alias if `test-ancient` does not exist.
 - Implements #33: Do not follow symlinks in recursive upgrade.
