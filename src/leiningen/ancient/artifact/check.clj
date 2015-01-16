@@ -10,7 +10,8 @@
   [path artifact-vector]
   (when (and (vector? artifact-vector)
              (symbol? (first artifact-vector))
-             (string? (second artifact-vector)))
+             (or (= (count artifact-vector) 1)
+                 (string? (second artifact-vector))))
     {:path path
      :artifact (ancient/read-artifact artifact-vector)}))
 
