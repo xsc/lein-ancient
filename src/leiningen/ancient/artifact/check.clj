@@ -8,7 +8,9 @@
 (defn read-artifact
   "Combine artifact path and artifact vector to a map of `:path`/`:artifact`."
   [path artifact-vector]
-  (when (vector? artifact-vector)
+  (when (and (vector? artifact-vector)
+             (symbol? (first artifact-vector))
+             (string? (second artifact-vector)))
     {:path path
      :artifact (ancient/read-artifact artifact-vector)}))
 
@@ -40,10 +42,11 @@
                   (conj p k k')
                   artifacts')))
             (reduce concat))
-       (cond->> (map-indexed
-                  (fn [i artifact-vector]
-                    (read-artifact (conj p i) artifact-vector))
-                  artifacts)
+       (cond->> (->> (map-indexed
+                       (fn [i artifact-vector]
+                         (read-artifact (conj p i) artifact-vector))
+                       artifacts)
+                     (filter identity))
          (not check-clojure?) (filter (comp not #{"clojure"} :id :artifact)))))))
 
 ;; ## Check
