@@ -17,10 +17,7 @@ __Leiningen__ ([via Clojars](https://clojars.org/lein-ancient))
 
 Put one of the following into the `:plugins` vector of the `:user` profile in your `~/.lein/profiles.clj`:
 
-```clojure
-[lein-ancient "0.5.5"]          ;; stable
-[lein-ancient "0.6.0-SNAPSHOT"] ;; unstable
-```
+[![Clojars Project](http://clojars.org/lein-ancient/latest-version.svg)](http://clojars.org/lein-ancient)
 
 This plugin is destined for Leiningen >= 2.0.0.
 
