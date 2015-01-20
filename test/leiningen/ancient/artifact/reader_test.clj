@@ -26,3 +26,15 @@
       (with-temp-file [f "{:plugins [[plugin \"0.1.0\"]]}"]
         (let [m (read-profiles-map! f [:profiles :prof])]
           (-> m :profiles :prof :plugins) => '[[plugin "0.1.0"]])))
+
+(fact "about project file parsing (for tests)."
+      (with-temp-file [new-project (str "(defproject project-x \"a\"\n"
+                                        "  :dependencies [[artifact \"0.1.1\"]])")]
+        (with-temp-file [old-project (str "(defproject project-x \"a\"\n"
+                                          "  :dependencies [[artifact \"0.1.0\"]])")]
+          (let [parent-path #(.getCanonicalPath (.getParentFile (io/file %)))
+                m (read-project-for-tests! (parent-path old-project) new-project)
+                {:keys [without-profiles]} (meta m)]
+            (:dependencies m) => (contains #{'[artifact/artifact "0.1.1"]})
+            (:dependencies without-profiles) => (contains #{'[artifact/artifact "0.1.1"]})
+            (-> without-profiles :root parent-path) => (parent-path old-project)))))
