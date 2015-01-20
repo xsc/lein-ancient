@@ -1,5 +1,11 @@
 # CHANGES: `lein-ancient`
 
+## 0.6.1
+
+- Using [version-clj](https://github.com/xsc/version-clj) 0.1.2
+- Fixes #44: Versions with long numeric Strings cause Exception.
+- Fixes #45: Upgraded Dependencies are not applied when running Tests.
+
 ## 0.6.0
 
 - Using [ancient-clj](https://github.com/xsc/ancient-clj) 0.3.1
