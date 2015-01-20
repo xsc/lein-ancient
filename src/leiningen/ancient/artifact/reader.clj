@@ -40,12 +40,15 @@
   "Read project map using the `defproject` macro. Adjust all paths using
    the given root."
   [root project-file]
-  (merge
-    (read-project!
-      (io/file root "project.clj"))
-    (read-project!
-      (io/file project-file)
-      [:dependencies :plugins :profiles])))
+  (let [old-project (read-project!
+                      (io/file root "project.clj"))
+        new-project (read-project!
+                      (io/file project-file)
+                      [:dependencies :plugins :profiles])]
+    (project/init-project
+      (with-meta
+        (merge old-project new-project)
+        {}))))
 
 (defn read-profiles-map!
   [path prefix]

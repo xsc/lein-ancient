@@ -1,7 +1,5 @@
 (ns leiningen.ancient.test
-  (:require [leiningen.core
-             [main :as main]
-             [project :as prj]]
+  (:require [leiningen.core.main :as main]
             [leiningen.ancient.artifact.files :as f]
             [leiningen.ancient
              [verbose :refer :all]]))
@@ -10,11 +8,10 @@
   "Run test task. Will throw or return true."
   [project task]
   (try
-    (let [[task-name & task-args] task
-          project' (prj/init-project project)]
+    (let [[task-name & task-args] task]
       (verbosef "%nrunning test task %s ..." (pr-str task))
       (binding [main/*exit-process?* false]
-        (main/apply-task task-name project' task-args)
+        (main/apply-task task-name project task-args)
         true))
     (catch Throwable t
       t)))
