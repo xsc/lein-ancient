@@ -1,15 +1,19 @@
 # CHANGES: `lein-ancient`
 
+## 0.6.2
+
+- Using [rewrite-clj][rewrite-clj] 0.4.8
+
 ## 0.6.1
 
-- Using [version-clj](https://github.com/xsc/version-clj) 0.1.2
+- Using [version-clj][version-clj] 0.1.2
 - Fixes #44: Versions with long numeric Strings cause Exception.
 - Fixes #45: Upgraded Dependencies are not applied when running Tests.
 
 ## 0.6.0
 
-- Using [ancient-clj](https://github.com/xsc/ancient-clj) 0.3.1
-- Using [rewrite-clj](https://github.com/xsc/rewrite-clj) 0.4.4
+- Using [ancient-clj][ancient-clj] 0.3.1
+- Using [rewrite-clj][rewrite-clj] 0.4.4
 - Implements #30: `test` is now fallback alias if `test-ancient` does not exist.
 - Implements #33: Do not follow symlinks in recursive upgrade.
 - Implements #34: Generate report at the end of a recursive upgrade.
@@ -22,8 +26,8 @@
 
 ## 0.5.5
 
-- Using [ancient-clj](https://github.com/xsc/ancient-clj) 0.1.9
-- Using [rewrite-clj](https://github.com/xsc/rewrite-clj) 0.3.8
+- Using [ancient-clj][ancient-clj] 0.1.9
+- Using [rewrite-clj][rewrite-clj] 0.3.8
 - Fixes #23: support HTTP/HTTPS authentication.
 - Fixes #24: handle UTF-8 files correctly.
 - Fixes #25: upgrade non-`:user` profiles, too.
@@ -33,18 +37,18 @@
 
 ## 0.5.4
 
-- Using [ancient-clj](https://github.com/xsc/ancient-clj) 0.1.5
+- Using [ancient-clj][ancient-clj] 0.1.5
 - Fixes #21: warnings when anything other than a HTTP 404 response lets metadata lookup fail
 
 ## 0.5.3
 
-- Using [rewrite-clj](https://github.com/xsc/rewrite-clj) 0.3.4
+- Using [rewrite-clj][rewrite-clj] 0.3.4
 - Fixes #19: regular expressions let parsing of profiles map fail
 - Fixes #20: S3 repository not checked if credentials supplied using `:auth` profile.
 
 ## 0.5.2
 
-- Using [rewrite-clj](https://github.com/xsc/rewrite-clj) 0.3.3
+- Using [rewrite-clj][rewrite-clj] 0.3.3
 - Fixes #18: problems with some "non-symbol" keywords, e.g. `:1.5.1`.
 
 ## 0.5.1
@@ -65,8 +69,8 @@
 - Added `:no-tests` to CLI.
 - Implemented recursive artifact checking and upgrading.
 - Added `:recursive` to CLI.
-- Using [ancient-clj](https://github.com/xsc/ancient-clj) 0.1.4.
-- Using [rewrite-clj](https://github.com/xsc/rewrite-clj) 0.3.2
+- Using [ancient-clj][ancient-clj] 0.1.4.
+- Using [rewrite-clj][rewrite-clj] 0.3.2
 - Added `latest` task to print latest artifact vector.
 
 ## 0.5.0
@@ -76,13 +80,13 @@
 ## 0.4.4
 
 - Fix for Amazon S3 Repositories (missing credentials).
-- Using [ancient-clj](https://github.com/xsc/ancient-clj) 0.1.3.
+- Using [ancient-clj][ancient-clj] 0.1.3.
 
 ## 0.4.3
 
-- Using [ancient-clj](https://github.com/xsc/ancient-clj) as backend.
+- Using [ancient-clj][ancient-clj] as backend.
 - New modes `:upgrade` and `:upgrade-global` for project.clj/profiles.clj rewriting
-  (based on [rewrite-clj](https://github.com/xsc/rewrite-clj))
+  (based on [rewrite-clj][rewrite-clj])
 
 ## 0.4.2
 
@@ -98,7 +102,7 @@
 
 ## 0.4.0
 
-- Switched to [version-clj](https://github.com/xsc/version-clj) for version comparison.
+- Switched to [version-clj][version-clj] for version comparison.
 
 ## 0.3.7
 
@@ -146,3 +150,7 @@
 ## <= 0.2.0
 
 Initial Releases.
+
+[ancient-clj]: https://github.com/xsc/ancient-clj
+[rewrite-clj]: https://github.com/xsc/rewrite-clj
+[version-clj]: https://github.com/xsc/version-clj
