@@ -2,7 +2,7 @@
 
 ## 0.6.2
 
-- Using [rewrite-clj][rewrite-clj] 0.4.8
+- Using [rewrite-clj][rewrite-clj] 0.4.11
 
 ## 0.6.1
 
