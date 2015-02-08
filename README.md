@@ -19,7 +19,7 @@ Put one of the following into the `:plugins` vector of the `:user` profile in yo
 
 [![Clojars Project](http://clojars.org/lein-ancient/latest-version.svg)](http://clojars.org/lein-ancient)
 
-This plugin is destined for Leiningen >= 2.0.0.
+This plugin is destined for Leiningen >= 2.4.0.
 
 ## Check Artifacts
 

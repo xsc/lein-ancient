@@ -14,4 +14,5 @@
                    :test-paths ["test"]}}
   :aliases {"test" ["midje"]}
   :eval-in-leiningen true
+  :min-lein-version "2.4.0"
   :pedantic? :abort)
