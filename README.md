@@ -148,7 +148,7 @@ plugin without leaving your buffer.
 
 ## License
 
-Copyright &copy; 2013 Yannick Scherer
+Copyright &copy; 2013-2015 Yannick Scherer
 
 Distributed under the Eclipse Public License, the same as Clojure.
 
