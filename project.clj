@@ -5,9 +5,9 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/data.xml "0.0.8"]
-                 [version-clj "0.1.1"]
+                 [version-clj "0.1.2"]
                  [clj-aws-s3 "0.3.10" :exclusions [com.amazonaws/aws-java-sdk]]
-                 [com.amazonaws/aws-java-sdk-s3 "1.9.14"]
+                 [com.amazonaws/aws-java-sdk-s3 "1.9.22"]
                  [clj-time "0.9.0"]
                  [http-kit "2.1.19"]
                  [joda-time "2.7"]
