@@ -89,13 +89,16 @@
 (defn parse
   "Create a map of `:artifact-opts`, `:opts` and `:args` from the given
    project and arguments."
-  [{:keys [repositories] :as project} args & {:keys [change-defaults exclude fixed]}]
+  [{:keys [repositories mirrors] :as project} args
+   & {:keys [change-defaults exclude fixed]}]
   (try
     (let [[opts' rst] (cli/parse args
                                  :change-defaults change-defaults
                                  :exclude exclude)
           opts (merge opts' fixed)
-          artifact-opts (-> (assoc opts :repositories repositories)
+          artifact-opts (-> (assoc opts
+                                   :repositories repositories
+                                   :mirrors mirrors)
                             (o/options))]
       {:artifact-opts artifact-opts
        :opts opts
