@@ -45,10 +45,29 @@
       (ancient/create-loaders)
       (wrap-loaders)))
 
+(defn- select-mirror
+  "Select a mirror for the given repository name/URL."
+  [mirrors name url]
+  (some
+    (fn [[match mirror]]
+      (when (or (and (string? match) (#{name url} match))
+                (and (instance? java.util.regex.Pattern match)
+                     (some #(re-matches match %) [name url])))
+        mirror))
+    mirrors))
+
+(defn select-mirrors
+  [repositories mirrors]
+  (->> (for [[name v] repositories
+             :let [url (if (string? v) v (:url v))
+                   mirror (select-mirror mirrors name url)]]
+         [name (or mirror v)])
+       (into {})))
+
 (defn options
   "Prepare the option map."
   ([] (options {}))
-  ([{:keys [repositories
+  ([{:keys [repositories mirrors
             dependencies? plugins? profiles?
             snapshots? qualified?
             check-clojure?]
@@ -57,8 +76,9 @@
           profiles? true
           qualified? false
           check-clojure? false}}]
-   {:repositories (prepare-repositories
-                    (or repositories ancient/default-repositories))
+   {:repositories (-> (or repositories ancient/default-repositories)
+                      (select-mirrors mirrors)
+                      (prepare-repositories))
     :snapshots? snapshots?
     :qualified? qualified?
     :check-clojure? check-clojure?
