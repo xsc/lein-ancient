@@ -33,6 +33,7 @@
 (defn prepare-repositories
   "Prepate the repositories for usage with ancient-clj."
   [repositories]
+  (debugf "repositories: %s" (pr-str repositories))
   (-> (for [[k spec] repositories
             :when spec]
         (->> (if (fn? spec)
