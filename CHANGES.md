@@ -1,5 +1,13 @@
 # CHANGES: `lein-ancient`
 
+## 0.6.4
+
+- Fixes: #49: Do not ignore `:mirrors` in the project map.
+
+## 0.6.3
+
+- Using [rewrite-clj][rewrite-clj] 0.4.12
+
 ## 0.6.2
 
 - Using [rewrite-clj][rewrite-clj] 0.4.11
