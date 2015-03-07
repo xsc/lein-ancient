@@ -13,12 +13,25 @@
 (def ^:private valid-content-types
   #{"text/xml" "application/xml"})
 
+(defn- base-opts
+  []
+  {:timeout
+   (if-let [v (System/getenv "http_timeout")]
+     (if (not= v "0")
+       (Long/parseLong v)
+       (* 60 60 1000))
+     (if (some
+           #(System/getenv %)
+           ["http_proxy" "https_proxy"])
+       30000
+       5000))
+   :as :text})
+
 (defn http-loader
   "Create version loader for a HTTP repository."
   [repository-uri & [{:keys [username passphrase]}]]
   (let [opts (merge
-               {:timeout 3000
-                :as :text}
+               (base-opts)
                (when (string? username)
                  {:basic-auth [username passphrase]}))]
     (fn [group id]
