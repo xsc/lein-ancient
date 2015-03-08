@@ -1,5 +1,9 @@
 # CHANGES: `lein-ancient`
 
+## 0.6.5
+
+- Using [ancient-clj][ancient-clj] 0.3.4
+
 ## 0.6.4
 
 - Fixes: #49: Do not ignore `:mirrors` in the project map.
