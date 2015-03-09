@@ -1,6 +1,6 @@
 (ns ancient-clj.io.http
   (:require [ancient-clj.io.xml :as xml]
-            [org.httpkit.client :as http]))
+            [clj-http.client :as http]))
 
 (def ^:private error-messages
   {401 "authorization needed."
@@ -25,6 +25,7 @@
            ["http_proxy" "https_proxy"])
        30000
        5000))
+   :throw-exceptions false
    :as :text})
 
 (defn http-loader
@@ -37,7 +38,7 @@
     (fn [group id]
       (try
         (let [uri (xml/metadata-uri repository-uri group id)
-              {:keys [status headers body error]} @(http/get uri opts)
+              {:keys [status headers body error]} (http/get uri opts)
               {:keys [content-type]} headers]
           (if-not error
             (if (= status 200)
