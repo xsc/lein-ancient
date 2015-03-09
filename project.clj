@@ -1,4 +1,4 @@
-(defproject lein-ancient "0.6.5"
+(defproject lein-ancient "0.6.6-SNAPSHOT"
   :description "Check your Projects for outdated Dependencies."
   :url "https://github.com/xsc/lein-ancient"
   :dependencies [[rewrite-clj "0.4.12"]
