@@ -15,26 +15,30 @@
 
 (defn- base-opts
   []
-  {:timeout
-   (if-let [v (System/getenv "http_timeout")]
-     (if (not= v "0")
-       (Long/parseLong v)
-       (* 60 60 1000))
-     (if (some
-           #(System/getenv %)
-           ["http_proxy" "https_proxy"])
-       30000
-       5000))
-   :throw-exceptions false
-   :as :text})
+  (let [timeout (if-let [v (System/getenv "http_timeout")]
+                  (if (not= v "0")
+                    (Long/parseLong v)
+                    (* 60 60 1000))
+                  (if (some
+                        #(System/getenv %)
+                        ["http_proxy" "https_proxy"])
+                    30000
+                    5000))]
+    {:socket-timeout timeout
+     :conn-timeout timeout
+     :throw-exceptions false
+     :as :text}))
 
 (defn http-loader
   "Create version loader for a HTTP repository."
-  [repository-uri & [{:keys [username passphrase]}]]
+  [repository-uri & [{:keys [username passphrase timeout]}]]
   (let [opts (merge
                (base-opts)
                (when (string? username)
-                 {:basic-auth [username passphrase]}))]
+                 {:basic-auth [username passphrase]})
+               (when timeout
+                 {:socket-timeout timeout
+                  :conn-timeout timeout}))]
     (fn [group id]
       (try
         (let [uri (xml/metadata-uri repository-uri group id)
