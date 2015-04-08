@@ -19,7 +19,8 @@
       (try
         (let [object-id (xml/metadata-uri path group id)
               {:keys [content metadata]} (get! object-id)
-              {:keys [content-type]} metadata]
+              {:keys [content-type]} metadata
+              content-type (and content-type (first (.split content-type ";")))]
           (if (contains? valid-content-types content-type)
             (if content
               (xml/metadata-xml->versions (slurp content))

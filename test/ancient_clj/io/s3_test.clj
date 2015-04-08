@@ -56,6 +56,7 @@
     ?object                                     ?check
     {}                                          (throwable? "content-type is not XML")
     {:metadata {:content-type "text/plain"}}    (throwable? "content-type is not XML")
+    {:metadata {:content-type "text/xml;a=b"}}  (throwable? "content not found")
     {:metadata {:content-type "text/xml"}}      (throwable? "content not found")
     {:content (.getBytes "<not-xml>" "UTF-8")
      :metadata {:content-type "text/xml"}}      (throwable? "Could not parse metadata XML"))

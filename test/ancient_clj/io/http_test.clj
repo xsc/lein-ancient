@@ -68,6 +68,8 @@
     {:status 200
      :headers {"content-type" "text/xml"}}    (throwable? "Could not parse metadata XML")
     {:status 200
+     :headers {"content-type" "text/xml;a=b"}} (throwable? "Could not parse metadata XML")
+    {:status 200
      :headers {"content-type" "text/xml"}
      :body "<not-xml>"}                       (throwable? "Could not parse metadata XML")
     {:status 200
