@@ -1,5 +1,9 @@
 # CHANGES: `lein-ancient`
 
+## 0.6.6
+
+- Using [ancient-clj][ancient-clj] 0.3.8.
+
 ## 0.6.5
 
 - Using [ancient-clj][ancient-clj] 0.3.6
