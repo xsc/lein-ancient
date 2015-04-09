@@ -12,8 +12,8 @@
                  [potemkin "0.3.13"]
                  [joda-time "2.7"]
                  [commons-io "2.4"]]
-  :license {:name "Eclipse Public License"
-            :url "http://www.eclipse.org/legal/epl-v10.html"}
+  :license {:name "MIT License"
+            :url "http://xsc.mit-license.org"}
   :profiles {:dev {:dependencies [[midje "1.6.3"]
                                   [slingshot "0.12.2"]]
                    :plugins [[lein-midje "3.1.1"]]
