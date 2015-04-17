@@ -13,7 +13,9 @@
                  [joda-time "2.7"]
                  [commons-io "2.4"]]
   :license {:name "MIT License"
-            :url "http://xsc.mit-license.org"}
+            :url "http://opensource.org/licenses/MIT"
+            :year 2013
+            :key "mit"}
   :profiles {:dev {:dependencies [[midje "1.6.3"]
                                   [slingshot "0.12.2"]]
                    :plugins [[lein-midje "3.1.1"]]
