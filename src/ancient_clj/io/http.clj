@@ -43,8 +43,10 @@
       (try
         (let [uri (xml/metadata-uri repository-uri group id)
               {:keys [status headers body error]} (http/get uri opts)
-              {:keys [content-type]} headers
-              content-type (and content-type (first (.split content-type ";")))]
+              content-type (some-> headers
+                                   (some [:content-type "content-type"])
+                                   (.split ";")
+                                   (first))]
           (if-not error
             (if (= status 200)
               (if (contains? valid-content-types content-type)
