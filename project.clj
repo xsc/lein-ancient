@@ -2,13 +2,13 @@
   :description "Check your Projects for outdated Dependencies."
   :url "https://github.com/xsc/lein-ancient"
   :dependencies [[rewrite-clj "0.4.12"]
-                 [ancient-clj "0.3.8"
+                 [ancient-clj "0.3.9"
                   :exclusions [com.amazonaws/aws-java-sdk-s3]]
                  [com.amazonaws/aws-java-sdk-s3 "1.9.0"
                   :exclusions [joda-time]]
                  [version-clj "0.1.2"]
                  [jansi-clj "0.1.0"]
-                 [org.clojure/tools.reader "0.8.16"]
+                 [org.clojure/tools.reader "0.9.1"]
                  [potemkin "0.3.13"]
                  [joda-time "2.7"]
                  [commons-io "2.4"]]
