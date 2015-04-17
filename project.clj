@@ -12,7 +12,9 @@
                  [com.amazonaws/aws-java-sdk-s3 "1.9.29"]
                  [com.fasterxml.jackson.core/jackson-core "2.5.2"]
                  [clj-time "0.9.0"]
-                 [clj-http "1.1.0" :exclusions [com.cognitect/transit-clj]]
+                 [clj-http "1.1.0"
+                  :exclusions [com.cognitect/transit-clj
+                               crouton]]
                  [joda-time "2.7"]
                  [commons-codec "1.10"]
                  [commons-logging "1.2"]
