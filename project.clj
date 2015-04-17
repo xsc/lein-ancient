@@ -6,10 +6,11 @@
             :year 2013
             :key "mit"}
   :dependencies [[org.clojure/clojure "1.6.0"]
+                 [org.clojure/tools.reader "0.9.1"]
                  [org.clojure/data.xml "0.0.8"]
                  [version-clj "0.1.2"]
                  [clj-aws-s3 "0.3.10" :exclusions [com.amazonaws/aws-java-sdk]]
-                 [com.amazonaws/aws-java-sdk-s3 "1.9.29"]
+                 [com.amazonaws/aws-java-sdk-s3 "1.9.31"]
                  [com.fasterxml.jackson.core/jackson-core "2.5.2"]
                  [clj-time "0.9.0"]
                  [clj-http "1.1.0"
