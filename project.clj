@@ -14,7 +14,8 @@
                  [clj-time "0.9.0"]
                  [clj-http "1.1.0"
                   :exclusions [com.cognitect/transit-clj
-                               crouton]]
+                               crouton
+                               slingshot]]
                  [joda-time "2.7"]
                  [commons-codec "1.10"]
                  [commons-logging "1.2"]
