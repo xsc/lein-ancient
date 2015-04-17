@@ -108,8 +108,16 @@ of a more recent version than the input artifact.
 
 ## License
 
+Copyright &copy; 2013-2015 Yannick Scherer
+
+This project is licensed under the [MIT License][license].
+
+[license]: http://opensource.org/licenses/MIT
+
 ```
-Copyright (c) 2015 Yannick Scherer
+The MIT License (MIT)
+
+Copyright (c) 2013-2015 Yannick Scherer
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
