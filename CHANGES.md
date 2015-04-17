@@ -1,5 +1,10 @@
 # CHANGES: `lein-ancient`
 
+## 0.6.7
+
+- Using [ancient-clj][ancient-clj] 0.3.9
+- Fixes #51: Restore compatibility with Leiningen >= 2.4.0
+
 ## 0.6.6
 
 - Using [ancient-clj][ancient-clj] 0.3.8.
@@ -7,6 +12,8 @@
 ## 0.6.5
 
 - Using [ancient-clj][ancient-clj] 0.3.6
+- Fixes #50: Do not ignore proxies.
+- Adds dynamic/configurable HTTP timeout.
 
 ## 0.6.4
 
