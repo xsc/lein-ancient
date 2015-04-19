@@ -108,12 +108,6 @@ of a more recent version than the input artifact.
 
 ## License
 
-Copyright &copy; 2013-2015 Yannick Scherer
-
-This project is licensed under the [MIT License][license].
-
-[license]: http://opensource.org/licenses/MIT
-
 ```
 The MIT License (MIT)
 
