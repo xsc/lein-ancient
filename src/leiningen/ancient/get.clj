@@ -73,7 +73,7 @@
     (errorf "no artifact coordinates given.")))
 
 (utils/deftask latest
-  {:docstring "List all versions for a given artifact."
+  {:docstring "Print a version vector for the given artifact's latest release."
    :exclude [:all :check-clojure :interactive :plugins
              :no-profiles :no-tests :tests :print :recursive]
    :fixed {:dependencies? true
