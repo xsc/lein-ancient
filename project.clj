@@ -8,15 +8,15 @@
                   :exclusions [joda-time]]
                  [version-clj "0.1.2"]
                  [jansi-clj "0.1.0"]
-                 [org.clojure/tools.reader "0.9.1"]
-                 [potemkin "0.3.13"]
-                 [joda-time "2.7"]
+                 [org.clojure/tools.reader "0.9.2"]
+                 [potemkin "0.4.1"]
+                 [joda-time "2.8.1"]
                  [commons-io "2.4"]]
   :license {:name "MIT License"
             :url "http://opensource.org/licenses/MIT"
             :year 2013
             :key "mit"}
-  :profiles {:dev {:dependencies [[midje "1.6.3"]
+  :profiles {:dev {:dependencies [[midje "1.7.0"]
                                   [slingshot "0.12.2"]]
                    :plugins [[lein-midje "3.1.1"]]
                    :test-paths ["test"]}}
