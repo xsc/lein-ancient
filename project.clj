@@ -2,7 +2,7 @@
   :description "Check your Projects for outdated Dependencies."
   :url "https://github.com/xsc/lein-ancient"
   :dependencies [[rewrite-clj "0.4.12"]
-                 [ancient-clj "0.3.9"
+                 [ancient-clj "0.3.10"
                   :exclusions [com.amazonaws/aws-java-sdk-s3]]
                  [com.amazonaws/aws-java-sdk-s3 "1.9.0"
                   :exclusions [joda-time]]
