@@ -26,7 +26,7 @@
   (let [m {:https :http
            :s3p   :s3}]
     (fn [^String uri]
-      (let [scheme (some-> (string/split uri #":/" 2)
+      (let [scheme (some-> (string/split uri #":/?" 2)
                            (first)
                            (keyword))]
         (m scheme scheme)))))
