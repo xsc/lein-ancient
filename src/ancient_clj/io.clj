@@ -10,6 +10,18 @@
 
 ;; ## Loader Creation
 
+(defmulti ^:private loader-for*
+  ::scheme
+  :default nil)
+
+;; ## Helper
+
+(defn- throw-loader-exception!
+  [opts]
+  (throw
+    (IllegalArgumentException.
+      (format "cannot create loader from: %s" (pr-str opts)))))
+
 (def ^:private get-scheme
   (let [m {:https :http
            :s3p   :s3}]
@@ -19,38 +31,46 @@
                            (keyword))]
         (m scheme scheme)))))
 
-(defmulti ^:private loader-for*
-  (fn [{:keys [uri]}]
-    (when (string? uri)
-      (get-scheme uri)))
-  :default nil)
+(defn- assoc-scheme
+  [{:keys [uri] :as opts}]
+  (if (string? uri)
+    (assoc opts ::scheme (get-scheme uri))
+    opts))
 
-(defn- wrapped-loader-for
-  [{:keys [uri f wrap]
-    :or {wrap identity}
-    :as opts}]
-  (let [loader (cond uri (loader-for* opts)
-                     f   f
-                     :else (throw
-                             (Exception.
-                               (format "cannot create loader from: %s"
-                                       (pr-str opts)))))]
-    (wrap loader)))
+(defn- prepare-loader-options
+  [opts]
+  (-> (cond (fn? opts)     {:f opts}
+            (string? opts) {:uri opts}
+            (map? opts)    (rename-keys
+                             opts
+                             {:url :uri
+                              :password :passphrase})
+            :else (throw-loader-exception! opts))
+      (assoc-scheme)))
+
+(defn- wrap-loader
+  [{:keys [wrap] :or {wrap identity} :as opts} loader]
+  (when-not loader
+    (throw-loader-exception! opts))
+  (wrap loader))
+
+(defn- create-loader
+  [{:keys [uri f] :as opts}]
+  (if uri
+    (loader-for* opts)
+    f))
 
 (defn loader-for
-  [v]
-  (cond (fn? v) v
-        (string? v) (wrapped-loader-for {:uri v})
-        (map? v)  (-> v
-                      (rename-keys
-                        {:url :uri
-                         :password :passphrase})
-                      (wrapped-loader-for))
-        :else (throw
-                (Exception.
-                  (format "cannot create loader from: %s" (pr-str v))))))
+  [opts]
+  (let [opts' (prepare-loader-options opts)]
+    (->> (create-loader opts')
+         (wrap-loader opts'))))
 
 ;; ## Loaders
+
+(defmethod loader-for* nil
+  [opts]
+  (throw-loader-exception! opts))
 
 (defmethod loader-for* :http
   [{:keys [uri] :as opts}]
