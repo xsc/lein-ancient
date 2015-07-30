@@ -7,6 +7,7 @@
   "Create a version loader for a local repository."
   [path & [{:keys [filenames]}]]
   (let [dir (io/file path)]
+    (assert (seq (.getPath dir)))
     (if (.isDirectory dir)
       (fn [group id]
         (->> ["maven-metadata-local.xml"

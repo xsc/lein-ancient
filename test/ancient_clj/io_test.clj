@@ -27,7 +27,8 @@
   "invalid://abc"             IllegalArgumentException
   "s3p://"                    AssertionError
   "s3p://maven/bucket"        AssertionError
-  {}                          Exception
+  "file://repo"               AssertionError
+  {}                          IllegalArgumentException
   {:uri "s3p://maven/bucket"} AssertionError
   {:uri "s3://maven/bucket"}  AssertionError
   {:uri "s3p://maven/bucket"
