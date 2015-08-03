@@ -6,7 +6,8 @@
              [collect :refer :all]
              [console :as console]
              [utils :as utils]
-             [verbose :refer :all]]))
+             [verbose :refer :all]]
+            [leiningen.core.main :as main]))
 
 ;; ## Logic
 
@@ -17,7 +18,13 @@
       (if (seq outdated)
         (doseq [artifact outdated]
           (console/print-outdated-message artifact))
-        (verbosef "all artifacts are up-to-date.")))))
+        (verbosef "all artifacts are up-to-date."))
+      {:outdated? (seq outdated)})))
+
+(defn- exit-with-status
+  [results]
+  (when (some (comp :outdated? second) results)
+    (main/exit 1)))
 
 ;; ## Tasks
 
@@ -25,11 +32,13 @@
   {:docstring "Check projects for outdated artifacts. (default)"
    :exclude [:interactive :print :no-tests]}
   [opts]
-  (utils/call-on-project-files check-file! opts))
+  (exit-with-status
+    (utils/call-on-project-files check-file! opts)))
 
 (utils/deftask profiles
   {:docstring "Check profiles for outdated artifacts."
    :exclude [:no-profiles :interactive :print :no-tests :recursive]
    :fixed {:plugins? true}}
   [opts]
-  (utils/call-on-profiles-files check-file! opts))
+  (exit-with-status
+    (utils/call-on-profiles-files check-file! opts)))
