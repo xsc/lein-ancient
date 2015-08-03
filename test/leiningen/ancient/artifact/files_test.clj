@@ -69,7 +69,23 @@
                 (spit (str contents "\n\n;; EOF"))
                 (.setLastModified (+ (System/currentTimeMillis) 5000)))
               (write-string! upgraded) =not=> empty?
-              (write-out! upgraded) => #(instance? Throwable %)))))
+             (write-out! upgraded) => #(instance? Throwable %)))))
+
+(fact "about project file upgrading with :exclusions."
+      (let [opts (const-opts "0.1.1")
+            mk #(format
+                  (str "(defproject project-x \"0.1.1-SNAPSHOT\"\n"
+                       "  :dependencies [[artifact %s :exclusions [other]]])")
+                  (pr-str %))]
+        (with-temp-file [tmp (mk "0.1.0")]
+          (let [f (read! (project-file tmp))
+                outdated (check! f opts)
+                artifacts (map (juxt (comp :symbol :artifact) :path) outdated)
+                upgraded (upgrade! f outdated)
+                expected (mk "0.1.1")]
+            (count outdated) => 1
+            artifacts => (contains #{'[artifact  [:dependencies 0]]})
+            (write-string! upgraded) => expected))))
 
 (fact "about project file upgrading with multiple identical artifacts."
       (let [opts (const-opts "0.1.1")
