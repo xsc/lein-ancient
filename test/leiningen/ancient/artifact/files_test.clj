@@ -87,6 +87,28 @@
             artifacts => (contains #{'[artifact  [:dependencies 0]]})
             (write-string! upgraded) => expected))))
 
+(fact "about partial project file upgrading."
+      (let [opts (const-opts "0.1.1")
+            mk #(format
+                  (str "(defproject project-x \"0.1.1-SNAPSHOT\"\n"
+                       "  :dependencies [[artifact %s]"
+                       "                 [artifact2 %s :upgrade? false]"
+                       "                 [artifact3 %s :upgrade? true]])")
+                  (pr-str %1)
+                  (pr-str %2)
+                  (pr-str %1))]
+        (with-temp-file [tmp (mk "0.1.0" "0.1.0")]
+          (let [f (read! (project-file tmp))
+                outdated (check! f opts)
+                artifacts (map (juxt (comp :symbol :artifact) :path) outdated)
+                upgraded (upgrade! f outdated)
+                expected (mk "0.1.1" "0.1.0")]
+            (count outdated) => 2
+            artifacts => (contains #{'[artifact [:dependencies 0]]})
+            artifacts =not=> (contains #{'[artifact2 [:dependencies 1]]})
+            artifacts => (contains #{'[artifact3 [:dependencies 2]]})
+            (write-string! upgraded) => expected))))
+
 (fact "about project file upgrading with multiple identical artifacts."
       (let [opts (const-opts "0.1.1")
             mk #(format
