@@ -5,7 +5,8 @@
                  [ancient-clj "0.3.10"
                   :exclusions [com.amazonaws/aws-java-sdk-s3]]
                  [com.amazonaws/aws-java-sdk-s3 "1.9.0"
-                  :exclusions [joda-time]]
+                  :exclusions [joda-time]
+                  :upgrade? false]
                  [version-clj "0.1.2"]
                  [jansi-clj "0.1.0"]
                  [org.clojure/tools.reader "0.9.2"]
