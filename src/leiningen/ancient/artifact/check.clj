@@ -5,13 +5,18 @@
 
 ;; ## Artifact Map
 
+(defn- check-artifact?
+  [[_ _ & {:keys [upgrade?] :or {upgrade? true}}]]
+  (boolean upgrade?))
+
 (defn read-artifact
   "Combine artifact path and artifact vector to a map of `:path`/`:artifact`."
   [path artifact-vector]
   (when (and (vector? artifact-vector)
              (symbol? (first artifact-vector))
              (or (= (count artifact-vector) 1)
-                 (string? (second artifact-vector))))
+                 (string? (second artifact-vector)))
+             (check-artifact? artifact-vector))
     {:path path
      :artifact (ancient/read-artifact artifact-vector)}))
 
