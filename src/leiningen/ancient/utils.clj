@@ -60,16 +60,16 @@
 
 (defn report-file-failures
   [{:keys [opts]} sq]
-  (if (:report? opts)
-    (let [sq (sort-by first sq)]
+  (when (:report? opts)
+    (let [sq' (sort-by first sq)]
       (verbosef "Report:%n-------")
-      (doseq [[file t] sq]
-      (verbosef "%s %s"
-                (if (throwable? t)
-                  (color/red "[fail]")
-                  (color/green "[ok]  "))
-                file)))
-    (dorun sq)))
+      (doseq [[file t] sq']
+        (verbosef "%s %s"
+                  (if (throwable? t)
+                    (color/red "[fail]")
+                    (color/green "[ok]  "))
+                  file))))
+  (doall sq))
 
 (defn call-files
   "Call the given function on all `DependencyFile` values, logging
@@ -122,8 +122,8 @@
                                  (keep collect/project-file-at args)))]
     (call-files f o files-if-multiple)
     (if (:root project)
-      (->> (collect/current-project-file project)
-           (call-file f o))
+      (let [file (collect/current-project-file project)]
+        [[(path-string file) (call-file f o file)]])
       (warnf "not inside of a project."))))
 
 (defn call-on-profiles-files
