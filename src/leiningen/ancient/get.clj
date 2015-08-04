@@ -51,7 +51,7 @@
     (print-version-seq "all qualified versions" qualified)
     (println)))
 
-(utils/deftask get
+(utils/deftask show-versions
   {:docstring "List all versions for a given artifact."
    :exclude [:all :allow-all :allow-snapshots :allow-qualified
              :check-clojure :interactive :plugins :no-profiles
@@ -72,7 +72,7 @@
           (verbosef "no versions found."))))
     (errorf "no artifact coordinates given.")))
 
-(utils/deftask latest
+(utils/deftask show-latest
   {:docstring "Print a version vector for the given artifact's latest release."
    :exclude [:all :check-clojure :interactive :plugins
              :no-profiles :no-tests :tests :print :recursive]

@@ -35,7 +35,7 @@
   (exit-with-status
     (utils/call-on-project-files check-file! opts)))
 
-(utils/deftask profiles
+(utils/deftask check-profiles
   {:docstring "Check profiles for outdated artifacts."
    :exclude [:no-profiles :interactive :print :no-tests :recursive]
    :fixed {:plugins? true}}
