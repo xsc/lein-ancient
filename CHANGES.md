@@ -3,11 +3,14 @@
 ## 0.6.8
 
 - Using [ancient-clj][ancient-clj] 0.3.10
+- Implements #54: Consistent subtask names.
+- Implements #55: Error code 1 when `check` or `check-profiles` fails.
+- Fixes #57: Handling of `file:repo` (i.e. relative path) repositories.
 
 ## 0.6.7
 
 - Using [ancient-clj][ancient-clj] 0.3.9
-- Fixes #51: Restore compatibility with Leiningen >= 2.4.0
+- Fixes #52: Restore compatibility with Leiningen >= 2.4.0
 
 ## 0.6.6
 
