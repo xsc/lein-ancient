@@ -2,10 +2,12 @@
 
 ## 0.6.8
 
-- Using [ancient-clj][ancient-clj] 0.3.10
+- Using [ancient-clj][ancient-clj] 0.3.11
+- Implements #51: Mark dependencies with `:upgrade? false` to prevent check.
 - Implements #54: Consistent subtask names.
 - Implements #55: Error code 1 when `check` or `check-profiles` fails.
 - Fixes #57: Handling of `file:repo` (i.e. relative path) repositories.
+- Fixes #58: Removes a warning with Clojure 1.7.0.
 
 ## 0.6.7
 
