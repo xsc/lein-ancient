@@ -7,7 +7,6 @@
 - Implements #54: Consistent subtask names.
 - Implements #55: Error code 1 when `check` or `check-profiles` fails.
 - Fixes #57: Handling of `file:repo` (i.e. relative path) repositories.
-- Fixes #58: Removes a warning with Clojure 1.7.0.
 
 ## 0.6.7
 
