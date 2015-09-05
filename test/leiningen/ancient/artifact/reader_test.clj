@@ -40,3 +40,21 @@
             (:dependencies m) => (contains #{'[artifact/artifact "0.1.1"]})
             (:dependencies without-profiles) => (contains #{'[artifact/artifact "0.1.1"]})
             (-> without-profiles :root parent-path) => (parent-path old-project)))))
+
+;; https://github.com/technomancy/leiningen/blob/master/doc/PROFILES.md#composite-profiles
+(fact "about project file with component profile parsing."
+      (with-temp-file [f (str "(defproject project-x \"0.1.1-SNAPSHOT\"\n"
+                              "  :dependencies [[artifact \"0.1.0\"]]\n"
+                              "  :plugins [[plugin \"0.1.0\"]]\n"
+                              "  :profiles {:shared {:plugins [[plugin2 \"0.1.1\"]]\n"
+                              "                      :dependencies [[artifact2 \"0.1.1\"]]}\n"
+                              "             :dev [:shared {:plugins [[plugin2 \"0.1.2\"]]\n"
+                              "                            :dependencies [[artifact3 \"0.1.2\"]]}]})")]
+        (let [m (read-project-map! f)]
+          m => map?
+          (:dependencies m) => '[[artifact "0.1.0"]]
+          (:plugins m) => '[[plugin "0.1.0"]]
+          (-> m :profiles :shared :dependencies) => '[[artifact2 "0.1.1"]]
+          (-> m :profiles :shared :plugins) => '[[plugin2 "0.1.1"]]
+          (-> m :profiles :dev :dependencies) => '[[artifact3 "0.1.2"]]
+          (-> m :profiles :dev :plugins) => '[[plugin3 "0.1.2"]])))
