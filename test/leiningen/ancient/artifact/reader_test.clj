@@ -12,12 +12,14 @@
       (with-temp-file [f (str "(defproject project-x \"0.1.1-SNAPSHOT\"\n"
                               "  :dependencies [[artifact \"0.1.0\"]]\n"
                               "  :plugins [[plugin \"0.1.0\"]]\n"
-                              "  :profiles {:dev {:dependencies [[artifact2 \"0.1.1\"]]}})")]
+                              "  :profiles {:dev {:plugins [[plugin2 \"0.1.1\"]]\n"
+                              "                   :dependencies [[artifact2 \"0.1.1\"]]}})")]
         (let [m (read-project-map! f)]
           m => map?
           (:dependencies m) => '[[artifact "0.1.0"]]
           (:plugins m) => '[[plugin "0.1.0"]]
-          (-> m :profiles :dev :dependencies) '[[artifact2 "0.1.1"]])))
+          (-> m :profiles :dev :dependencies) => '[[artifact2 "0.1.1"]]
+          (-> m :profiles :dev :plugins) => '[[plugin2 "0.1.1"]])))
 
 (fact "about profiles file parsing."
       (with-temp-file [f "{:prof {:plugins [[plugin \"0.1.0\"]]}}"]
