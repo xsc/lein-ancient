@@ -53,7 +53,7 @@
                          (read-artifact (conj p i) artifact-vector))
                        artifacts)
                      (filter identity))
-         (not check-clojure?) (filter (comp not #{"clojure"} :id :artifact)))))))
+         (not check-clojure?) (filter (comp not #{"clojure" "clojurescript"} :id :artifact)))))))
 
 ;; ## Check
 
