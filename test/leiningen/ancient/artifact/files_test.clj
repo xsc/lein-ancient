@@ -132,3 +132,28 @@
             artifacts => (contains #{'[artifact  [:dependencies 2]]})
             artifacts => (contains #{'[artifact2 [:dependencies 3]]})
             (write-string! upgraded) => expected))))
+
+(fact "about project file upgrading with profiles."
+      (let [opts (const-opts "0.1.1")
+            mk #(format
+                  (str "(defproject project-x \"0.1.1-SNAPSHOT\"\n"
+                       "  :dependencies [[artifact %s]\n"
+                       "                 [other \"0.1.5\"]\n"
+                       "                 [other2 \"0.1.3\"]]\n"
+                       "  :profiles {:dev {:dependencies [[artifact2 %s]]}\n"
+                       "             :build [:dev\n"
+                       "                     {:dependencies [[artifact3 %s]]}]})")
+                  (pr-str %)
+                  (pr-str %)
+                  (pr-str %))]
+        (with-temp-file [tmp (mk "0.1.0")]
+          (let [f (read! (project-file tmp))
+                outdated (check! f opts)
+                artifacts (map (juxt (comp :symbol :artifact) :path) outdated)
+                upgraded (upgrade! f outdated)
+                expected (mk "0.1.1")]
+            (count outdated) => 3
+            artifacts => (contains #{'[artifact  [:dependencies 0]]})
+            artifacts => (contains #{'[artifact2 [:profiles :dev :dependencies 0]]})
+            artifacts => (contains #{'[artifact3 [:profiles :build 1 :dependencies 0]]})
+            (write-string! upgraded) => expected))))
