@@ -27,24 +27,32 @@
 
 ;; ## Upgrade
 
-(defn- move-to-value-or-index
-  "Move within a zipper. A keyword prompts descend into
-   a map, a number moves to the given position."
+(defn- move-to-index
   [zloc p]
-  (cond (not zloc) nil
-        (integer? p) (nth
-                       (->> (iterate z/right zloc)
-                            (remove #(= (z/tag %) :uneval)))
-                       p)
-        (keyword? p) (when-let [floc (z/find-value zloc p)]
-                       (when-let [floc (z/right floc)]
-                         (z/down floc)))
-        :else nil))
+  (nth
+    (->> (iterate z/right zloc)
+         (remove #(= (z/tag %) :uneval)))
+    p))
+
+(defn- move-to-value
+  [zloc p]
+  (when-let [floc (z/find-value zloc p)]
+    (when-let [floc (z/right floc)]
+      floc)))
+
+(defn- move-to-value-or-index
+  "Move within a zipper. A keyword prompts descend into a map, a number moves
+   to the given position. `zloc` has to point to either a seq or a vector"
+  [zloc p]
+  (when-let [zloc' (some-> zloc z/down)]
+    (if (integer? p)
+      (move-to-index zloc' p)
+      (move-to-value zloc' p))))
 
 (defn- move-path
   "Move within a zipper to the node at the given path."
   [loc path]
-  (reduce move-to-value-or-index loc path))
+  (reduce move-to-value-or-index (z/up loc) path))
 
 (defn upgrade-path
   "Upgrade the version vector at the given position."
