@@ -8,7 +8,8 @@
                             [org.clojure/clojure "1.5.1"]]
              :plugins [[group/plugin "0.1.0"]]
              :profiles {:xyz {:dependencies [[artifact "1.2.3"]]
-                              :plugins [[plugin "3.2.1"]]}}}]
+                              :plugins [[plugin "3.2.1"]]}
+                        :comp [:xyz {:dependencies [[comp "1.2.3"]]}]}}]
   (tabular
     (fact "about artifact collection."
           (let [opts (o/options ?opts)
@@ -19,11 +20,11 @@
             paths => (has every? vector?)
             paths => (has every? (complement empty?))))
     ?opts                                  ?artifacts
-    {}                                     '[group/artifact artifact]
-    {:check-clojure? true}                 '[group/artifact artifact org.clojure/clojure]
+    {}                                     '[group/artifact artifact comp]
+    {:check-clojure? true}                 '[group/artifact artifact comp org.clojure/clojure]
     {:profiles? false}                     '[group/artifact]
     {:dependencies? false}                 '[]
-    {:plugins? true}                       '[group/artifact artifact group/plugin plugin]
+    {:plugins? true}                       '[group/artifact artifact comp group/plugin plugin]
     {:plugins? true, :profiles? false}     '[group/artifact group/plugin]
     {:plugins? true, :dependencies? false} '[group/plugin plugin]
     {:plugins? true
