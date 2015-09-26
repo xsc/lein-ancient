@@ -20,40 +20,77 @@
     {:path path
      :artifact (ancient/read-artifact artifact-vector)}))
 
+(defn- collect-from?
+  [{:keys [allowed-keys]} k data]
+  (when (contains? allowed-keys k)
+    (if (= k :profiles)
+      (or (map? data) (sequential? data))
+      (sequential? data))))
+
+(declare collect-artifacts-from-map)
+
+(defn- collect-artifacts-from-composite-profile
+  [options path data]
+  (->> (keep-indexed
+         (fn [i artifact-map]
+           (when (map? artifact-map)
+             (collect-artifacts-from-map
+               options
+               (conj path i)
+               artifact-map)))
+         data)
+       (reduce concat)))
+
+(defn- collect-artifacts-from-profiles
+  [options path profiles]
+  (mapcat
+    (fn [[profile data]]
+      (let [path' (conj path profile)]
+        (if (map? data)
+          (collect-artifacts-from-map options path' data)
+          (collect-artifacts-from-composite-profile options path' data))))
+    profiles))
+
+(defn- collect-artifacts-from-vector
+  [options path v]
+  (keep-indexed
+    (fn [i artifact-vector]
+      (read-artifact
+        (conj path i)
+        artifact-vector))
+    v))
+
+(defn- collect-artifacts-from-map
+  [{:keys [allowed-keys] :as options} path artifacts]
+  (for [k allowed-keys
+        :when (contains? artifacts k)
+        :let [data (get artifacts k)]
+        :when (collect-from? options k data)
+        :let [f (if (= k :profiles)
+                  collect-artifacts-from-profiles
+                  collect-artifacts-from-vector)]
+        artifact (f options (conj path k) data)]
+    artifact))
+
+(defn- include-artifact?
+  [{:keys [check-clojure?]} {:keys [artifact]}]
+  (when artifact
+    (or check-clojure?
+        (not (contains? #{"clojure"} (:id artifact))))))
+
 (defn collect-artifacts
-  "Collect all artifacts in the given map, based on `:allowed-keys` within
-   the given options."
-  ([options artifacts]
-   (collect-artifacts options [] artifacts))
-  ([{:keys [allowed-keys check-clojure?] :as options} path artifacts]
-   (let [p (vec path)
-         allowed-key? (set allowed-keys)
-         allowed? (fn [k v]
-                    (and (allowed-key? k)
-                         (sequential? v)))]
-     (if (map? artifacts)
-       (->> (concat
-              (for [[k data] artifacts
-                    :when (allowed-key? k)]
-                (collect-artifacts
-                  options
-                  (conj p k)
-                  data))
-              (for [[k data] artifacts
-                    :when (map? data)
-                    [k' artifacts'] data
-                    :when (allowed? k' artifacts')]
-                (collect-artifacts
-                  options
-                  (conj p k k')
-                  artifacts')))
-            (reduce concat))
-       (cond->> (->> (map-indexed
-                       (fn [i artifact-vector]
-                         (read-artifact (conj p i) artifact-vector))
-                       artifacts)
-                     (filter identity))
-         (not check-clojure?) (filter (comp not #{"clojure"} :id :artifact)))))))
+  "Collect all artifacts in the given map, based on:
+
+   - `:allowed-keys`: a seq of keys to be investiaged (e.g. `[:dependencies]`),
+   - `:check-clojure?`: whether to check Clojure artifacts.
+
+   "
+  [options artifacts]
+  (->> (collect-artifacts-from-map
+         (update-in options [:allowed-keys] set)
+         []
+         artifacts)
+       (filter #(include-artifact? options %))))
 
 ;; ## Check
 
