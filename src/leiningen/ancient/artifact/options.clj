@@ -68,22 +68,28 @@
   [{:keys [dependencies?
            plugins?
            profiles?
-           check-clojure?]
+           check-clojure?
+           only
+           exclude]
     :or {dependencies? true
          profiles? true
          check-clojure? false}}]
-  (let [spec {:dependencies dependencies?
-              :plugins      plugins?
-              :profiles     profiles?
-              :clojure      check-clojure?}]
-    (reduce
-      (fn [result [k include?]]
-        (update-in
-          result
-          [(if include? :include :exclude)]
-          (fnil conj #{})
-          k))
-      {} spec)))
+  (if (or (seq only) (seq exclude))
+    (cond-> {}
+      (seq only) (assoc :include [only])
+      (seq exclude) (assoc :exclude [exclude]))
+    (let [spec {:dependencies dependencies?
+                :plugins      plugins?
+                :profiles     profiles?
+                :clojure      check-clojure?}]
+      (reduce
+        (fn [result [k include?]]
+          (update-in
+            result
+            [(if include? :include :exclude)]
+            (fnil conj #{})
+            k))
+        {} spec))))
 
 (defn options
   "Prepare the option map."
