@@ -19,6 +19,8 @@
   :colors?          true
   :print?           false
   :recursive?       false
+  :only             []
+  :exclude          []
   :tests?           true)
 
 (defmacro with-logging
@@ -84,3 +86,16 @@
     [":print" ":tests"]      {:print? true, :tests? true}
     [":tests" ":print"]      {:print? true, :tests? true}
     [":recursive"]           {:recursive? true}))
+
+(let [defaults (first (parse []))
+      dis (partial apply dissoc)]
+  (tabular
+    (fact "about setting effects"
+          (let [[flags args] (parse ?args)
+                ks (keys ?effects)]
+            (dis flags ks) => (dis defaults ks)
+            (select-keys flags ks) => ?effects
+            args => empty?))
+    ?args                    ?effects
+    [":only" "a,b"]          {:only [:a :b]}
+    [":exclude" "x,y"]       {:exclude [:x :y]}))

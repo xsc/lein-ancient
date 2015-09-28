@@ -35,6 +35,20 @@
    :recursive       [#{:recursive?}
                      "recursively process files at the given or current paths."]})
 
+(defn- split-keywords-into
+  [k]
+  (fn [opts ^String v]
+    (->> (string/split v #",")
+         (map keyword)
+         (assoc opts k))))
+
+(def ^:private settings
+  "All available settings and their parsers."
+  {:only [(split-keywords-into :only)
+          "low-level setting to determine which artifact types to process."]
+   :exclude [(split-keywords-into :exclude)
+             "low-level setting to determine which artifact types to ignore."]})
+
 (defn- keys->strings
   [m]
   (->> (for [[k v] m]
@@ -77,6 +91,12 @@
               (vector (str k))))
        (into {})))
 
+(def ^:private setting-fns
+  "Map of setting strings to effect functions."
+  (->> (for [[k [f _]] settings]
+         [(str k) f])
+       (into {})))
+
 (def ^:private defaults
   "Default settings."
   (-> (reduce
@@ -87,7 +107,9 @@
         (map first (vals flags)))
       (zipmap (repeat false))
       (merge
-        {:dependencies? true
+        {:only          []
+         :exclude       []
+         :dependencies? true
          :profiles?     true
          :colors?       true
          :tests?        true})))
@@ -111,33 +133,71 @@
   (let [msg (format "option '%s' not recognized." arg)]
     (throw (ex-info msg {:arg arg}))))
 
-(defn- supported?
-  "Check if an argument is supported and print warning if not. Returns
-   true if argument is supported, nil otherwise."
+(defn- applicable?
   [arg exclude?]
   (if (exclude? arg)
     (warnf "option '%s' is not applicable for this task." arg)
     (if-let [msg (deprecated arg)]
       (warnf "option '%s' is no longer supported. (%s)" arg msg)
-      (if (contains? flag-fns arg)
-        (flag-fns arg)
-        (unrecognized! arg)))))
+      true)))
+
+(defn- supported-flag?
+  "Check if an argument is supported and print warning if not. Returns
+   a flag function if argument is supported, nil otherwise."
+  [arg exclude?]
+  (when (applicable? arg exclude?)
+    (if (contains? flag-fns arg)
+      (flag-fns arg)
+      (unrecognized! arg))))
+
+(defn- supported-setting?
+  "Check if an argument is supported and print warning if not. Returns
+   a setting function if argument is supported, nil otherwise."
+  [arg exclude?]
+  (when (applicable? arg exclude?)
+    (if (contains? setting-fns arg)
+      (setting-fns arg)
+      (unrecognized! arg))))
 
 ;; ## Parse
 
 (defn- flag?
   "Check whether a string represents a flag."
-  [^String s]
-  (.startsWith s ":"))
+  [s]
+  (or (vector? s)
+      (.startsWith ^String s ":")))
+
+(defn- group-args
+  [args]
+  (loop [args args
+         result []]
+    (if (seq args)
+      (let [[flag & rst] args]
+        (if (contains? setting-fns flag)
+          (recur (next rst) (conj result [flag (first rst)]))
+          (recur rst (conj result flag))))
+      result)))
 
 (defn- split-args
   "Split command line arguments into flags and rest arguments."
   [args]
-  (let [[fls rst] (split-with flag? args)]
+  (let [args (group-args args)
+        [fls rst] (split-with flag? args)]
     (->> (if (= (first rst) "--")
            (rest rst)
            rst)
          (vector fls))))
+
+(defn- read-arg
+  [exclude? opts flag]
+  (if (vector? flag)
+    (let [[flag value] flag]
+      (if-let [f (supported-setting? flag exclude?)]
+        (f opts value)
+        opts))
+    (if-let [f (supported-flag? flag exclude?)]
+      (f opts)
+      opts)))
 
 (defn parse
   "Parse the given command line args and produce a pair of
@@ -149,10 +209,7 @@
                   (sort-by #(flag-order % 0))
                   (reverse)
                   (reduce
-                    (fn [opts flag]
-                      (if-let [f (supported? flag exclude?)]
-                        (f opts)
-                        opts))
+                    #(read-arg exclude? %1 %2)
                     (merge defaults change-defaults)))]
     [opts rst]))
 
@@ -167,7 +224,7 @@
 (defn doc!
   "Attach CLI doc to var metadata."
   [task-var msg & {:keys [exclude]}]
-  (->> (reduce dissoc flags exclude)
+  (->> (reduce dissoc (merge flags settings) exclude)
        (sort-by key)
        (map
          (fn [[k [_ doc]]]
