@@ -82,13 +82,22 @@
         artifact (f options (conj path k) data)]
     (update-in artifact [:keys] conj k)))
 
+(defn- match-it
+  [f sq keys]
+  (f
+    (fn [item]
+      (if (sequential? item)
+        (every? keys (set item))
+        (contains? keys item)))
+    sq))
+
 (defn- include-artifact?
   [{:keys [include exclude]} {:keys [artifact keys]}]
   (when artifact
     (let [k? (set keys)]
       (and (not (k? ::never))
-           (or (empty? include) (some k? include))
-           (or (empty? exclude) (not-any? k? exclude))))))
+           (or (empty? include) (match-it some include k?))
+           (or (empty? exclude) (match-it not-any? exclude k?))))))
 
 (defn collect-artifacts
   "Collect all artifacts in the given map, based on:
