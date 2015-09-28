@@ -9,10 +9,10 @@
   [{:keys [id version]} [_ _ & {:keys [upgrade upgrade?] :or {upgrade []}}]]
   (if (or (false? upgrade) (false? upgrade?))
     [::never]
-    (cond-> []
+    (cond-> #{}
       (#{"clojure"} id)            (conj :clojure)
-      (version/snapshot? version)  (conj :snapshots)
       (version/qualified? version) (conj :qualified)
+      (version/snapshot? version)  (-> (conj :snapshots) (disj :qualified))
       (keyword? upgrade)           (conj upgrade)
       (sequential? upgrade)        (concat upgrade))))
 
