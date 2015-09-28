@@ -79,8 +79,6 @@
   (let [spec {:dependencies dependencies?
               :plugins      plugins?
               :profiles     profiles?
-              :snapshots    snapshots?
-              :qualified    qualified?
               :clojure      check-clojure?}]
     (reduce
       (fn [result [k include?]]
@@ -94,11 +92,19 @@
 (defn options
   "Prepare the option map."
   ([] (options {}))
-  ([{:keys [repositories mirrors] :as opts}]
+  ([{:keys [repositories
+            mirrors
+            snapshots?
+            qualified?]
+     :or {snapshots? false
+          qualified? false}
+     :as opts}]
    (merge
      {:repositories
       (-> (or repositories ancient/default-repositories)
           (select-mirrors mirrors)
           (prepare-repositories))
+      :snapshots? snapshots?
+      :qualified? qualified?
       :cache (ref {})}
      (include-exclude-options opts))))
