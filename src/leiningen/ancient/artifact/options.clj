@@ -68,13 +68,9 @@
   [{:keys [dependencies?
            plugins?
            profiles?
-           snapshots?
-           qualified?
            check-clojure?]
     :or {dependencies? true
-         snapshots? false
          profiles? true
-         qualified? false
          check-clojure? false}}]
   (let [spec {:dependencies dependencies?
               :plugins      plugins?
