@@ -64,49 +64,40 @@
          [name (or mirror v)])
        (into {})))
 
-(defn- include-exclude-options
-  [{:keys [dependencies?
-           plugins?
-           profiles?
-           check-clojure?
-           only
-           exclude]
-    :or {dependencies? true
-         profiles? true
-         check-clojure? false}}]
-  (if (or (seq only) (seq exclude))
-    (cond-> {}
-      (seq only) (assoc :include [only])
-      (seq exclude) (assoc :exclude [exclude]))
-    (let [spec {:dependencies dependencies?
-                :plugins      plugins?
-                :profiles     profiles?
-                :clojure      check-clojure?}]
-      (reduce
-        (fn [result [k include?]]
-          (update-in
-            result
-            [(if include? :include :exclude)]
-            (fnil conj #{})
-            k))
-        {} spec))))
+(defn- repository-options
+  [options {:keys [repositories mirrors]}]
+  (->> (-> (or repositories ancient/default-repositories)
+           (select-mirrors mirrors)
+           (prepare-repositories))
+       (assoc options :repositories)))
+
+(defn- version-options
+  [options {:keys [snapshots? qualified?]}]
+  (assoc options
+         :snapshots? (boolean snapshots?)
+         :qualified? (boolean qualified?)))
+
+(defn- selector-options
+  [options {:keys [dependencies? plugins? profiles? check-clojure? only exclude]
+            :or {dependencies? true, profiles? true}}]
+
+  (let [base (->> [dependencies? plugins? profiles? check-clojure?]
+                  (map #(if % :include :exclude))
+                  (zipmap [:dependencies :plugins :profiles :clojure])
+                  (reduce
+                    (fn [m [marker k]]
+                      (update-in m [k] conj marker))
+                    {}))]
+    (cond-> base
+      (seq only)    (update-in [:include] #(map (fn [x] (conj only x)) %))
+      (seq exclude) (update-in [:exclude] concat exclude)
+      true          (merge options))))
 
 (defn options
   "Prepare the option map."
   ([] (options {}))
-  ([{:keys [repositories
-            mirrors
-            snapshots?
-            qualified?]
-     :or {snapshots? false
-          qualified? false}
-     :as opts}]
-   (merge
-     {:repositories
-      (-> (or repositories ancient/default-repositories)
-          (select-mirrors mirrors)
-          (prepare-repositories))
-      :snapshots? snapshots?
-      :qualified? qualified?
-      :cache (ref {})}
-     (include-exclude-options opts))))
+  ([opts]
+   (-> {:cache (ref {})}
+       (repository-options opts)
+       (version-options opts)
+       (selector-options opts))))

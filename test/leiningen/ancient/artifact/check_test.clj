@@ -45,14 +45,25 @@
                 artifacts (collect-artifacts opts data)]
             (set (map (comp :symbol :artifact) artifacts)) => (set ?artifacts)))
     ?opts                              ?artifacts
-    {:only [:qualified]}               '[qualified qualified-plugin]
+    {:only [:qualified]}               '[qualified]
     {:only [:dependencies :qualified]} '[qualified]
-    {:only [:plugins :qualified]}      '[qualified-plugin]
-    {:exclude [:qualified]}            '[snapshot release snapshot-plugin plugin]
+    {:only [:plugins :qualified]}      '[]
+    {:plugins? true
+     :only [:plugins :qualified]}      '[qualified-plugin]
+    {:plugins? true
+     :only [:qualified]}               '[qualified qualified-plugin]
+    {:dependencies? false
+     :plugins? true
+     :only [:qualified]}               '[qualified-plugin]
+    {:exclude [:qualified]}            '[snapshot release]
     {:only [:dependencies]
      :exclude [:qualified]}            '[snapshot release]
-    {:only [:snapshots]}               '[snapshot snapshot-plugin]
-    {:exclude [:snapshots]}            '[qualified release qualified-plugin plugin]))
+    {:only [:snapshots]}               '[snapshot]
+    {:plugins? true,
+     :only [:snapshots]}               '[snapshot snapshot-plugin]
+    {:exclude [:snapshots]}            '[qualified release]
+    {:plugins? true
+     :exclude [:snapshots]}            '[qualified release qualified-plugin plugin]))
 
 (let [artifact (read-artifact [:path] '[artifact "0.1.0" :exclusions []])
       const-opts #(o/options
