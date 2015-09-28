@@ -114,11 +114,11 @@
    map, options and arguments. Will not print file paths if only the current
    project's file is processed."
   [f {:keys [opts args project] :as o}]
-  (if-let [files-if-multiple (if (:recursive? opts)
-                               (if (seq args)
-                                 (mapcat collect/recursive-project-files args)
-                                 (collect/recursive-project-files "."))
-                               (if (seq args)
+  (if-let [files-if-multiple (seq
+                               (if (:recursive? opts)
+                                 (if (seq args)
+                                   (mapcat collect/recursive-project-files args)
+                                   (collect/recursive-project-files "."))
                                  (keep collect/project-file-at args)))]
     (call-files f o files-if-multiple)
     (if (:root project)
