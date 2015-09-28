@@ -64,28 +64,41 @@
          [name (or mirror v)])
        (into {})))
 
+(defn- include-exclude-options
+  [{:keys [dependencies?
+           plugins?
+           profiles?
+           snapshots?
+           qualified?
+           check-clojure?]
+    :or {dependencies? true
+         snapshots? false
+         profiles? true
+         qualified? false
+         check-clojure? false}}]
+  (let [spec {:dependencies dependencies?
+              :plugins      plugins?
+              :profiles     profiles?
+              :snapshots    snapshots?
+              :qualified    qualified?
+              :clojure      check-clojure?}]
+    (reduce
+      (fn [result [k include?]]
+        (update-in
+          result
+          [(if include? :include :exclude)]
+          (fnil conj #{})
+          k))
+      {} spec)))
+
 (defn options
   "Prepare the option map."
   ([] (options {}))
-  ([{:keys [repositories mirrors
-            dependencies? plugins? profiles?
-            snapshots? qualified?
-            check-clojure?]
-     :or {dependencies? true
-          snapshots? false
-          profiles? true
-          qualified? false
-          check-clojure? false}}]
-   {:repositories (-> (or repositories ancient/default-repositories)
-                      (select-mirrors mirrors)
-                      (prepare-repositories))
-    :snapshots? snapshots?
-    :qualified? qualified?
-    :check-clojure? check-clojure?
-    :allowed-keys (->> (vector
-                         (if dependencies? :dependencies)
-                         (if plugins? :plugins)
-                         (if profiles? :profiles))
-                       (filter identity)
-                       (set))
-    :cache (ref {})}))
+  ([{:keys [repositories mirrors] :as opts}]
+   (merge
+     {:repositories
+      (-> (or repositories ancient/default-repositories)
+          (select-mirrors mirrors)
+          (prepare-repositories))
+      :cache (ref {})}
+     (include-exclude-options opts))))

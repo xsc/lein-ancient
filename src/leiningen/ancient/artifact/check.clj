@@ -3,11 +3,20 @@
             [ancient-clj.core :as ancient]
             [version-clj.core :as version]))
 
-;; ## Artifact Map
+;; ## Artifact Keys/Partitions
 
-(defn- check-artifact?
-  [[_ _ & {:keys [upgrade?] :or {upgrade? true}}]]
-  (boolean upgrade?))
+(defn- artifact-keys
+  [{:keys [id version]} [_ _ & {:keys [upgrade upgrade?] :or {upgrade []}}]]
+  (if (or (false? upgrade) (false? upgrade?))
+    [::never]
+    (cond-> []
+      (#{"clojure"} id)            (conj :clojure)
+      (version/snapshot? version)  (conj :snapshots)
+      (version/qualified? version) (conj :qualified)
+      (keyword? upgrade)           (conj upgrade)
+      (sequential? upgrade)        (concat upgrade))))
+
+;; ## Artifact Collection
 
 (defn read-artifact
   "Combine artifact path and artifact vector to a map of `:path`/`:artifact`."
@@ -15,17 +24,18 @@
   (when (and (vector? artifact-vector)
              (symbol? (first artifact-vector))
              (or (= (count artifact-vector) 1)
-                 (string? (second artifact-vector)))
-             (check-artifact? artifact-vector))
-    {:path path
-     :artifact (ancient/read-artifact artifact-vector)}))
+                 (string? (second artifact-vector))))
+    (let [artifact (ancient/read-artifact artifact-vector)
+          ks (artifact-keys artifact artifact-vector)]
+      {:path     path
+       :artifact artifact
+       :keys     ks})))
 
 (defn- collect-from?
-  [{:keys [allowed-keys]} k data]
-  (when (contains? allowed-keys k)
-    (if (= k :profiles)
-      (or (map? data) (sequential? data))
-      (sequential? data))))
+  [k data]
+  (if (= k :profiles)
+    (or (map? data) (sequential? data))
+    (sequential? data)))
 
 (declare collect-artifacts-from-map)
 
@@ -61,35 +71,41 @@
     v))
 
 (defn- collect-artifacts-from-map
-  [{:keys [allowed-keys] :as options} path artifacts]
-  (for [k allowed-keys
+  [options path artifacts]
+  (for [k [:dependencies :plugins :profiles]
         :when (contains? artifacts k)
         :let [data (get artifacts k)]
-        :when (collect-from? options k data)
+        :when (collect-from? k data)
         :let [f (if (= k :profiles)
                   collect-artifacts-from-profiles
                   collect-artifacts-from-vector)]
         artifact (f options (conj path k) data)]
-    artifact))
+    (update-in artifact [:keys] conj k)))
 
 (defn- include-artifact?
-  [{:keys [check-clojure?]} {:keys [artifact]}]
+  [{:keys [include exclude]} {:keys [artifact keys]}]
   (when artifact
-    (or check-clojure?
-        (not (contains? #{"clojure"} (:id artifact))))))
+    (let [k? (set keys)]
+      (and (not (k? ::never))
+           (or (empty? include) (some k? include))
+           (or (empty? exclude) (not-any? k? exclude))))))
 
 (defn collect-artifacts
   "Collect all artifacts in the given map, based on:
 
-   - `:allowed-keys`: a seq of keys to be investiaged (e.g. `[:dependencies]`),
-   - `:check-clojure?`: whether to check Clojure artifacts.
+   - `:include`: artifact-specific keys to include,
+   - `:exclude`: artifact-specific keys to exclude.
+
+   Artifact keys are derived from the artifact ID, its position, version and an
+   additional `:upgrade` option in the artifact vector. The following would e.g.
+   have the keys `:snapshot`, `:clojure`, `:dependencies` and `:profiles`:
+
+       :profiles {:1.7 {:dependencies
+                        [[org.clojure/clojure \"1.7.0-master-SNAPSHOT\"]]}}}
 
    "
   [options artifacts]
-  (->> (collect-artifacts-from-map
-         (update-in options [:allowed-keys] set)
-         []
-         artifacts)
+  (->> (collect-artifacts-from-map options [] artifacts)
        (filter #(include-artifact? options %))))
 
 ;; ## Check

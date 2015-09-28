@@ -5,6 +5,7 @@
              [options :as o]]))
 
 (let [data '{:dependencies [[group/artifact "1.0.0"]
+                            [group/excluded "1.0.0" :upgrade false]
                             [org.clojure/clojure "1.5.1"]]
              :plugins [[group/plugin "0.1.0"]]
              :profiles {:xyz {:dependencies [[artifact "1.2.3"]]
