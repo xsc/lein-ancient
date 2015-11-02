@@ -11,6 +11,7 @@
     [::never]
     (cond-> #{}
       (#{"clojure"} id)            (conj :clojure)
+      (#{"clojurescript"} id)      (conj :clojure)
       (version/qualified? version) (conj :qualified)
       (version/snapshot? version)  (-> (conj :snapshots) (disj :qualified))
       (keyword? upgrade)           (conj upgrade)
