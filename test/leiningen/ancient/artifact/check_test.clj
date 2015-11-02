@@ -6,7 +6,8 @@
 
 (let [data '{:dependencies [[group/artifact "1.0.0"]
                             [group/excluded "1.0.0" :upgrade false]
-                            [org.clojure/clojure "1.5.1"]]
+                            [org.clojure/clojure "1.5.1"]
+                            [org.clojure/clojurescript "1.7.58"]]
              :plugins [[group/plugin "0.1.0"]]
              :profiles {:xyz {:dependencies [[artifact "1.2.3"]]
                               :plugins [[plugin "3.2.1"]]}
@@ -22,7 +23,7 @@
             paths => (has every? (complement empty?))))
     ?opts                                  ?artifacts
     {}                                     '[group/artifact artifact comp]
-    {:check-clojure? true}                 '[group/artifact artifact comp org.clojure/clojure]
+    {:check-clojure? true}                 '[group/artifact artifact comp org.clojure/clojure org.clojure/clojurescript]
     {:profiles? false}                     '[group/artifact]
     {:dependencies? false}                 '[]
     {:plugins? true}                       '[group/artifact artifact comp group/plugin plugin]
@@ -31,7 +32,7 @@
     {:plugins? true
      :dependencies? true
      :check-clojure? true
-     :profiles? false}                     '[group/artifact group/plugin org.clojure/clojure]))
+     :profiles? false}                     '[group/artifact group/plugin org.clojure/clojure org.clojure/clojurescript]))
 
 (let [data '{:dependencies [[snapshot "0-SNAPSHOT"]
                             [qualified "0-alpha"]
