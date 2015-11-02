@@ -9,10 +9,8 @@
                   :upgrade? false]
                  [version-clj "0.1.2"]
                  [jansi-clj "0.1.0"]
-                 [org.clojure/tools.reader "0.9.2"]
-                 [potemkin "0.4.1"]
-                 [joda-time "2.8.2"]
-                 [commons-io "2.4"]]
+                 [org.clojure/tools.reader "0.10.0"]
+                 [potemkin "0.4.1"]]
   :license {:name "MIT License"
             :url "http://opensource.org/licenses/MIT"
             :year 2013
