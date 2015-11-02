@@ -7,6 +7,10 @@
 - Implements #54: Consistent subtask names.
 - Implements #55: Error code 1 when `check` or `check-profiles` fails.
 - Fixes #57: Handling of `file:repo` (i.e. relative path) repositories.
+- Implements #61: Check composite profiles.
+- Implements #63: Only check ClojureScript when `:check-clojure` is set.
+- Add `:only`/`:exclude` command line options.
+- Deprecates subtasks `get` and `profiles`.
 
 ## 0.6.7
 
