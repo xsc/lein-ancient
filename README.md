@@ -65,7 +65,7 @@ To let `lein-ancient` perform the same checks for the profiles in `~/.lein/profi
 it using:
 
 ```bash
-$ lein ancient profiles [<options>]
+$ lein ancient check-profiles [<options>]
 ...
 ```
 
@@ -100,6 +100,40 @@ $ lein ancient upgrade-profiles [<options>]
 ...
 ```
 
+## Exclusion/Selection of Artifacts
+
+It is possible to add a marker to an artifact vector using the `:upgrade` key:
+
+```clojure
+:dependencies [[org.clojure/clojure "1.7.0"]
+               [pandect "0.4.0" :upgrade :crypto]]
+```
+
+This can be :
+
+- the boolean value `false`: do never check/upgrade this artifact,
+- a keyword: mark the artifact with the given keyword,
+- a vector of keywords: mark the artifact with the given keywords.
+
+By supplying `:only` or `:exclude` on the command line, you can run
+checks/upgrades on only those artifacts that match the given markers:
+
+```
+$ lein ancient upgrade :exclude crypto
+```
+
+There are two predefined markers that get attached to matching artifacts:
+`snapshots` to SNAPSHOT versions and `qualified` to qualified (i.e.
+alpha/beta/...) ones.
+
+ __Note__ that `:only`/`:exclude` compose with the
+`:dependencies`/`:plugins`/`:all` options - to e.g. only upgrade SNAPSHOTs of
+plugins you'd use:
+
+```
+$ lein ancient upgrade :plugins :only snapshots
+```
+
 ## Regression Testing
 
 You'd want to make sure that the upgraded dependencies don't mess with your library or application,
@@ -123,7 +157,7 @@ If you do not have access to a browser or are just too lazy/annoyed to leave the
 to your console while the latter only retrieves the artifact vector, e.g. destined for your `project.clj`.
 
 ```bash
-$ lein ancient get com.taoensso/timbre :allow-all
+$ lein ancient show-versions com.taoensso/timbre :allow-all
 Getting Version Information for com.taoensso/timbre from 2 Repositories ...
   * 39 version(s) found.
   * latest release:          "2.6.2"
@@ -132,7 +166,7 @@ Getting Version Information for com.taoensso/timbre from 2 Repositories ...
   * all releases:            [ "2.6.2" "2.6.1" "2.6.0" "2.5.0" "2.4.1" ...
 ...
 
-$ lein ancient latest com.taoensso/timbre :allow-all
+$ lein ancient show-latest com.taoensso/timbre :allow-all
 [com.taoensso/timbre "2.6.2"]
 ```
 
