@@ -15,8 +15,8 @@
         (let [r (or (read-line) "")
               r (.toLowerCase ^String r)]
           (case r
-            ("yes" "y") (do (println) true)
-            ("no" "n")  (do (println) false)
+            ("yes" "y") true
+            ("no" "n")  false
             (recur (inc i))))))))
 
 (defn print-outdated-message
@@ -35,11 +35,11 @@
   (let [{:keys [symbol version-string]} artifact
         clojure? (contains? (set keys) :clojure)]
     (verbosef
-      "[%s %s] is available but we use %s %s\n"
+      "[%s %s] is available but we use %s %s"
       symbol
       (color/green (pr-str (:version-string latest)))
       (color/yellow (pr-str version-string))
       (color/blue
         (if clojure?
           "(use :check-clojure to upgrade)"
-          "(not upgraded)")))))
+          "(ignored)")))))

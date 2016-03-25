@@ -17,7 +17,9 @@
     (utils/with-success [outdated (f/check! r artifact-opts)]
       (if (seq outdated)
         (doseq [artifact outdated]
-          (console/print-outdated-message artifact))
+          (if (:include? artifact)
+            (console/print-outdated-message artifact)
+            (console/print-ignored-message artifact)))
         (verbosef "all artifacts are up-to-date."))
       {:outdated? (seq outdated)})))
 
