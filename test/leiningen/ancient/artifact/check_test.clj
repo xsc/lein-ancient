@@ -15,7 +15,7 @@
   (tabular
     (fact "about artifact collection."
           (let [opts (o/options ?opts)
-                artifacts (collect-artifacts opts data)
+                artifacts (filter :include? (collect-artifacts opts data))
                 symbols (map (comp :symbol :artifact) artifacts)
                 paths (map :path artifacts)]
             (set symbols) => (set ?artifacts)
@@ -89,6 +89,7 @@
                                   [rest2 "0.2.0"]]}
             opts (o/options {})
             artifacts (->> (collect-artifacts opts data)
+                           (filter :include?)
                            (map (juxt (comp :symbol :artifact) :path)))]
         (count artifacts) => 5
         artifacts => (contains #{'[group/artifact [:dependencies 0]]})

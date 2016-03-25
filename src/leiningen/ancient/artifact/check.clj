@@ -92,13 +92,17 @@
         (contains? keys item)))
     sq))
 
-(defn- include-artifact?
-  [{:keys [include exclude]} {:keys [artifact keys]}]
+(defn- mark-artifact
+  [{:keys [include exclude]} {:keys [artifact keys] :as data}]
   (when artifact
     (let [k? (set keys)]
-      (and (not (k? ::never))
-           (or (empty? include) (match-it some include k?))
-           (or (empty? exclude) (match-it not-any? exclude k?))))))
+      (when-not (k? ::never)
+        (cond (and (or (empty? include) (match-it some include k?))
+                   (or (empty? exclude) (match-it not-any? exclude k?)))
+              (assoc data :include? true)
+
+              (k? :clojure)
+              data)))))
 
 (defn collect-artifacts
   "Collect all artifacts in the given map, based on:
@@ -116,7 +120,7 @@
    "
   [options artifacts]
   (->> (collect-artifacts-from-map options [] artifacts)
-       (filter #(include-artifact? options %))))
+       (keep #(mark-artifact options %))))
 
 ;; ## Check
 

@@ -23,7 +23,9 @@
 
 (defn- exit-with-status
   [results]
-  (when (some (comp :outdated? second) results)
+  (when (->> (mapcat (comp :outdated? second) results)
+             (filter :include?)
+             (seq))
     (main/exit 1)))
 
 ;; ## Tasks
