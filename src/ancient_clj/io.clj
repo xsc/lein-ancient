@@ -39,19 +39,17 @@
 
 (defn- prepare-loader-options
   [opts]
-  (-> (cond (fn? opts)     {:f opts}
-            (string? opts) {:uri opts}
-            (map? opts)    (rename-keys
-                             opts
-                             {:url :uri
-                              :password :passphrase})
-            :else (throw-loader-exception! opts))
-      (assoc-scheme)))
+  (some-> (cond (fn? opts)     {:f opts}
+                (string? opts) {:uri opts}
+                (map? opts)    (rename-keys
+                                 opts
+                                 {:url :uri
+                                  :password :passphrase})
+                :else nil)
+          (assoc-scheme)))
 
 (defn- wrap-loader
-  [{:keys [wrap] :or {wrap identity} :as opts} loader]
-  (when-not loader
-    (throw-loader-exception! opts))
+  [{:keys [wrap] :or {wrap identity}} loader]
   (wrap loader))
 
 (defn- create-loader
@@ -60,17 +58,22 @@
     (loader-for* opts)
     f))
 
+(defn maybe-loader-for
+  [opts]
+  (some->> (prepare-loader-options opts)
+           (create-loader)
+           (wrap-loader opts)))
+
 (defn loader-for
   [opts]
-  (let [opts' (prepare-loader-options opts)]
-    (->> (create-loader opts')
-         (wrap-loader opts'))))
+  (or (maybe-loader-for opts)
+      (throw-loader-exception! opts)))
 
 ;; ## Loaders
 
 (defmethod loader-for* nil
-  [opts]
-  (throw-loader-exception! opts))
+  [_]
+  nil)
 
 (defmethod loader-for* :http
   [{:keys [uri] :as opts}]
