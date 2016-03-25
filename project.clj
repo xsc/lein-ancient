@@ -2,7 +2,7 @@
   :description "Maven Version Utilities for Clojure"
   :url "https://github.com/xsc/ancient-clj"
   :license {:name "MIT License"
-            :url "http://opensource.org/licenses/MIT"
+            :url "https://opensource.org/licenses/MIT"
             :year 2013
             :key "mit"}
   :dependencies [[org.clojure/clojure "1.7.0"]
