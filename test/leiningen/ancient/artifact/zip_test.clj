@@ -33,6 +33,27 @@
   [:dependencies 0]
 
   (str "(defproject project-x \"0.1.1-SNAPSHOT\"\n"
+       "  :dependencies #^:replace [[xyz \"0.2.0\"]\n"
+       "                            %s\n"
+       "                            [abc \"0.3.0\"]])")
+  read-project-zipper!
+  [:dependencies 1]
+
+  (str "(defproject project-x \"0.1.1-SNAPSHOT\"\n"
+       "  :dependencies ^:replace [[xyz \"0.2.0\"]\n"
+       "                           %s\n"
+       "                           [abc \"0.3.0\"]])")
+  read-project-zipper!
+  [:dependencies 1]
+
+  (str "(defproject project-x \"0.1.1-SNAPSHOT\"\n"
+       "  :dependencies [[xyz \"0.2.0\"]\n"
+       "                 ^:some-meta %s\n"
+       "                 [abc \"0.3.0\"]])")
+  read-project-zipper!
+  [:dependencies 1]
+
+  (str "(defproject project-x \"0.1.1-SNAPSHOT\"\n"
        "  :dependencies [#_[ignore] %s])")
   read-project-zipper!
   [:dependencies 0]
