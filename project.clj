@@ -13,7 +13,7 @@
                  [org.clojure/tools.reader "0.10.0"]
                  [potemkin "0.4.3"]]
   :license {:name "MIT License"
-            :url "http://opensource.org/licenses/MIT"
+            :url "https://opensource.org/licenses/MIT"
             :year 2013
             :key "mit"}
   :profiles {:dev {:dependencies [[midje "1.8.3"]
