@@ -1,7 +1,7 @@
 (defproject lein-ancient "0.6.9-SNAPSHOT"
   :description "Check your Projects for outdated Dependencies."
   :url "https://github.com/xsc/lein-ancient"
-  :dependencies [[ancient-clj "0.3.11"
+  :dependencies [[ancient-clj "0.3.12"
                   :exclusions [com.amazonaws/aws-java-sdk-s3]]
                  [rewrite-clj "0.4.12"]
                  [com.amazonaws/aws-java-sdk-s3 "1.9.0"
@@ -10,12 +10,12 @@
                  [version-clj "0.1.2"]
                  [jansi-clj "0.1.0"]
                  [org.clojure/tools.reader "0.10.0"]
-                 [potemkin "0.4.1"]]
+                 [potemkin "0.4.3"]]
   :license {:name "MIT License"
             :url "http://opensource.org/licenses/MIT"
             :year 2013
             :key "mit"}
-  :profiles {:dev {:dependencies [[midje "1.7.0"]
+  :profiles {:dev {:dependencies [[midje "1.8.3"]
                                   [slingshot "0.12.2"]]
                    :plugins [[lein-midje "3.1.1"]]
                    :test-paths ["test"]}}
