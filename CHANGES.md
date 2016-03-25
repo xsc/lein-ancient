@@ -1,5 +1,13 @@
 # CHANGES: `lein-ancient`
 
+## 0.6.9
+
+- Using [ancient-clj][ancient-clj] 0.3.12
+- Implements #69: List outdated Clojure/ClojureScript artifacts but do not
+  include in exit code calculation or upgrade unless `:check-clojure` is
+  explicitly given.
+- Implements #71: Warn on unknown repository types instead of failing.
+
 ## 0.6.8
 
 - Using [ancient-clj][ancient-clj] 0.3.11
