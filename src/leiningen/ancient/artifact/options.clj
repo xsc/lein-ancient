@@ -9,41 +9,46 @@
   (->> (quot (- (System/nanoTime) start) 1000000)
        (format "\u0394 %4dms")))
 
-(defn- wrap-loaders
-  "Wrap loaders with logging."
-  [loaders]
-  (->> (for [[repo-id f] loaders]
-         (->> (fn [group id]
-                (let [start (System/nanoTime)
-                      vs (f group id)
-                      tag (->> (vector
-                                 (format "[%s]" repo-id)
-                                 (format-delta start))
-                               (apply format "%-9s - %-7s -"))]
-                  (cond (instance? Throwable vs)
-                        (warnf "%s failure when checking %s/%s: %s" tag group id vs)
-                        (empty? vs)
-                        (debugf "%s no results for %s/%s." tag group id)
-                        :else
-                        (debugf "%s %d versions found for %s/%s." tag (count vs) group id))
-                  vs))
-              (vector repo-id)))
-       (into {})))
+(defn- wrap-single-loader
+  [f repo-id]
+  (fn [group id]
+    (let [start (System/nanoTime)
+          vs (f group id)
+          tag (->> (vector
+                     (format "[%s]" repo-id)
+                     (format-delta start))
+                   (apply format "%-9s - %-7s -"))]
+      (cond (instance? Throwable vs)
+            (warnf "%s failure when checking %s/%s: %s" tag group id vs)
+            (empty? vs)
+            (debugf "%s no results for %s/%s." tag group id)
+            :else
+            (debugf "%s %d versions found for %s/%s." tag (count vs) group id))
+      vs)))
+
+(defn- create-repository-loader
+  [repo-id spec]
+  (when spec
+    (some-> (if (fn? spec)
+              spec
+              (-> (if (string? spec) {:url spec} spec)
+                  (user/profile-auth)
+                  (user/resolve-credentials)))
+            (ancient/maybe-create-loader)
+            (wrap-single-loader repo-id))))
 
 (defn prepare-repositories
   "Prepate the repositories for usage with ancient-clj."
   [repositories]
   (debugf "repositories: %s" (pr-str repositories))
-  (-> (for [[k spec] repositories
-            :when spec]
-        (->> (if (fn? spec)
-               spec
-               (-> (if (string? spec) {:url spec} spec)
-                   (user/profile-auth)
-                   (user/resolve-credentials)))
-             (vector k)))
-      (ancient/create-loaders)
-      (wrap-loaders)))
+  (->> (for [[repo-id spec] repositories
+             :let [loader (create-repository-loader repo-id spec)]]
+         (if loader
+           [repo-id loader]
+           (warnf "[%s] could not create repository loader: %s"
+                  repo-id
+                  (pr-str spec))))
+       (into {})))
 
 (defn- select-mirror
   "Select a mirror for the given repository name/URL."
