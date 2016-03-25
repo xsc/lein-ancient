@@ -16,11 +16,20 @@
 
 ;; ## Helper
 
+(defn- sanitize
+  [m k]
+  (if (contains? m k)
+    (assoc m k '<hidden>)
+    m))
+
 (defn- throw-loader-exception!
   [opts]
-  (throw
-    (IllegalArgumentException.
-      (format "cannot create loader from: %s" (pr-str opts)))))
+  (let [sanitized-opts (-> opts
+                           (sanitize :password)
+                           (sanitize :passphrase))]
+    (throw
+      (IllegalArgumentException.
+        (format "cannot create loader from: %s" (pr-str opts))))))
 
 (def ^:private get-scheme
   (let [m {:https :http
