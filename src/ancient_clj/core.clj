@@ -28,6 +28,12 @@
          [id (wrap (io/loader-for v))])
        (into {})))
 
+(defn ^{:added "0.3.12"} maybe-create-loader
+  "Create loader function for the given spec. Will return `nil` for
+   unknown loader types."
+  [spec]
+  (io/maybe-loader-for spec))
+
 (defn ^{:added "0.3.12"} maybe-create-loaders
   "Create loader map for a seq of ID/settings pairs representing
    different repositories. Will contain `nil` values for unknown
