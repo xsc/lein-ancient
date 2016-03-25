@@ -16,14 +16,16 @@
 
 (defn- prompt-for-upgrade!
   [artifact {:keys [opts]}]
-  (let [result (if (:include? artifact)
-                 (do
-                   (console/print-outdated-message artifact)
-                   (or (not (:interactive? opts))
-                       (console/prompt "Do you want to upgrade?")))
-                 (console/print-ignored-message artifact))]
-    (println)
-    result))
+  (if (:include? artifact)
+    (do
+      (console/print-outdated-message artifact)
+      (or (not (:interactive? opts))
+          (let [result (console/prompt "Do you want to upgrade?")]
+            (println)
+            result)))
+    (do (console/print-ignored-message artifact)
+        (if (:interactive? opts)
+          (println)))))
 
 (defn- as-string
   [upgraded]
