@@ -29,3 +29,17 @@
       symbol
       (color/green (pr-str (:version-string latest)))
       (color/yellow (pr-str version-string)))))
+
+(defn print-ignored-message
+  [{:keys [latest artifact keys]}]
+  (let [{:keys [symbol version-string]} artifact
+        clojure? (contains? (set keys) :clojure)]
+    (verbosef
+      "[%s %s] is available but we use %s %s"
+      symbol
+      (color/green (pr-str (:version-string latest)))
+      (color/yellow (pr-str version-string))
+      (color/blue
+        (if clojure?
+          "(use :check-clojure to upgrade)"
+          "(not upgraded)")))))
