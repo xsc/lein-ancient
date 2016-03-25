@@ -1,7 +1,8 @@
 (defproject lein-ancient "0.6.9-SNAPSHOT"
   :description "Check your Projects for outdated Dependencies."
   :url "https://github.com/xsc/lein-ancient"
-  :dependencies [[ancient-clj "0.3.12"
+  :dependencies [[org.clojure/clojure "1.8.0" :scope "provided"]
+                 [ancient-clj "0.3.12"
                   :exclusions [com.amazonaws/aws-java-sdk-s3]]
                  [rewrite-clj "0.4.12"]
                  [com.amazonaws/aws-java-sdk-s3 "1.9.0"
