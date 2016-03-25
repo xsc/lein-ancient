@@ -5,7 +5,6 @@ dependencies and plugins.
 
 [![Build Status](https://travis-ci.org/xsc/lein-ancient.svg?branch=master)](https://travis-ci.org/xsc/lein-ancient)
 [![Dependencies Status](http://jarkeeper.com/xsc/lein-ancient/status.svg)](http://jarkeeper.com/xsc/lein-ancient)
-[![endorse](https://api.coderwall.com/xsc/endorsecount.png)](https://coderwall.com/xsc)
 
 This plugin supersedes [lein-outdated](https://github.com/ato/lein-outdated) and uses metadata
 XML files in the different Maven repositories instead of a [Lucene](http://lucene.apache.org/core/)-based
@@ -15,7 +14,7 @@ search index. Version comparison is done using [version-clj](https://github.com/
 
 __Leiningen__ ([via Clojars](https://clojars.org/lein-ancient))
 
-Put one of the following into the `:plugins` vector of the `:user` profile in your `~/.lein/profiles.clj`:
+Put the following into the `:plugins` vector of the `:user` profile in your `~/.lein/profiles.clj`:
 
 [![Clojars Project](http://clojars.org/lein-ancient/latest-version.svg)](http://clojars.org/lein-ancient)
 
