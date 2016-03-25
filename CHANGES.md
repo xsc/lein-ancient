@@ -3,6 +3,8 @@
 ## 0.6.9
 
 - Using [ancient-clj][ancient-clj] 0.3.12
+- Fixes #67: Upgrade no longer produces a malformed `project.clj` if metadata
+  (e.g. `^:replace`) is used.
 - Implements #69: List outdated Clojure/ClojureScript artifacts but do not
   include in exit code calculation or upgrade unless `:check-clojure` is
   explicitly given.
