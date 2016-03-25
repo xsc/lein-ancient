@@ -16,7 +16,7 @@
             :url "https://opensource.org/licenses/MIT"
             :year 2013
             :key "mit"}
-  :profiles {:dev {:dependencies [[midje "1.7.0"]
+  :profiles {:dev {:dependencies [[midje "1.7.0" :upgrade? false]
                                   [slingshot "0.12.2"]]
                    :plugins [[lein-midje "3.1.1"]]
                    :test-paths ["test"]}}
