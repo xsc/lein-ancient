@@ -1,7 +1,7 @@
 (ns ancient-clj.core
   (:require [ancient-clj
              [artifact :as artifact]
-             [io :refer [loader-for]]
+             [io :as io]
              [load :refer [load-versions!]]]
             [version-clj.core :as v]
             [potemkin :refer [import-vars]]))
@@ -25,7 +25,18 @@
    `wrap` will be called on each loader function."
   [m & {:keys [wrap] :or {wrap identity}}]
   (->> (for [[id v] m]
-         [id (wrap (loader-for v))])
+         [id (wrap (io/loader-for v))])
+       (into {})))
+
+(defn ^{:added "0.3.12"} maybe-create-loaders
+  "Create loader map for a seq of ID/settings pairs representing
+   different repositories. Will contain `nil` values for unknown
+   loaders.
+
+   `wrap` will be called on each loader function."
+  [m & {:keys [wrap] :or {wrap identity}}]
+  (->> (for [[id v] m]
+         [id (some-> v io/maybe-loader-for wrap)])
        (into {})))
 
 ;; ## Result Handling
