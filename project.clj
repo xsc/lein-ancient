@@ -1,4 +1,4 @@
-(defproject lein-ancient "0.6.9-SNAPSHOT"
+(defproject lein-ancient "0.6.9"
   :description "Check your Projects for outdated Dependencies."
   :url "https://github.com/xsc/lein-ancient"
   :dependencies [[org.clojure/clojure "1.8.0" :scope "provided"]
