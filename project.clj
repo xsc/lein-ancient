@@ -16,7 +16,6 @@
                                slingshot]]
                  [commons-logging "1.2"]
                  [potemkin "0.4.3"]]
-  :exclusions [org.clojure/clojure joda-time]
   :profiles {:dev {:dependencies [[midje "1.8.3"]
                                   [clj-time "0.11.0"]
                                   [joda-time "2.9.2"]
