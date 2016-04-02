@@ -20,8 +20,6 @@
                                   [clj-time "0.11.0"]
                                   [joda-time "2.9.2"]
                                   [http-kit "2.1.19"]]
-                   :plugins [[lein-midje "3.1.3"]]}
-             :1.5 {:dependencies [[org.clojure/clojure "1.5.1"]]}}
-  :aliases {"all"  ["with-profile" "dev:+1.5"]
-            "test" ["midje"]}
+                   :plugins [[lein-midje "3.1.3"]]}}
+  :aliases {"test" ["midje"]}
   :pedantic? :abort)
