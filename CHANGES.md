@@ -2,7 +2,7 @@
 
 ## 0.6.10
 
-- Using [ancient-clj][ancient-clj] 0.3.13
+- Using [ancient-clj][ancient-clj] 0.3.14
 
 ## 0.6.9
 

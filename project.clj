@@ -10,7 +10,7 @@
                  ^:source-dep [potemkin "0.4.3"]
                  ^:source-dep [version-clj "0.1.2"]
                  ^:source-dep [jansi-clj "0.1.0"]
-                 ^:source-dep [ancient-clj "0.3.13"
+                 ^:source-dep [ancient-clj "0.3.14"
                                :exclusions [com.amazonaws/aws-java-sdk-s3
                                             clj-http]]
 
