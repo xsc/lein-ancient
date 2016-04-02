@@ -1,6 +1,12 @@
-language: clojure
-lein: lein2
+language: java
 sudo: false
+before_install:
+  - wget -O lein "https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein"
+  - chmod +x lein
+before_script:
+  - ./lein version
+  - ./lein isolated deps
+script: ./lein isolated midje
 jdk:
   - openjdk7
   - oraclejdk7
