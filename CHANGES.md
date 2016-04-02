@@ -3,6 +3,11 @@
 ## 0.6.10
 
 - Using [ancient-clj][ancient-clj] 0.3.14
+- Using [rewrite-clj][rewrite-clj] 0.4.13
+- Uses [mranderson][mranderson] to isolate dependencies and prevent conflicts
+  with other plugins.
+
+[mranderson]: https://github.com/benedekfazekas/mranderson
 
 ## 0.6.9
 
