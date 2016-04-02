@@ -15,10 +15,10 @@
                                crouton
                                slingshot]]
                  [commons-logging "1.2"]
+                 [joda-time "2.9.2"]
                  [potemkin "0.4.3"]]
   :profiles {:dev {:dependencies [[midje "1.8.3"]
                                   [clj-time "0.11.0"]
-                                  [joda-time "2.9.2"]
                                   [http-kit "2.1.19"]]
                    :plugins [[lein-midje "3.1.3"]]}}
   :aliases {"test" ["midje"]}
