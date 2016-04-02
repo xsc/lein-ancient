@@ -5,24 +5,21 @@
             :url "https://opensource.org/licenses/MIT"
             :year 2013
             :key "mit"}
-  :dependencies [[org.clojure/clojure "1.7.0"]
-                 [org.clojure/tools.reader "0.10.0"]
+  :dependencies [[org.clojure/clojure "1.8.0" :scope "provided"]
                  [org.clojure/data.xml "0.0.8"]
                  [version-clj "0.1.2"]
                  [clj-aws-s3 "0.3.10" :exclusions [com.amazonaws/aws-java-sdk]]
-                 [com.amazonaws/aws-java-sdk-s3 "1.10.64"]
-                 [com.fasterxml.jackson.core/jackson-core "2.7.3"]
-                 [clj-time "0.11.0"]
+                 [com.amazonaws/aws-java-sdk-s3 "1.10.66"]
                  [clj-http "2.1.0"
                   :exclusions [com.cognitect/transit-clj
                                crouton
                                slingshot]]
-                 [joda-time "2.9.2"]
-                 [commons-codec "1.10"]
                  [commons-logging "1.2"]
                  [potemkin "0.4.3"]]
   :exclusions [org.clojure/clojure joda-time]
-  :profiles {:dev {:dependencies [[midje "1.8.3" :exclusions [clj-time commons-codec]]
+  :profiles {:dev {:dependencies [[midje "1.8.3"]
+                                  [clj-time "0.11.0"]
+                                  [joda-time "2.9.2"]
                                   [http-kit "2.1.19"]]
                    :plugins [[lein-midje "3.1.3"]]}
              :1.5 {:dependencies [[org.clojure/clojure "1.5.1"]]}}
