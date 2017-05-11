@@ -14,22 +14,15 @@
    :passphrase "def"
    :path       "snapshots"})
 
-(def aws-creds
-  (-> opts
-      (select-keys [:username :passphrase])
-      (rename-keys
-        {:username :access-key
-         :passphrase :secret-key})))
-
 ;; ## Tests
 
 (against-background
-  [(aws.sdk.s3/get-object
-     aws-creds
+  [(#'ancient-clj.io.s3/s3-get-object!
+     anything
      "bucket"
      (metadata-uri "snapshots" "group" "id"))
    => {:content (.getBytes (xml/generate-xml) "UTF-8")
-       :metadata {:content-type "text/xml"}}]
+       :content-type "text/xml"}]
   (fact "about the S3/XML version loader."
         (let [loader (s3-loader "bucket" opts)
               vs (set (loader "group" "id"))]
@@ -45,8 +38,8 @@
                           (.contains (.getMessage t) msg))))]
   (tabular
     (against-background
-      [(aws.sdk.s3/get-object
-         aws-creds
+      [(#'ancient-clj.io.s3/s3-get-object!
+         anything
          "bucket"
          (metadata-uri "snapshots" "group" "id"))
        => ?object]
@@ -55,13 +48,13 @@
               (loader "group" "id") => ?check)))
     ?object                                     ?check
     {}                                          (throwable? "content-type is not XML")
-    {:metadata {:content-type "text/plain"}}    (throwable? "content-type is not XML")
-    {:metadata {:content-type "text/xml;a=b"}}  (throwable? "content not found")
-    {:metadata {:content-type "text/xml"}}      (throwable? "content not found")
+    {:content-type "text/plain"}    (throwable? "content-type is not XML")
+    {:content-type "text/xml;a=b"}  (throwable? "content not found")
+    {:content-type "text/xml"}      (throwable? "content not found")
     {:content (.getBytes "<not-xml>" "UTF-8")
-     :metadata {:content-type "text/xml"}}      (throwable? "Could not parse metadata XML"))
+     :content-type "text/xml"}      (throwable? "Could not parse metadata XML"))
   (fact "about handling AWS errors."
-        (with-redefs [aws.sdk.s3/get-object
+        (with-redefs [ancient-clj.io.s3/s3-get-object!
                       (fn [& _]
                         (throw
                           (doto (AmazonS3Exception. "oops.")

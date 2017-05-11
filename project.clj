@@ -8,11 +8,12 @@
   :dependencies [[org.clojure/clojure "1.8.0" :scope "provided"]
                  [org.clojure/data.xml "0.0.8"]
                  [version-clj "0.1.2"]
-                 [clj-aws-s3 "0.3.10" :exclusions [com.amazonaws/aws-java-sdk]]
-                 [com.amazonaws/aws-java-sdk-s3 "1.10.66"]
+                 ;; Note that this is the samve version used by s3-wagon-private 1.3.0
+                 [com.amazonaws/aws-java-sdk-s3 "1.11.28"]
                  [clj-http "2.1.0"
                   :exclusions [com.cognitect/transit-clj
                                crouton
+                               org.apache.httpcomponents/httpclient
                                slingshot]]
                  [commons-logging "1.2"]
                  [joda-time "2.9.2"]

@@ -1,25 +1,38 @@
 (ns ancient-clj.io.s3
-  (:require [ancient-clj.io.xml :as xml]
-            [aws.sdk.s3 :as s3])
-  (:import [com.amazonaws.services.s3.model AmazonS3Exception]))
+  (:require [ancient-clj.io.xml :as xml])
+  (:import (com.amazonaws.auth AWSCredentialsProvider BasicAWSCredentials DefaultAWSCredentialsProviderChain)
+           (com.amazonaws.services.s3 AmazonS3ClientBuilder)
+           (com.amazonaws.services.s3.model AmazonS3Exception)))
 
 (def ^:private valid-content-types
   #{"text/xml" "application/xml"})
 
+(defn ^:private s3-get-object!
+  [client bucket key]
+  (let [s3-object (.getObject client bucket key)]
+    {:content (.getObjectContent s3-object)
+     :content-type (.getContentType (.getObjectMetadata s3-object))}))
+
 (defn s3-loader
   "Create version loader for S3 repository."
-  [bucket & [{:keys [path username passphrase]
+  [bucket & [{:keys [path username passphrase no-auth]
               :or {path "releases"}}]]
-  {:pre [(string? username)
-         (string? passphrase)]}
-  (let [credentials {:access-key username
-                     :secret-key passphrase}
-        get! #(s3/get-object credentials bucket %)]
+  {:pre [(or no-auth (string? username))
+         (or no-auth (string? passphrase))]}
+  (let [credentials (if no-auth
+                      (DefaultAWSCredentialsProviderChain.)
+                      (let [creds (BasicAWSCredentials. username passphrase)]
+                        (reify AWSCredentialsProvider
+                          (getCredentials [_] creds)
+                          (refresh [_]))))
+        client (-> (AmazonS3ClientBuilder/standard)
+                   (.withCredentials credentials)
+                   (.build))
+        get! #(s3-get-object! client bucket %)]
     (fn [group id]
       (try
         (let [object-id (xml/metadata-uri path group id)
-              {:keys [content metadata]} (get! object-id)
-              {:keys [content-type]} metadata
+              {:keys [content content-type]} (get! object-id)
               content-type (and content-type (first (.split content-type ";")))]
           (if (contains? valid-content-types content-type)
             (if content
