@@ -21,7 +21,11 @@
   {:uri "s3p://maven/bucket" :username "abc" :passphrase "def"}
   {:uri "s3p://maven/bucket" :username "abc" :password "def"}
   {:url "s3p://maven/bucket" :username "abc" :passphrase "def"}
-  {:uri "s3://maven/bucket" :username "abc" :passphrase "def"})
+  {:uri "s3://maven/bucket" :username "abc" :passphrase "def"}
+  ;; uses default credentials
+  "s3p://maven/bucket"
+  {:uri "s3p://maven/bucket"}
+  {:uri "s3://maven/bucket"})
 
 (tabular
   (fact "about invalid loader specifications."
@@ -30,10 +34,9 @@
   ""                          IllegalArgumentException
   "invalid://abc"             IllegalArgumentException
   "s3p://"                    AssertionError
-  "s3p://maven/bucket"        AssertionError
   "file://repo"               AssertionError
   {}                          IllegalArgumentException
-  {:uri "s3p://maven/bucket"} AssertionError
-  {:uri "s3://maven/bucket"}  AssertionError
   {:uri "s3p://maven/bucket"
-   :username "abc"}           AssertionError)
+   :username "abc"}           AssertionError
+  {:uri "s3p://maven/bucket"
+   :passphrase "def"}         AssertionError)

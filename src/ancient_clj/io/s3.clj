@@ -7,27 +7,51 @@
 (def ^:private valid-content-types
   #{"text/xml" "application/xml"})
 
+(defn ^:private create-static-credentials-provider
+  "Creates a static credentials credentials provider using the supplied
+  credentials."
+  [access-key secret-key]
+  {:pre [(string? access-key)
+         (string? secret-key)]}
+  (let [creds (BasicAWSCredentials. access-key secret-key)]
+    (reify AWSCredentialsProvider
+      (getCredentials [_] creds)
+      (refresh [_]))))
+
+(defn ^:private create-credentials-provider
+  "Creates a credentials provider using the given username and password, if
+  any.  If no credentials have been provided, use the default credentials
+  provider."
+  [{:keys [username passphrase]}]
+  (if (or (some? username) (some? passphrase))
+    (create-static-credentials-provider username passphrase)
+    (DefaultAWSCredentialsProviderChain.)))
+
+(defn ^:private create-delayed-client
+  "Creates a client in delay, possibly using credentials given with the
+  options."
+  [{:keys [username passphrase] :as options}]
+  (when (or (some? username) (some? passphrase))
+    (assert (and (string? username) (string? passphrase))))
+  (delay
+    (-> (AmazonS3ClientBuilder/standard)
+        (.withCredentials (create-credentials-provider options))
+        (.build))))
+
 (defn ^:private s3-get-object!
-  [client bucket key]
-  (let [s3-object (.getObject client bucket key)]
+  "Gets an S3 object at the given bucket and key.  The client-ref is a client
+  which must be dereferenced to be used (permitting lazy evaluation)."
+  [client-ref bucket key]
+  (let [s3-object (.getObject @client-ref bucket key)]
     {:content (.getObjectContent s3-object)
      :content-type (.getContentType (.getObjectMetadata s3-object))}))
 
 (defn s3-loader
   "Create version loader for S3 repository."
-  [bucket & [{:keys [path username passphrase no-auth]
-              :or {path "releases"}}]]
-  {:pre [(or no-auth (string? username))
-         (or no-auth (string? passphrase))]}
-  (let [credentials (if no-auth
-                      (DefaultAWSCredentialsProviderChain.)
-                      (let [creds (BasicAWSCredentials. username passphrase)]
-                        (reify AWSCredentialsProvider
-                          (getCredentials [_] creds)
-                          (refresh [_]))))
-        client (-> (AmazonS3ClientBuilder/standard)
-                   (.withCredentials credentials)
-                   (.build))
+  [bucket & [{:keys [path]
+              :or {path "releases"}
+              :as options}]]
+  (let [client (create-delayed-client options)
         get! #(s3-get-object! client bucket %)]
     (fn [group id]
       (try
