@@ -23,6 +23,7 @@
             :url "https://opensource.org/licenses/MIT"
             :year 2013
             :key "mit"}
+  :scm {:dir ".."}
   :profiles {:dev {:dependencies [[midje "1.8.3"]
                                   [slingshot "0.12.2"]]
                    :plugins [[lein-midje "3.1.1"]]
