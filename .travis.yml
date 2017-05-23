@@ -1,12 +1,13 @@
 language: java
-sudo: false
+sudo: true
 before_install:
   - wget -O lein "https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein"
   - chmod +x lein
 before_script:
   - ./lein version
-  - ./lein isolated deps
-script: ./lein isolated midje
+script:
+  - cd lein-ancient && ../lein isolated deps && ../lein isolated midje
+  - cd ../ancient-clj && ../lein deps && ../lein test
 jdk:
   - openjdk7
   - oraclejdk7
