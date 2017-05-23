@@ -1,16 +1,14 @@
 (ns ancient-clj.io.s3
   (:require [ancient-clj.io.xml :as xml])
-  (:import (com.amazonaws.auth AWSCredentialsProvider BasicAWSCredentials DefaultAWSCredentialsProviderChain)
+  (:import (com.amazonaws.auth AWSCredentialsProvider BasicAWSCredentials)
            (com.amazonaws.services.s3 AmazonS3ClientBuilder)
            (com.amazonaws.services.s3.model AmazonS3Exception)))
 
 (def ^:private valid-content-types
   #{"text/xml" "application/xml"})
 
-(defn ^:private create-static-credentials-provider
-  "Creates a static credentials credentials provider using the supplied
-  credentials."
-  [access-key secret-key]
+(defn- static-credentials-provider
+  [{access-key :username, secret-key :passphrase}]
   {:pre [(string? access-key)
          (string? secret-key)]}
   (let [creds (BasicAWSCredentials. access-key secret-key)]
@@ -18,32 +16,36 @@
       (getCredentials [_] creds)
       (refresh [_]))))
 
-(defn ^:private create-credentials-provider
-  "Creates a credentials provider using the given username and password, if
-  any.  If no credentials have been provided, use the default credentials
-  provider."
+(defn- check-credentials!
   [{:keys [username passphrase]}]
-  (if (or (some? username) (some? passphrase))
-    (create-static-credentials-provider username passphrase)
-    (DefaultAWSCredentialsProviderChain.)))
+  (when-not (or (every? nil? [username passphrase])
+                (every? string? [username passphrase]))
+    (throw
+      (IllegalArgumentException.
+        (str  "You have to supply both ':username' and ':passphrase' for S3 "
+              "repositories.\n"
+              "Note that you can omit both to fall back to your system's AWS "
+              "credentials.")))))
 
-(defn ^:private create-delayed-client
+(defn- build-client-delay
   "Creates a client in delay, possibly using credentials given with the
   options."
-  [{:keys [username passphrase] :as options}]
-  (when (or (some? username) (some? passphrase))
-    (assert (and (string? username) (string? passphrase))))
+  [options]
+  (check-credentials! options)
   (delay
-    (-> (AmazonS3ClientBuilder/standard)
-        (.withCredentials (create-credentials-provider options))
-        (.build))))
+    (if (:username options)
+      (.. (AmazonS3ClientBuilder/standard)
+          (withCredentials
+            (static-credentials-provider options))
+          (build))
+      (AmazonS3ClientBuilder/defaultClient))))
 
-(defn ^:private s3-get-object!
+(defn- s3-get-object!
   "Gets an S3 object at the given bucket and key.  The client-ref is a client
   which must be dereferenced to be used (permitting lazy evaluation)."
   [client-ref bucket key]
   (let [s3-object (.getObject @client-ref bucket key)]
-    {:content (.getObjectContent s3-object)
+    {:content      (.getObjectContent s3-object)
      :content-type (.getContentType (.getObjectMetadata s3-object))}))
 
 (defn s3-loader
@@ -51,7 +53,7 @@
   [bucket & [{:keys [path]
               :or {path "releases"}
               :as options}]]
-  (let [client (create-delayed-client options)
+  (let [client (build-client-delay options)
         get! #(s3-get-object! client bucket %)]
     (fn [group id]
       (try

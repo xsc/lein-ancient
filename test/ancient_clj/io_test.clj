@@ -37,6 +37,6 @@
   "file://repo"               AssertionError
   {}                          IllegalArgumentException
   {:uri "s3p://maven/bucket"
-   :username "abc"}           AssertionError
+   :username "abc"}           IllegalArgumentException
   {:uri "s3p://maven/bucket"
-   :passphrase "def"}         AssertionError)
+   :passphrase "def"}         IllegalArgumentException)
