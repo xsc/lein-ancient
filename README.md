@@ -1,26 +1,30 @@
 # lein-ancient
 
-A [Leiningen](https://github.com/technomancy/leiningen) plugin to check your project for outdated
-dependencies and plugins.
+A [Leiningen][lein] plugin to check your project for outdated dependencies and
+plugins.
 
 [![Build Status](https://travis-ci.org/xsc/lein-ancient.svg?branch=master)](https://travis-ci.org/xsc/lein-ancient)
-[![Dependencies Status](http://jarkeeper.com/xsc/lein-ancient/status.svg)](http://jarkeeper.com/xsc/lein-ancient)
+[![Clojars Artifact](https://img.shields.io/clojars/v/lein-ancient.svg)](https://clojars.org/lein-ancient)
 
-This plugin supersedes [lein-outdated](https://github.com/ato/lein-outdated) and uses metadata
-XML files in the different Maven repositories instead of a [Lucene](http://lucene.apache.org/core/)-based
-search index. Version comparison is done using [version-clj](https://github.com/xsc/version-clj).
+This plugin supersedes [lein-outdated][lein-outdated] and uses metadata XML
+files in the different Maven repositories instead of a [Lucene][lucene]-based
+search index. Version comparison is done using [version-clj][version-clj].
+
+[lein]: https://github.com/technomancy/leiningen
+[lein-outdated]: https://github.com/ato/lein-outdated
+[lucene]: http://lucene.apache.org/core/
+[version-clj]: https://github.com/xsc/version-clj
+
+lein-ancient is destined for Leiningen >= 2.4.0.
 
 ## Usage
 
-__Leiningen__ ([via Clojars](https://clojars.org/lein-ancient))
+```sh
+lein help ancient
+lein help ancient <subtask>
+```
 
-Put the following into the `:plugins` vector of the `:user` profile in your `~/.lein/profiles.clj`:
-
-[![Clojars Project](http://clojars.org/lein-ancient/latest-version.svg)](http://clojars.org/lein-ancient)
-
-This plugin is destined for Leiningen >= 2.4.0.
-
-## Check Artifacts
+### Check Artifacts
 
 `lein-ancient`'s default behaviour is to check your current project (or a given file/directory) for
 artifacts that have newer versions available, e.g.:
@@ -68,7 +72,7 @@ $ lein ancient check-profiles [<options>]
 ...
 ```
 
-## Upgrade Artifacts
+### Upgrade Artifacts
 
 `lein-ancient` lets you upgrade artifacts automatically and interactively, accepting
 the same options as the default and `profiles` tasks:
@@ -99,7 +103,7 @@ $ lein ancient upgrade-profiles [<options>]
 ...
 ```
 
-## Exclusion/Selection of Artifacts
+### Exclusion/Selection of Artifacts
 
 It is possible to add a marker to an artifact vector using the `:upgrade` key:
 
@@ -133,7 +137,7 @@ plugins you'd use:
 $ lein ancient upgrade :plugins :only snapshots
 ```
 
-## Regression Testing
+### Regression Testing
 
 You'd want to make sure that the upgraded dependencies don't mess with your library or application,
 wouldn't you? Unit tests are your friend and lein-ancient offers a mechanism to automatically run
@@ -149,7 +153,7 @@ used for testing; if you want a specific command to be run simply create an alia
 
 (Note that referencing other aliases does not work yet.)
 
-## Inspect Artifact Versions
+### Inspect Artifact Versions
 
 If you do not have access to a browser or are just too lazy/annoyed to leave the command line, the tasks
 `get` and `latest` might be just the thing for you! The former prints some human-readable artifact data
@@ -184,7 +188,7 @@ plugin without leaving your buffer.
 ```
 MIT License
 
-Copyright (c) 2013-2016 Yannick Scherer
+Copyright (c) 2013-2017 Yannick Scherer
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
