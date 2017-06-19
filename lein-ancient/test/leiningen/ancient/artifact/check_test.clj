@@ -7,7 +7,10 @@
 (let [data '{:dependencies [[group/artifact "1.0.0"]
                             [group/excluded "1.0.0" :upgrade false]
                             [org.clojure/clojure "1.5.1"]
-                            [org.clojure/clojurescript "1.7.58"]]
+                            [org.clojure/clojurescript "1.7.58"]
+                            [snapshot "SNAPSHOT"]
+                            [release  "RELEASE"]
+                            [latest   "LATEST"]]
              :plugins [[group/plugin "0.1.0"]]
              :profiles {:xyz {:dependencies [[artifact "1.2.3"]]
                               :plugins [[plugin "3.2.1"]]}

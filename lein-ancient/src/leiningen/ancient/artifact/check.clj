@@ -7,7 +7,12 @@
 
 (defn- artifact-keys
   [{:keys [id version]} [_ _ & {:keys [upgrade upgrade?] :or {upgrade []}}]]
-  (if (or (false? upgrade) (false? upgrade?))
+  (if (or (false? upgrade)
+          (false? upgrade?)
+          (contains? #{[["snapshot"]]
+                       [["release"]]
+                       [["latest"]]}
+                     version))
     [::never]
     (cond-> #{}
       (#{"clojure"} id)            (conj :clojure)
