@@ -19,9 +19,10 @@
   [path]
   (if-let [root (some-> (z/of-file path)
                         (z/find-value z/next 'defproject))]
-    {:dependencies (find-in-project root :dependencies [])
-     :plugins (find-in-project root :plugins [])
-     :profiles (find-in-project root :profiles {})}
+    {:dependencies         (find-in-project root :dependencies [])
+     :managed-dependencies (find-in-project root :managed-dependencies [])
+     :plugins              (find-in-project root :plugins [])
+     :profiles             (find-in-project root :profiles {})}
     (throw
       (Exception.
         (str "invalid project file: " path)))))
@@ -44,7 +45,10 @@
                       (io/file root "project.clj"))
         new-project (read-project!
                       (io/file project-file)
-                      [:dependencies :plugins :profiles])]
+                      [:managed-dependencies
+                       :dependencies
+                       :plugins
+                       :profiles])]
     (project/init-project
       (with-meta
         (merge old-project new-project)

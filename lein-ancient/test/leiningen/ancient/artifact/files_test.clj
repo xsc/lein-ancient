@@ -45,6 +45,10 @@
   project-file
 
   (str "(defproject project-x \"0.1.1-SNAPSHOT\"\n"
+       "  :managed-dependencies [%s])")
+  project-file
+
+  (str "(defproject project-x \"0.1.1-SNAPSHOT\"\n"
        "  :dependencies [#_[ignore] %s])")
   project-file
 

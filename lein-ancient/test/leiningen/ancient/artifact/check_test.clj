@@ -11,6 +11,7 @@
                             [snapshot "SNAPSHOT"]
                             [release  "RELEASE"]
                             [latest   "LATEST"]]
+             :managed-dependencies [[managed "1.0.0"]]
              :plugins [[group/plugin "0.1.0"]]
              :profiles {:xyz {:dependencies [[artifact "1.2.3"]]
                               :plugins [[plugin "3.2.1"]]}
@@ -25,17 +26,17 @@
             paths => (has every? vector?)
             paths => (has every? (complement empty?))))
     ?opts                                  ?artifacts
-    {}                                     '[group/artifact artifact comp]
-    {:check-clojure? true}                 '[group/artifact artifact comp org.clojure/clojure org.clojure/clojurescript]
-    {:profiles? false}                     '[group/artifact]
+    {}                                     '[group/artifact artifact comp managed]
+    {:check-clojure? true}                 '[group/artifact artifact comp managed org.clojure/clojure org.clojure/clojurescript]
+    {:profiles? false}                     '[group/artifact managed]
     {:dependencies? false}                 '[]
-    {:plugins? true}                       '[group/artifact artifact comp group/plugin plugin]
-    {:plugins? true, :profiles? false}     '[group/artifact group/plugin]
+    {:plugins? true}                       '[group/artifact artifact comp managed group/plugin plugin]
+    {:plugins? true, :profiles? false}     '[group/artifact managed group/plugin]
     {:plugins? true, :dependencies? false} '[group/plugin plugin]
     {:plugins? true
      :dependencies? true
      :check-clojure? true
-     :profiles? false}                     '[group/artifact group/plugin org.clojure/clojure org.clojure/clojurescript]))
+     :profiles? false}                     '[group/artifact group/plugin managed org.clojure/clojure org.clojure/clojurescript]))
 
 (let [data '{:dependencies [[snapshot "0-SNAPSHOT"]
                             [qualified "0-alpha"]

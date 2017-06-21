@@ -78,15 +78,18 @@
 
 (defn- collect-artifacts-from-map
   [options path artifacts]
-  (for [k [:dependencies :plugins :profiles]
+  (for [k [:dependencies :managed-dependencies :plugins :profiles]
         :when (contains? artifacts k)
         :let [data (get artifacts k)]
         :when (collect-from? k data)
         :let [f (if (= k :profiles)
                   collect-artifacts-from-profiles
-                  collect-artifacts-from-vector)]
+                  collect-artifacts-from-vector)
+              artifact-key (if (= k :managed-dependencies)
+                             :dependencies
+                             k)]
         artifact (f options (conj path k) data)]
-    (update-in artifact [:keys] conj k)))
+    (update-in artifact [:keys] conj k artifact-key)))
 
 (defn- match-it
   [f sq keys]

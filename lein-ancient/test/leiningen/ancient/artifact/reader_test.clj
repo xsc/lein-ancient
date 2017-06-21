@@ -11,11 +11,13 @@
 (fact "about project file parsing."
       (with-temp-file [f (str "(defproject project-x \"0.1.1-SNAPSHOT\"\n"
                               "  :dependencies [[artifact \"0.1.0\"]]\n"
+                              "  :managed-dependencies [[managed-artifact \"0.1.0\"]]\n"
                               "  :plugins [[plugin \"0.1.0\"]]\n"
                               "  :profiles {:dev {:plugins [[plugin2 \"0.1.1\"]]\n"
                               "                   :dependencies [[artifact2 \"0.1.1\"]]}})")]
         (let [m (read-project-map! f)]
           m => map?
+          (:managed-dependencies m) => '[[managed-artifact "0.1.0"]]
           (:dependencies m) => '[[artifact "0.1.0"]]
           (:plugins m) => '[[plugin "0.1.0"]]
           (-> m :profiles :dev :dependencies) => '[[artifact2 "0.1.1"]]
