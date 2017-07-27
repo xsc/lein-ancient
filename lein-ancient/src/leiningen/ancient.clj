@@ -5,7 +5,8 @@
              [upgrade :as u]
              [verbose :refer :all]]
             [leiningen.core.main :as main]
-            [jansi-clj.auto]))
+            [jansi-clj.auto]
+            [leiningen.ancient.utils :as utils]))
 
 
 (defn- as-deprecated
@@ -21,6 +22,7 @@
   ^:higher-order ^:no-project-needed
   ^{:subtasks [#'c/check
                #'c/check-profiles
+               #'c/check-stdin
                #'g/show-versions
                #'g/show-latest
                #'u/upgrade
@@ -33,10 +35,11 @@
     (case (first args)
       "check"                       (run c/check)
       "check-profiles"              (run c/check-profiles)
+      "check-input"                 (run c/check-stdin)
       "get"                         (run-deprecated "show-versions" g/show-versions)
       "profiles"                    (run-deprecated "check-profiles" c/check-profiles)
       "show-versions"               (run g/show-versions)
       ("show-latest" "latest")      (run g/show-latest)
       "upgrade"                     (run u/upgrade)
       "upgrade-profiles"            (run u/upgrade-profiles)
-      (apply c/check project args))))
+      (apply (if (utils/stream-available? System/in) c/check-stdin c/check) project args))))

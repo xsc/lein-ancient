@@ -6,6 +6,7 @@
              [zip :as z]]
             [leiningen.ancient.verbose :refer :all]
             [potemkin :refer [defprotocol+]]
+            [rewrite-clj.node :as n]
             [clojure.java.io :as io]))
 
 ;; ## Protocol
@@ -122,6 +123,15 @@
      :read-fn       #(reader/read-profiles-map! % prefix)
      :zipper-fn     z/read-profiles-zipper!
      :check-post-fn #(drop-prefixes prefix %))))
+
+(defn virtual-file
+  "Create new `DependencyFile` value based on a data map"
+  [path data]
+  (assert (map? data))
+  (dependency-file
+    path
+    :read-fn (constantly data)
+    :zipper-fn (constantly (n/map-node data))))
 
 ;; ## Example
 

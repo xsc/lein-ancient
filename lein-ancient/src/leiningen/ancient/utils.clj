@@ -5,8 +5,9 @@
              [collect :as collect]
              [verbose :refer :all]]
             [jansi-clj.core :as color]
-            [clojure.string :as string])
-  (:import [java.io StringWriter PrintWriter]))
+            [clojure.string :as string]
+            [clojure.edn :as edn])
+  (:import [java.io StringWriter PrintWriter InputStream]))
 
 ;; ## Reporting
 
@@ -165,3 +166,16 @@
              (let [~opts opts#]
                ~@body)))
          (cli/doc! ~docstring :exclude ex#))))
+
+(defn stream-available? [^InputStream stream]
+  (pos? (.available stream)))
+
+(defn read-edn-forms-from-stream [stream]
+  (try
+    (let [read-next #(edn/read {:eof ::eof-sentinel} stream)
+          not-eof? #(not= % ::eof-sentinel)]
+      (doall (->> (repeatedly read-next)
+                  (take-while not-eof?))))
+    (catch Throwable e
+      (errorf "unable to read EDN forms: %s" (str e))
+      nil)))

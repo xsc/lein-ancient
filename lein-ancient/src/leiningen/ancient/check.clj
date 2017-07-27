@@ -46,3 +46,20 @@
   [opts]
   (exit-with-status
     (utils/call-on-profiles-files check-file! opts)))
+
+(utils/deftask check-stdin
+  {:docstring "Check artifacts in list(s) provided via stdin."
+   :exclude   [:interactive :print :no-tests]}
+  [opts]
+  (when-not (utils/stream-available? System/in)
+    (println "please specify artifacts list(s) on stdin.")
+    (main/exit 1))
+  (if-some [input (utils/read-edn-forms-from-stream *in*)]
+    (let [artifacts-list (vec (apply concat input))
+          fake-project-map {:dependencies artifacts-list}
+          fake-file (f/virtual-file "<stdin>" fake-project-map)]
+      (debugf "input artifacts list: %s" artifacts-list)
+      (exit-with-status
+        (utils/call-file check-file! opts fake-file)))
+    (main/exit 2)))
+
