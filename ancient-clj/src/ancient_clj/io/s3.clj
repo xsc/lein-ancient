@@ -24,11 +24,11 @@
   (when-not (or (every? nil? [username passphrase])
                 (every? string? [username passphrase]))
     (throw
-     (IllegalArgumentException.
-      (str  "You have to supply both ':username' and ':passphrase' for S3 "
-            "repositories.\n"
-            "Note that you can omit both to fall back to your system's AWS "
-            "credentials.")))))
+      (IllegalArgumentException.
+        (str  "You have to supply both ':username' and ':passphrase' for S3 "
+              "repositories.\n"
+              "Note that you can omit both to fall back to your system's AWS "
+              "credentials.")))))
 
 (defn- build-client-delay
   "Creates a client in delay, possibly using credentials given with the
@@ -36,11 +36,11 @@
   [{:keys [auth-type profile] :as options}]
   (check-credentials! options)
   (delay
-   (condp = (or auth-type :static)
-     :instance (AmazonS3Client. (InstanceProfileCredentialsProvider. true))
-     :profile  (AmazonS3Client. (ProfileCredentialsProvider. (name profile)))
-     :env      (AmazonS3Client. (EnvironmentVariableCredentialsProvider.))
-     :static   (if (:username options)
+    (condp = (or auth-type :static)
+      :instance (AmazonS3Client. (InstanceProfileCredentialsProvider. true))
+      :profile  (AmazonS3Client. (ProfileCredentialsProvider. (name profile)))
+      :env      (AmazonS3Client. (EnvironmentVariableCredentialsProvider.))
+      :static   (if (:username options)
                  (.. (AmazonS3ClientBuilder/standard)
                      (withCredentials
                       (static-credentials-provider options))
