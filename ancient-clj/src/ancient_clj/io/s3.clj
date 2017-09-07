@@ -1,7 +1,10 @@
 (ns ancient-clj.io.s3
   (:require [ancient-clj.io.xml :as xml])
-  (:import (com.amazonaws.auth AWSCredentialsProvider BasicAWSCredentials)
-           (com.amazonaws.services.s3 AmazonS3ClientBuilder)
+  (:import (com.amazonaws.auth AWSCredentialsProvider BasicAWSCredentials
+                               InstanceProfileCredentialsProvider
+                               EnvironmentVariableCredentialsProvider)
+           (com.amazonaws.auth.profile ProfileCredentialsProvider)
+           (com.amazonaws.services.s3 AmazonS3Client AmazonS3ClientBuilder)
            (com.amazonaws.services.s3.model AmazonS3Exception)))
 
 (def ^:private valid-content-types
@@ -21,24 +24,28 @@
   (when-not (or (every? nil? [username passphrase])
                 (every? string? [username passphrase]))
     (throw
-      (IllegalArgumentException.
-        (str  "You have to supply both ':username' and ':passphrase' for S3 "
-              "repositories.\n"
-              "Note that you can omit both to fall back to your system's AWS "
-              "credentials.")))))
+     (IllegalArgumentException.
+      (str  "You have to supply both ':username' and ':passphrase' for S3 "
+            "repositories.\n"
+            "Note that you can omit both to fall back to your system's AWS "
+            "credentials.")))))
 
 (defn- build-client-delay
   "Creates a client in delay, possibly using credentials given with the
   options."
-  [options]
+  [{:keys [auth-type profile] :as options}]
   (check-credentials! options)
   (delay
-    (if (:username options)
-      (.. (AmazonS3ClientBuilder/standard)
-          (withCredentials
-            (static-credentials-provider options))
-          (build))
-      (AmazonS3ClientBuilder/defaultClient))))
+   (condp = (or auth-type :static)
+     :instance (AmazonS3Client. (InstanceProfileCredentialsProvider. true))
+     :profile  (AmazonS3Client. (ProfileCredentialsProvider. (name profile)))
+     :env      (AmazonS3Client. (EnvironmentVariableCredentialsProvider.))
+     :static   (if (:username options)
+                 (.. (AmazonS3ClientBuilder/standard)
+                     (withCredentials
+                      (static-credentials-provider options))
+                     (build))
+                 (AmazonS3ClientBuilder/defaultClient)))))
 
 (defn- s3-get-object!
   "Gets an S3 object at the given bucket and key.  The client-ref is a client
@@ -65,15 +72,15 @@
               (xml/metadata-xml->versions (slurp content))
               (Exception. "object content not found."))
             (Exception.
-              (format "object's content-type is not XML (%s): %s"
-                      (pr-str valid-content-types)
-                      content-type))))
+             (format "object's content-type is not XML (%s): %s"
+                     (pr-str valid-content-types)
+                     content-type))))
         (catch AmazonS3Exception ex
           (let [s (.getStatusCode ex)]
             (if (= s 404)
               []
               (Exception.
-                (format "[status=%d] %s" s (.getErrorCode ex))
-                ex))))
+               (format "[status=%d] %s" s (.getErrorCode ex))
+               ex))))
         (catch Throwable ex
           ex)))))
