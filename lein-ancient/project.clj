@@ -16,7 +16,7 @@
 
                  ;; S3 dependency is pinned because of conflicts of newer
                  ;; versions with Leiningen's precompiled dependencies.
-                 [com.amazonaws/aws-java-sdk-s3 "1.9.0"
+                 [com.amazonaws/aws-java-sdk-s3 "1.11.28"
                   :exclusions [joda-time]
                   :upgrade? false]]
   :license {:name "MIT License"
