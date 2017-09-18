@@ -1,4 +1,4 @@
-# ancient-clj [![Build Status](https://travis-ci.org/xsc/ancient-clj.svg?branch=master)](https://travis-ci.org/xsc/ancient-clj)
+# ancient-clj
 
 __ancient-clj__ is a library for accessing versioning metadata in Maven repositories.
 It is the base for the Leiningen plugin [lein-ancient](https://github.com/xsc/lein-ancient).
@@ -6,12 +6,6 @@ It is the base for the Leiningen plugin [lein-ancient](https://github.com/xsc/le
 Version comparison is done using [version-clj](https://github.com/xsc/version-clj).
 
 ## Usage
-
-__Leiningen ([via Clojars](https://clojars.org/ancient-clj))__
-
-[![Clojars Project](https://img.shields.io/clojars/v/ancient-clj.svg)](https://clojars.org/ancient-clj)
-
-__REPL__
 
 ```clojure
 (require '[ancient-clj.core :as ancient])

@@ -5,6 +5,7 @@ plugins.
 
 [![Build Status](https://travis-ci.org/xsc/lein-ancient.svg?branch=master)](https://travis-ci.org/xsc/lein-ancient)
 [![Clojars Artifact](https://img.shields.io/clojars/v/lein-ancient.svg)](https://clojars.org/lein-ancient)
+[![Clojars Artifact](https://img.shields.io/clojars/v/ancient-clj.svg)](https://clojars.org/ancient-clj)
 
 This plugin supersedes [lein-outdated][lein-outdated] and uses metadata XML
 files in the different Maven repositories instead of a [Lucene][lucene]-based
