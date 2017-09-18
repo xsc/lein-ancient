@@ -18,6 +18,11 @@
              "instead.\n")
   (f arg))
 
+(defn- run-default
+  [project args]
+  (let [run-fn (if (utils/stream-available? System/in) c/check-stdin c/check)]
+    (apply run-fn project args)))
+
 (defn
   ^:higher-order ^:no-project-needed
   ^{:subtasks [#'c/check
@@ -42,4 +47,4 @@
       ("show-latest" "latest")      (run g/show-latest)
       "upgrade"                     (run u/upgrade)
       "upgrade-profiles"            (run u/upgrade-profiles)
-      (apply (if (utils/stream-available? System/in) c/check-stdin c/check) project args))))
+      (run-default project args))))

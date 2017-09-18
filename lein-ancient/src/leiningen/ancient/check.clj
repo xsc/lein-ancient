@@ -49,7 +49,7 @@
 
 (utils/deftask check-stdin
   {:docstring "Check artifacts in list(s) provided via stdin."
-   :exclude   [:interactive :print :no-tests]}
+   :exclude   [:interactive :print :no-tests :recursive]}
   [opts]
   (when-not (utils/stream-available? System/in)
     (println "please specify artifacts list(s) on stdin.")
@@ -62,4 +62,3 @@
       (exit-with-status
         (utils/call-file check-file! opts fake-file)))
     (main/exit 2)))
-
