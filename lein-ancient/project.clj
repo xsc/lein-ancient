@@ -1,4 +1,4 @@
-(defproject lein-ancient "0.6.11-SNAPSHOT"
+(defproject lein-ancient "0.6.11"
   :description "Check your Projects for outdated Dependencies."
   :url "https://github.com/xsc/lein-ancient"
   :dependencies [[org.clojure/clojure "1.8.0" :scope "provided"]
@@ -10,7 +10,7 @@
                  ^:source-dep [potemkin "0.4.3"]
                  ^:source-dep [version-clj "0.1.2"]
                  ^:source-dep [jansi-clj "0.1.0"]
-                 ^:source-dep [ancient-clj "0.3.14"
+                 ^:source-dep [ancient-clj "0.6.11"
                                :exclusions [com.amazonaws/aws-java-sdk-s3
                                             clj-http]]
 
