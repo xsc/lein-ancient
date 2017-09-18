@@ -1,5 +1,17 @@
 # CHANGES: `lein-ancient`
 
+## 0.6.12
+
+- do not warn on `RELEASE` and `SNAPSHOT` version literals (see #75).
+- add support for `:managed-dependencies` (see #76).
+- add support for non-static AWS credentials (see xsc/ancient-clj#8).
+- add `check-input` task (and dispatch to it automatically when necessary) to
+  allow checking of arbitrary artifact vectors from `stdin` (see #78).
+
+## 0.6.11
+
+Do not use.
+
 ## 0.6.10
 
 - Using [ancient-clj][ancient-clj] 0.3.14
