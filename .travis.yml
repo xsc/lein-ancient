@@ -1,7 +1,7 @@
 language: java
 sudo: true
 before_install:
-  - wget -O lein "https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein"
+  - wget -O lein "https://raw.githubusercontent.com/technomancy/leiningen/2.7.1/bin/lein"
   - chmod +x lein
 before_script:
   - ./lein version

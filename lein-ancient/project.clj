@@ -7,12 +7,16 @@
                  ;; (to avoid dependency conflicts)
                  ^:source-dep [rewrite-clj "0.4.13"]
                  ^:source-dep [org.clojure/tools.reader "0.10.0"]
-                 ^:source-dep [potemkin "0.4.3"]
+                 ^:source-dep [potemkin "0.4.4"]
                  ^:source-dep [version-clj "0.1.2"]
                  ^:source-dep [jansi-clj "0.1.0"]
                  ^:source-dep [ancient-clj "0.6.12"
                                :exclusions [com.amazonaws/aws-java-sdk-s3
                                             clj-http]]
+
+                 [clj-http "3.7.0"
+                  :exclusions [commons-codec
+                               org.apache.httpcomponents/httpcore]]
 
                  ;; S3 dependency is pinned because of conflicts of newer
                  ;; versions with Leiningen's precompiled dependencies.
