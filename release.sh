@@ -48,8 +48,11 @@ function commit_snapshot() {
 }
 
 function deploy_artifacts() {
-    $LEIN_EACH :in ancient-clj deploy clojars
-    $LEIN_EACH :in lein-ancient isolated deploy clojars
+    cd ancient-clj
+    $LEIN deploy clojars
+    cd ../lein-ancient
+    $LEIN isolated deploy clojars
+    cd ..
 }
 
 function run_tests() {
