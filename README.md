@@ -38,7 +38,7 @@ $ lein ancient
 ```
 
 You can specify the type of versions to check with `:allow-snapshots`, `:allow-qualified` and
-`:allow-all`, and the kind of artifacts with `:plugins` and `:all`:
+`:allow-all`, and the kind of artifacts with `:plugins`, `:java-agents`, and `:all`:
 
 ```bash
 $ lein ancient :allow-snapshots
@@ -50,6 +50,9 @@ $ lein ancient :allow-snapshots
 $ lein ancient :plugins
 [lein-midje "3.1.2"] is available but we use "3.0.1"
 ```
+
+$ lein ancient :java-agents
+[com.newrelic.agent.java/newrelic-agent "3.43.0"] is available but we use "3.35.1"
 
 It works recursively, too:
 
