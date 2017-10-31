@@ -6,8 +6,8 @@
 
 (def ^:private flags
   "All available flags and effects."
-  {:all             [#{:dependencies? :plugins?}
-                     "check dependencies _and_ plugins."]
+  {:all             [#{:dependencies? :plugins? :java-agents?}
+                     "check dependencies, plugins, _and_ java-agents."]
    :allow-all       [#{:snapshots? :qualified?}
                      "allow SNAPSHOT and qualified versions to be reported as new."]
    :allow-snapshots [#{:snapshots?}
@@ -18,8 +18,10 @@
                      "include Clojure (org.clojure/clojure) when checking for outdated artifacts."]
    :interactive     [#{:interactive?}
                      "prompt the user for approval of any changes made during upgrade."]
-   :plugins         [#{:no-dependencies? :plugins?}
+   :plugins         [#{:no-dependencies? :no-java-agents? :plugins?}
                      "check _only_ plugins."]
+   :java-agents     [#{:no-dependencies? :no-plugins? :java-agents?}
+                     "check _only_ java-agents"]
    :no-colors       [#{:no-colors?}
                      "explicitly disable colorized output."]
    :no-colours      [#{:no-colors?}
@@ -111,6 +113,7 @@
          :exclude       []
          :dependencies? true
          :profiles?     true
+         :java-agents?  true
          :colors?       true
          :tests?        true})))
 

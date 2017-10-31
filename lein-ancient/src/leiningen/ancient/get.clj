@@ -59,7 +59,8 @@
    :fixed {:snapshots? true
            :qualified? true
            :dependencies? true
-           :plugins? true}}
+           :plugins? true
+           :java-agents? true}}
   [{:keys [artifact-opts args]}]
   (if-let [artifact' (first args)]
     (let [{:keys [symbol] :as artifact} (ancient/read-artifact artifact')]
@@ -77,7 +78,8 @@
    :exclude [:all :check-clojure :interactive :plugins
              :no-profiles :no-tests :tests :print :recursive]
    :fixed {:dependencies? true
-           :plugins? true}}
+           :plugins? true
+           :java-agents? true}}
   [{:keys [artifact-opts args]}]
   (if-let [artifact' (first args)]
     (let [{:keys [symbol] :as artifact} (ancient/read-artifact artifact')
