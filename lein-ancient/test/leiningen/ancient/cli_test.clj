@@ -13,6 +13,7 @@
   :dependencies?    true
   :plugins?         false
   :profiles?        true
+  :java-agents?     true
   :qualified?       false
   :snapshots?       false
   :interactive?     false
@@ -40,7 +41,7 @@
       (with-out-str
         (with-logging true
           (parse [":get"])))
-        => #"no longer supported")
+      => #"no longer supported")
 
 (fact "about unapplicable flags."
       (with-out-str
@@ -68,15 +69,21 @@
             (dis flags ks) => (dis defaults ks)
             (select-keys flags ks) => ?effects))
     ?args                    ?effects
-    [":all"]                 {:dependencies? true, :plugins? true}
+    [":all"]                 {:dependencies? true, :plugins? true,
+                              :java-agents? true}
     [":allow-all"]           {:snapshots? true, :qualified? true}
     [":allow-snapshots"]     {:snapshots? true}
     [":allow-qualified"]     {:qualified? true}
     [":check-clojure"]       {:check-clojure? true}
     [":interactive"]         {:interactive? true}
-    [":plugins"]             {:dependencies? false, :plugins? true}
-    [":all" ":plugins"]      {:dependencies? true, :plugins? true}
-    [":plugins" ":all"]      {:dependencies? true, :plugins? true}
+    [":plugins"]             {:dependencies? false, :plugins? true,
+                              :java-agents? false}
+    [":all" ":plugins"]      {:dependencies? true, :plugins? true,
+                              :java-agents? true}
+    [":plugins" ":all"]      {:dependencies? true, :plugins? true,
+                              :java-agents? true}
+    [":java-agents"]         {:dependencies? false, :plugins? false,
+                              :java-agents? true}
     [":no-colors"]           {:colors? false}
     [":no-colours"]          {:colors? false}
     [":no-profiles"]         {:profiles? false}
