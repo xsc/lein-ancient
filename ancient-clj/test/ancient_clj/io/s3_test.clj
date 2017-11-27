@@ -12,6 +12,7 @@
 (def opts
   {:username   "abc"
    :passphrase "def"
+   :region     "ghi"
    :path       "snapshots"})
 
 ;; ## Tests
