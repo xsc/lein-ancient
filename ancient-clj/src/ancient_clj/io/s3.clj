@@ -33,12 +33,11 @@
   [options]
   (check-credentials! options)
   (delay
-    (if (:username options)
-      (.. (AmazonS3ClientBuilder/standard)
-          (withCredentials
-            (static-credentials-provider options))
-          (build))
-      (AmazonS3ClientBuilder/defaultClient))))
+   (cond-> (AmazonS3ClientBuilder/standard)
+     (:username options) (.withCredentials
+                           (static-credentials-provider options))
+     (:region options)   (.withRegion (:region options))
+     true (.build))))
 
 (defn- s3-get-object!
   "Gets an S3 object at the given bucket and key.  The client-ref is a client
