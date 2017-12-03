@@ -13,8 +13,7 @@
                  [clj-http "2.1.0"
                   :exclusions [com.cognitect/transit-clj
                                crouton
-                               org.apache.httpcomponents/httpclient
-                               slingshot]]
+                               org.apache.httpcomponents/httpclient]]
                  [commons-logging "1.2"]
                  [joda-time "2.9.2"]
                  [potemkin "0.4.3"]]
