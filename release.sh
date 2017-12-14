@@ -56,8 +56,12 @@ function deploy_artifacts() {
 }
 
 function run_tests() {
-    $LEIN_EACH :in ancient-clj install > /dev/null
-    $LEIN_EACH test
+    cd ancient-clj
+    $LEIN test
+    $LEIN install > /dev/null
+    cd ../lein-ancient
+    $LEIN test
+    cd ..
 }
 
 # ---------------------------
