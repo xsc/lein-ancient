@@ -78,7 +78,7 @@
 
 (defn- collect-artifacts-from-map
   [options path artifacts]
-  (for [k [:dependencies :managed-dependencies :plugins :profiles]
+  (for [k [:dependencies :managed-dependencies :plugins :profiles :java-agents]
         :when (contains? artifacts k)
         :let [data (get artifacts k)]
         :when (collect-from? k data)

@@ -83,12 +83,14 @@
          :qualified? (boolean qualified?)))
 
 (defn- selector-options
-  [options {:keys [dependencies? plugins? profiles? check-clojure? only exclude]
+  [options {:keys [dependencies? plugins? profiles? java-agents? check-clojure?
+                   only exclude]
             :or {dependencies? true, profiles? true}}]
-
-  (let [base (->> [dependencies? plugins? profiles? check-clojure?]
+  (let [base (->> [dependencies? plugins? profiles? java-agents?
+                   check-clojure?]
                   (map #(if % :include :exclude))
-                  (zipmap [:dependencies :plugins :profiles :clojure])
+                  (zipmap [:dependencies :plugins :profiles :java-agents
+                           :clojure])
                   (reduce
                     (fn [m [marker k]]
                       (update-in m [k] conj marker))

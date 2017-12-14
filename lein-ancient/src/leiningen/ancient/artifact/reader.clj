@@ -22,7 +22,8 @@
     {:dependencies         (find-in-project root :dependencies [])
      :managed-dependencies (find-in-project root :managed-dependencies [])
      :plugins              (find-in-project root :plugins [])
-     :profiles             (find-in-project root :profiles {})}
+     :profiles             (find-in-project root :profiles {})
+     :java-agents          (find-in-project root :java-agents [])}
     (throw
       (Exception.
         (str "invalid project file: " path)))))
@@ -48,7 +49,8 @@
                       [:managed-dependencies
                        :dependencies
                        :plugins
-                       :profiles])]
+                       :profiles
+                       :java-agents])]
     (project/init-project
       (with-meta
         (merge old-project new-project)
