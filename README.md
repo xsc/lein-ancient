@@ -20,9 +20,10 @@ lein-ancient is destined for Leiningen >= 2.4.0.
 
 ## Usage
 
-```sh
-lein help ancient
-lein help ancient <subtask>
+Put the following into the `:plugins` vector of the `:user` profile in your `~/.lein/profiles.clj`:
+
+```clojure
+[lein-ancient "0.6.15"]
 ```
 
 ### Check Artifacts
