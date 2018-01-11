@@ -49,10 +49,10 @@ $ lein ancient :allow-snapshots
 
 $ lein ancient :plugins
 [lein-midje "3.1.2"] is available but we use "3.0.1"
-```
 
 $ lein ancient :java-agents
 [com.newrelic.agent.java/newrelic-agent "3.43.0"] is available but we use "3.35.1"
+```
 
 It works recursively, too:
 
