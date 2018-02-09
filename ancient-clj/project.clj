@@ -10,7 +10,7 @@
                  [version-clj "0.1.2"]
                  ;; Note that this is the samve version used by s3-wagon-private 1.3.0
                  [com.amazonaws/aws-java-sdk-s3 "1.11.28"]
-                 [clj-http "2.1.0"
+                 [clj-http "3.7.0"
                   :exclusions [com.cognitect/transit-clj
                                crouton
                                org.apache.httpcomponents/httpclient]]
@@ -20,7 +20,7 @@
   :scm {:dir ".."}
   :profiles {:dev {:dependencies [[midje "1.8.3"]
                                   [clj-time "0.11.0"]
-                                  [http-kit "2.1.19"]]
+                                  [http-kit "2.2.0"]]
                    :plugins [[lein-midje "3.1.3"]]}}
   :aliases {"test" ["midje"]}
   :pedantic? :abort)
