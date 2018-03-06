@@ -20,7 +20,15 @@ lein-ancient is destined for Leiningen >= 2.4.0.
 
 ## Usage
 
-```sh
+Install `lein-ancient` by putting the following into the `:plugins` vector of the `:user` profile in your `~/.lein/profiles.clj`:
+
+```clojure
+[lein-ancient "0.6.15"]
+```
+
+Once `lein-ancient` is installed,cd  use Leiningen's built-in help feature to see how to use it:
+
+``` bash
 lein help ancient
 lein help ancient <subtask>
 ```
