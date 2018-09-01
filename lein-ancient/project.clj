@@ -32,12 +32,11 @@
                                   [slingshot "0.12.2"]]
                    :plugins [[lein-midje "3.1.1"]]
                    :test-paths ["test"]}}
-  :plugins [[thomasa/mranderson "0.4.7"]]
-  :aliases {"test"     ["midje"]
-            "build"    ["do" "clean," "source-deps"
-                        ":skip-javaclass-repackage" "true"
-                        ":project-prefix" "ancient"]
-            "isolated" ["do" "build," "with-profile" "+plugin.mranderson/config"]}
-  :eval-in-leiningen true
+  :aliases {"test" ["midje"]}
+
+  :plugins [[lein-isolate "0.1.1"]]
+  :middleware [leiningen.isolate/middleware]
+
+  :eval-in :leiningen
   :min-lein-version "2.4.0"
   :pedantic? :abort)

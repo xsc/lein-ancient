@@ -6,7 +6,7 @@ before_install:
 before_script:
   - ./lein version
 script:
-  - cd lein-ancient && ../lein isolated deps && ../lein isolated midje
+  - cd lein-ancient && ../lein isolate midje
   - cd ../ancient-clj && ../lein deps && ../lein test
 jdk:
   - openjdk7
