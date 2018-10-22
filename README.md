@@ -26,7 +26,7 @@ Install `lein-ancient` by putting the following into the `:plugins` vector of th
 [lein-ancient "0.6.15"]
 ```
 
-Once `lein-ancient` is installed,cd  use Leiningen's built-in help feature to see how to use it:
+Once `lein-ancient` is installed, use Leiningen's built-in help feature to see how to use it:
 
 ``` bash
 lein help ancient
