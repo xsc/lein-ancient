@@ -27,7 +27,7 @@ the `:user` profile in your `~/.lein/profiles.clj`:
 [lein-ancient "0.6.15"]
 ```
 
-Once `lein-ancient` is installed,cd  use Leiningen's built-in help feature to
+Once `lein-ancient` is installed, use Leiningen's built-in help feature to
 see how to use it:
 
 ``` bash
