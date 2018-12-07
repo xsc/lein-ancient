@@ -18,9 +18,13 @@
                  [joda-time "2.9.2"]
                  [potemkin "0.4.3"]]
   :scm {:dir ".."}
-  :profiles {:dev {:dependencies [[midje "1.8.3"]
+  :profiles {:dev {:dependencies [[midje "1.9.3"
+                                   :exclusions [org.clojure/clojure
+                                                commons-codec
+                                                clj-time
+                                                potemkin]]
                                   [clj-time "0.11.0"]
-                                  [http-kit "2.1.19"]]
+                                  [http-kit "2.3.0"]]
                    :plugins [[lein-midje "3.1.3"]]}}
   :aliases {"test" ["midje"]}
   :pedantic? :abort)

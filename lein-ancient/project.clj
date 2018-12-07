@@ -28,7 +28,10 @@
             :year 2013
             :key "mit"}
   :scm {:dir ".."}
-  :profiles {:dev {:dependencies [[midje "1.8.3"]
+  :profiles {:dev {:dependencies [[midje "1.9.3"
+                                   :exclusions [org.clojure/clojure
+                                                potemkin
+                                                joda-time]]
                                   [slingshot "0.12.2"]]
                    :plugins [[lein-midje "3.1.1"]]
                    :test-paths ["test"]}}
