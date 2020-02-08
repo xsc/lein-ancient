@@ -11,7 +11,7 @@
    504 "server timeout."})
 
 (def ^:private valid-content-types
-  #{"text/xml" "application/xml"})
+  #{"text/xml" "application/xml" "application/octet-stream"})
 
 (defn- base-opts
   []
