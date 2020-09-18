@@ -76,6 +76,16 @@
         artifact-vector))
     v))
 
+(defn- remove-duplicate-artifacts
+  "Remove duplicate artifacts.
+   Two artifacts are considered the same when their symbol is identical.
+   In case artifacts are duplicate, keep the last one. "
+  [artifacts]
+  (->> artifacts
+       (group-by #(get-in % [:artifact :symbol]))
+       vals
+       (map last)))
+
 (defn- collect-artifacts-from-map
   [options path artifacts]
   (for [k [:dependencies :managed-dependencies :plugins :profiles :java-agents]
@@ -128,6 +138,7 @@
    "
   [options artifacts]
   (->> (collect-artifacts-from-map options [] artifacts)
+       remove-duplicate-artifacts
        (keep #(mark-artifact options %))))
 
 ;; ## Check
