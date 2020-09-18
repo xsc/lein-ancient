@@ -38,6 +38,21 @@
      :check-clojure? true
      :profiles? false}                     '[group/artifact group/plugin managed org.clojure/clojure org.clojure/clojurescript]))
 
+(let [data '{:dependencies [[managed]
+                            [my-artifact "1.0.0"]
+                            [my-artifact "2.0.0"]]
+             :managed-dependencies [[managed "3.0.0"]]}]
+  (tabular
+    (fact "about artifact collection with duplicate artifacts."
+          (let [opts (o/options ?opts)
+                artifacts (filter :include? (collect-artifacts opts data))
+                info (->> artifacts
+                          (map :artifact)
+                          (map  #(select-keys % [:symbol :version-string])))]
+            (set info) => (set ?info)))
+    ?opts                                  ?info
+    {}                                     '[{:symbol managed :version-string "3.0.0"} {:symbol my-artifact :version-string "2.0.0"}]))
+
 (let [data '{:dependencies [[snapshot "0-SNAPSHOT"]
                             [qualified "0-alpha"]
                             [release "0"]]
