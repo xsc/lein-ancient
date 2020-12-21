@@ -1,0 +1,17 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+
+  test-ancient-clj:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: run-tests
+        working-directory: ./ancient-clj
+        run: lein test
