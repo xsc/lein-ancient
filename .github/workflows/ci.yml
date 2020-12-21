@@ -8,10 +8,18 @@ on:
 
 jobs:
 
-  test-ancient-clj:
+  test-library:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: run-tests
         working-directory: ./ancient-clj
+        run: lein test
+
+  test-plugin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: run-tests
+        working-directory: ./lein-ancient
         run: lein test
