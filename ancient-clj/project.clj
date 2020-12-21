@@ -1,10 +1,6 @@
 (defproject ancient-clj "0.7.0-SNAPSHOT"
   :description "Maven Version Utilities for Clojure"
   :url "https://github.com/xsc/ancient-clj"
-  :license {:name "MIT License"
-            :url "https://opensource.org/licenses/MIT"
-            :year 2013
-            :key "mit"}
   :dependencies [[org.clojure/clojure "1.10.1" :scope "provided"]
                  [org.clojure/data.xml "0.2.0-alpha6"]
                  [version-clj "0.1.2"]

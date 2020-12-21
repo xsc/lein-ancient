@@ -23,10 +23,6 @@
                  [com.amazonaws/aws-java-sdk-s3 "1.11.28"
                   :exclusions [joda-time commons-logging]
                   :upgrade? false]]
-  :license {:name "MIT License"
-            :url "https://opensource.org/licenses/MIT"
-            :year 2013
-            :key "mit"}
   :scm {:dir ".."}
 
   :plugins [[lein-isolate "0.1.2"]]
