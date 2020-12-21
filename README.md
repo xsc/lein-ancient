@@ -1,11 +1,11 @@
 # lein-ancient
 
-A [Leiningen][lein] plugin to check your project for outdated dependencies and
-plugins.
-
-[![Build Status](https://travis-ci.org/xsc/lein-ancient.svg?branch=master)](https://travis-ci.org/xsc/lein-ancient)
+![CI](https://github.com/xsc/lein-ancient/workflows/CI/badge.svg?branch=master)
 [![Clojars Artifact](https://img.shields.io/clojars/v/lein-ancient.svg)](https://clojars.org/lein-ancient)
 [![Clojars Artifact](https://img.shields.io/clojars/v/ancient-clj.svg)](https://clojars.org/ancient-clj)
+
+A [Leiningen][lein] plugin to check your project for outdated dependencies and
+plugins, as well as upgrade them if desired.
 
 This plugin supersedes [lein-outdated][lein-outdated] and uses metadata XML
 files in the different Maven repositories instead of a [Lucene][lucene]-based
@@ -20,13 +20,15 @@ lein-ancient is destined for Leiningen >= 2.4.0.
 
 ## Usage
 
-Install `lein-ancient` by putting the following into the `:plugins` vector of the `:user` profile in your `~/.lein/profiles.clj`:
+Install `lein-ancient` by putting the following into the `:plugins` vector of
+the `:user` profile in your `~/.lein/profiles.clj`:
 
 ```clojure
 [lein-ancient "0.6.15"]
 ```
 
-Once `lein-ancient` is installed,cd  use Leiningen's built-in help feature to see how to use it:
+Once `lein-ancient` is installed,cd  use Leiningen's built-in help feature to
+see how to use it:
 
 ``` bash
 lein help ancient
@@ -35,8 +37,8 @@ lein help ancient <subtask>
 
 ### Check Artifacts
 
-`lein-ancient`'s default behaviour is to check your current project (or a given file/directory) for
-artifacts that have newer versions available, e.g.:
+`lein-ancient`'s default behaviour is to check your current project (or a given
+file/directory) for artifacts that have newer versions available, e.g.:
 
 ```bash
 $ lein ancient
@@ -45,8 +47,9 @@ $ lein ancient
 [pandect "0.3.0"] is available but we use "0.2.3"
 ```
 
-You can specify the type of versions to check with `:allow-snapshots`, `:allow-qualified` and
-`:allow-all`, and the kind of artifacts with `:plugins`, `:java-agents`, and `:all`:
+You can specify the type of versions to check with `:allow-snapshots`,
+`:allow-qualified` and `:allow-all`, and the kind of artifacts with `:plugins`,
+`:java-agents`, and `:all`:
 
 ```bash
 $ lein ancient :allow-snapshots
@@ -76,8 +79,8 @@ $ lein ancient :recursive
 [potemkin "0.3.3"] is available but we use "0.3.2"
 ```
 
-To let `lein-ancient` perform the same checks for the profiles in `~/.lein/profiles.clj`, run
-it using:
+To let `lein-ancient` perform the same checks for the profiles in
+`~/.lein/profiles.clj`, run it using:
 
 ```bash
 $ lein ancient check-profiles [<options>]
@@ -86,8 +89,8 @@ $ lein ancient check-profiles [<options>]
 
 ### Upgrade Artifacts
 
-`lein-ancient` lets you upgrade artifacts automatically and interactively, accepting
-the same options as the default and `profiles` tasks:
+`lein-ancient` lets you upgrade artifacts automatically and interactively,
+accepting the same options as the default and `profiles` tasks:
 
 ```bash
 $ lein ancient upgrade :interactive
@@ -104,9 +107,9 @@ Do you want to upgrade? [yes/no] yes
 2 artifacts were upgraded.
 ```
 
-Omit `:interactive` if lein-ancient should just do its thing; use `:print` for a dry-run,
-printing out the resulting file instead of writing back to disk. You can even perform a
-recursive upgrade run by supplying `:recursive`.
+Omit `:interactive` if lein-ancient should just do its thing; use `:print` for a
+dry-run, printing out the resulting file instead of writing back to disk. You
+can even perform a recursive upgrade run by supplying `:recursive`.
 
 You can upgrade the global user profiles by running:
 
@@ -151,11 +154,12 @@ $ lein ancient upgrade :plugins :only snapshots
 
 ### Regression Testing
 
-You'd want to make sure that the upgraded dependencies don't mess with your library or application,
-wouldn't you? Unit tests are your friend and lein-ancient offers a mechanism to automatically run
-them after an upgrade - and revert to the original state if they fail. By default, `lein test` is
-used for testing; if you want a specific command to be run simply create an alias `test` in your
-`project.clj`:
+You'd want to make sure that the upgraded dependencies don't mess with your
+library or application, wouldn't you? Unit tests are your friend and
+lein-ancient offers a mechanism to automatically run them after an upgrade - and
+revert to the original state if they fail. By default, `lein test` is used for
+testing; if you want a specific command to be run simply create an alias `test`
+in your `project.clj`:
 
 ```clojure
 ...
@@ -167,9 +171,10 @@ used for testing; if you want a specific command to be run simply create an alia
 
 ### Inspect Artifact Versions
 
-If you do not have access to a browser or are just too lazy/annoyed to leave the command line, the tasks
-`get` and `latest` might be just the thing for you! The former prints some human-readable artifact data
-to your console while the latter only retrieves the artifact vector, e.g. destined for your `project.clj`.
+If you do not have access to a browser or are just too lazy/annoyed to leave the
+command line, the tasks `get` and `latest` might be just the thing for you! The
+former prints some human-readable artifact data to your console while the latter
+only retrieves the artifact vector, e.g. destined for your `project.clj`.
 
 ```bash
 $ lein ancient show-versions com.taoensso/timbre :allow-all
