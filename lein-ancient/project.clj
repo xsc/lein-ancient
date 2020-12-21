@@ -28,12 +28,6 @@
             :year 2013
             :key "mit"}
   :scm {:dir ".."}
-  :profiles {:dev {:dependencies [[midje "1.9.9"]
-                                  [slingshot "0.12.2"]
-                                  [fipp "0.6.23"]]
-                   :plugins [[lein-midje "3.2.2"]]
-                   :test-paths ["test"]}}
-  :aliases {"test" ["midje"]}
 
   :plugins [[lein-isolate "0.1.1"]]
   :middleware [leiningen.isolate/middleware]
