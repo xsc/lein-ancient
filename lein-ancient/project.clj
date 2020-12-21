@@ -29,7 +29,7 @@
             :key "mit"}
   :scm {:dir ".."}
 
-  :plugins [[lein-isolate "0.1.1"]]
+  :plugins [[lein-isolate "0.1.2"]]
   :middleware [leiningen.isolate/middleware]
 
   :eval-in :leiningen

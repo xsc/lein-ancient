@@ -7,22 +7,16 @@ on:
     branches: [master]
 
 jobs:
-
-  test-library:
+  test-library-and-plugin:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: run-tests
+      - name: test-library
         working-directory: ./ancient-clj
         run: lein test
-
-  test-plugin:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
       - name: install-library
         working-directory: ./ancient-clj
         run: lein install
-      - name: run-tests
+      - name: test-plugin
         working-directory: ./lein-ancient
-        run: lein test
+        run: lein isolate test
