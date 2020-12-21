@@ -37,21 +37,6 @@
           :check-clojure? true
           :profiles? false}                     '[group/artifact group/plugin managed org.clojure/clojure org.clojure/clojurescript])))
 
-(let [data '{:dependencies [[managed]
-                            [my-artifact "1.0.0"]
-                            [my-artifact "2.0.0"]]
-             :managed-dependencies [[managed "3.0.0"]]}]
-  (tabular
-    (fact "about artifact collection with duplicate artifacts."
-          (let [opts (o/options ?opts)
-                artifacts (filter :include? (collect-artifacts opts data))
-                info (->> artifacts
-                          (map :artifact)
-                          (map  #(select-keys % [:symbol :version-string])))]
-            (set info) => (set ?info)))
-    ?opts                                  ?info
-    {}                                     '[{:symbol managed :version-string "3.0.0"} {:symbol my-artifact :version-string "2.0.0"}]))
-
 (let [data '{:dependencies [[snapshot "0-SNAPSHOT"]
                             [qualified "0-alpha"]
                             [release "0"]]
@@ -102,16 +87,32 @@
                               [org.clojure/clojure "1.5.1"]
                               [head1 "0.1.0"]
                               [group/artifact "1.0.0"]
-                              [rest1 "0.1.0"]
-                              [rest2 "0.2.0"]]}
+                              [rest1 "0.1.0"]]}
         opts (o/options {})
         artifacts (->> (collect-artifacts opts data)
                        (filter :include?)
-                       (map (juxt (comp :symbol :artifact) :path))
+                       (map (juxt (comp :symbol :artifact)
+                                  (comp :version-string :artifact)
+                                  :path))
                        (set))]
-    (is (= (set '[[group/artifact [:dependencies 0]]
-                  [head1 [:dependencies 2]]
-                  [group/artifact [:dependencies 3]]
-                  [rest1 [:dependencies 4]]
-                  [rest2 [:dependencies 5]]])
+    (is (= (set '[[group/artifact "1.0.0" [:dependencies 0]]
+                  [head1          "0.1.0" [:dependencies 2]]
+                  [group/artifact "1.0.0" [:dependencies 3]]
+                  [rest1          "0.1.0" [:dependencies 4]]])
+           artifacts))))
+
+(deftest t-artifact-collection-with-managed-dependencies
+  (let [data '{:dependencies [[group/artifact "1.0.0"]
+                              [org.clojure/clojure "1.5.1"]
+                              [managed]]
+               :managed-dependencies [[managed "0.2.0"]]}
+        opts (o/options {})
+        artifacts (->> (collect-artifacts opts data)
+                       (filter :include?)
+                       (map (juxt (comp :symbol :artifact)
+                                  (comp :version-string :artifact)
+                                  :path))
+                       (set))]
+    (is (= (set '[[group/artifact "1.0.0" [:dependencies 0]]
+                  [managed        "0.2.0" [:managed-dependencies 0]]])
            artifacts))))

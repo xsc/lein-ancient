@@ -76,15 +76,28 @@
         artifact-vector))
     v))
 
-(defn- remove-duplicate-artifacts
-  "Remove duplicate artifacts.
-   Two artifacts are considered the same when their symbol is identical.
-   In case artifacts are duplicate, keep the last one. "
+(defn- remove-managed-dependencies
+  "Managed dependencies appear twice:
+   - once in `:dependencies` but without version,
+   - and once in `:managed-dependencies`, this time with version.
+
+   We don't want to add a version to `:dependencies` but we want to
+   check/update the one in `:managed-dependencies` - thus, we have to
+   remove all entries in `:dependencies` that have a managed counterpart."
   [artifacts]
-  (->> artifacts
-       (group-by #(get-in % [:artifact :symbol]))
-       vals
-       (map last)))
+  (let [managed-artifacts
+        (->> artifacts
+             (filter
+               (fn [{:keys [keys artifact]}]
+                 (contains? (set keys) :managed-dependencies)))
+             (map (comp :symbol :artifact))
+             (set))]
+    (remove
+      (fn [{{:keys [symbol version-string]} :artifact, ks :keys}]
+        (and (not (contains? (set ks) :managed-dependencies))
+             (empty? version-string)
+             (contains? managed-artifacts symbol)))
+      artifacts)))
 
 (defn- collect-artifacts-from-map
   [options path artifacts]
@@ -99,7 +112,8 @@
                              :dependencies
                              k)]
         artifact (f options (conj path k) data)]
-    (update-in artifact [:keys] conj k artifact-key)))
+    (-> artifact
+        (update :keys conj k artifact-key))))
 
 (defn- match-it
   [f sq keys]
@@ -138,7 +152,7 @@
    "
   [options artifacts]
   (->> (collect-artifacts-from-map options [] artifacts)
-       remove-duplicate-artifacts
+       (remove-managed-dependencies)
        (keep #(mark-artifact options %))))
 
 ;; ## Check
