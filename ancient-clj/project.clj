@@ -6,7 +6,7 @@
             :year 2013
             :key "mit"}
   :dependencies [[org.clojure/clojure "1.8.0" :scope "provided"]
-                 [org.clojure/data.xml "0.0.8"]
+                 [org.clojure/data.xml "0.2.0-alpha6"]
                  [version-clj "0.1.2"]
                  ;; Note that this is the samve version used by s3-wagon-private 1.3.0
                  [com.amazonaws/aws-java-sdk-s3 "1.11.28"]
