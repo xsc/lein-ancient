@@ -20,6 +20,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: install-library
+        working-directory: ./ancient-clj
+        run: lein install
       - name: run-tests
         working-directory: ./lein-ancient
         run: lein test
