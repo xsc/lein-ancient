@@ -11,18 +11,24 @@
                  ^:source-dep [version-clj "0.1.2"]
                  ^:source-dep [jansi-clj "0.1.1"]
                  ^:source-dep [ancient-clj "0.7.0-SNAPSHOT"
-                               :exclusions [com.amazonaws/aws-java-sdk-s3
-                                            clj-http]]
+                               :exclusions [clj-http
+                                            org.clojure/data.xml]]
 
+                 ;; do not inline these
                  [clj-http "3.11.0"
                   :exclusions [commons-codec
-                               org.apache.httpcomponents/httpcore]]
+                               commons-io]]
 
-                 ;; S3 dependency is pinned because of conflicts of newer
-                 ;; versions with Leiningen's precompiled dependencies.
-                 [com.amazonaws/aws-java-sdk-s3 "1.11.28"
-                  :exclusions [joda-time commons-logging]
-                  :upgrade? false]]
+                 ;; pin dependencies to match Leiningen
+                 [commons-codec "1.11"
+                  :scope "provided"]
+                 [commons-io "2.8.0"
+                  :scope "provided"]
+                 [org.apache.httpcomponents/httpclient "4.5.13"
+                  :scope "provided"]
+                 [org.clojure/data.xml "0.2.0-alpha5"
+                  :exclusions [org.clojure/clojure]
+                  :scope "provided"]]
   :scm {:dir ".."}
 
   :plugins [[lein-isolate "0.1.2"]]
