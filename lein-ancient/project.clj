@@ -31,7 +31,7 @@
                   :scope "provided"]]
   :scm {:dir ".."}
 
-  :plugins [[lein-isolate "0.1.2"]]
+  :plugins [[lein-isolate "0.2.1"]]
   :middleware [leiningen.isolate/middleware]
 
   :eval-in :leiningen
