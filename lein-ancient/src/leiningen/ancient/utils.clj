@@ -90,21 +90,23 @@
 (defn parse
   "Create a map of `:artifact-opts`, `:opts` and `:args` from the given
    project and arguments."
-  [{:keys [repositories mirrors] :as project} args
+  [{:keys [repositories mirrors managed-dependencies] :as project} args
    & {:keys [change-defaults exclude fixed]}]
   (try
     (let [[opts' rst] (cli/parse args
                                  :change-defaults change-defaults
                                  :exclude exclude)
           opts (merge opts' fixed)
-          artifact-opts (-> (assoc opts
-                                   :repositories repositories
-                                   :mirrors mirrors)
+          artifact-opts (-> opts
+                            (merge
+                              {:managed-dependencies managed-dependencies
+                               :repositories         repositories
+                               :mirrors              mirrors})
                             (o/options))]
       {:artifact-opts artifact-opts
-       :opts opts
-       :project project
-       :args rst})
+       :opts          opts
+       :project       project
+       :args          rst})
     (catch Throwable t
       (errorf "%s" (.getMessage t)))))
 

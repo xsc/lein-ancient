@@ -100,11 +100,16 @@
       (seq exclude) (update-in [:exclude] concat exclude)
       true          (merge options))))
 
+(defn- managed-dependencies-options
+  [options {:keys [managed-dependencies]}]
+  (assoc options :managed-dependencies managed-dependencies))
+
 (defn options
   "Prepare the option map."
   ([] (options {}))
   ([opts]
    (-> {:cache (ref {})}
+       (managed-dependencies-options opts)
        (repository-options opts)
        (version-options opts)
        (selector-options opts))))

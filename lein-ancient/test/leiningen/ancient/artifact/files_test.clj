@@ -7,11 +7,30 @@
   (:import [java.io StringWriter]))
 
 (defn- const-opts
-  [v]
+  [v & [extra-opts]]
   (o/options
-    {:plugins? true
-     :repositories
-     {"const" (constantly [v])}}))
+    (merge
+      extra-opts
+      {:plugins? true
+       :repositories
+       {"const" (constantly [v])}})))
+
+(defn- test-upgrade!
+  [?file opts contents expected outdated-count]
+  (with-temp-file [tmp contents]
+    (let [f (?file tmp)
+          r (read! f)]
+      (is (satisfies? Dependencies f))
+      (is (satisfies? Dependencies r))
+      (let [outdated (check! r opts)]
+        (is (= outdated-count (count outdated)))
+        (is (every? :latest outdated))
+        (is (every? #{"0.1.1"} (map (comp :version-string :latest) outdated)))
+        (let [u (upgrade! r outdated)]
+          (is (satisfies? Dependencies u))
+          (is (= expected (write-string! u)))
+          (write-out! u)
+          (is (= expected (slurp tmp))))))))
 
 (deftest t-project-file-upgrading
   (are [?fmt ?file]
@@ -21,34 +40,12 @@
                   opts (const-opts "0.1.1")
                   contents (format ?fmt (pr-str ?artifact))
                   expected (format ?fmt (pr-str upgraded))]
-              (with-temp-file [tmp contents]
-                (let [f (?file tmp)
-                      r (read! f)]
-                  (is (satisfies? Dependencies f))
-                  (is (satisfies? Dependencies r))
-                  (let [outdated (check! r opts)]
-                    (is (= 1 (count outdated)))
-                    (is (every? :latest outdated))
-                    (is (every? #{"0.1.1"} (map (comp :version-string :latest) outdated)))
-                    (let [u (upgrade! r outdated)]
-                      (is (satisfies? Dependencies u))
-                      (is (= expected (write-string! u)))
-                      (write-out! u)
-                      (is (= expected (slurp tmp))))))))
+              (test-upgrade! ?file opts contents expected 1))
             '[artifact]
             '[artifact "0.1.0"]
             '[artifact "0.1.0" :exclusions [other]])
        (str "(defproject project-x \"0.1.1-SNAPSHOT\"\n"
             "  :dependencies [%s])")
-       project-file
-
-       (str "(defproject project-x \"0.1.1-SNAPSHOT\"\n"
-            "  :managed-dependencies [%s])")
-       project-file
-
-       (str "(defproject project-x \"0.1.1-SNAPSHOT\"\n"
-            "  :dependencies         [[artifact]]"
-            "  :managed-dependencies [%s])")
        project-file
 
        (str "(defproject project-x \"0.1.1-SNAPSHOT\"\n"
@@ -62,6 +59,34 @@
        (str "{:plugins [[xyz \"0.2.0\"]%n"
             "           %s]}")
        #(profiles-file % [:profiles :prof])))
+
+(deftest t-project-file-upgrading-with-managed-dependencies
+  (are [?fmt ?outdated-count]
+       (are [?artifact]
+            (let [[a _ & rst] ?artifact
+                  upgraded (reduce conj [a "0.1.1"] rst)
+                  opts (const-opts
+                         "0.1.1"
+                         {:managed-dependencies '[[artifact "0.2.0"]]})
+                  contents (format ?fmt (pr-str ?artifact))
+                  expected (format ?fmt (pr-str upgraded))]
+              (test-upgrade! project-file opts contents expected ?outdated-count))
+            '[artifact "0.1.0"]
+            '[artifact "0.1.0" :exclusions [other]])
+       (str "(defproject project-x \"0.1.1-SNAPSHOT\"\n"
+            "  :managed-dependencies [%s])")
+       1
+
+       (str "(defproject project-x \"0.1.1-SNAPSHOT\"\n"
+            "  :dependencies   [[artifact]]"
+            "  :parent-project {:path \"parent.clj\""
+            "                   :inherit [:managed-dependencies]})")
+       0
+
+       (str "(defproject project-x \"0.1.1-SNAPSHOT\"\n"
+            "  :dependencies         [[artifact]]"
+            "  :managed-dependencies [%s])")
+       1))
 
 (deftest t-project-file-upgrading-failure-because-of-modifications
   (let [opts (const-opts "0.1.1")

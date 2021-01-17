@@ -106,7 +106,8 @@
                               [org.clojure/clojure "1.5.1"]
                               [managed]]
                :managed-dependencies [[managed "0.2.0"]]}
-        opts (o/options {})
+        opts (o/options
+               {:managed-dependencies '[[managed "0.2.0"]]})
         artifacts (->> (collect-artifacts opts data)
                        (filter :include?)
                        (map (juxt (comp :symbol :artifact)

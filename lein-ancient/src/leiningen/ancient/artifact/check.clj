@@ -83,15 +83,12 @@
 
    We don't want to add a version to `:dependencies` but we want to
    check/update the one in `:managed-dependencies` - thus, we have to
-   remove all entries in `:dependencies` that have a managed counterpart."
-  [artifacts]
-  (let [managed-artifacts
-        (->> artifacts
-             (filter
-               (fn [{:keys [keys artifact]}]
-                 (contains? (set keys) :managed-dependencies)))
-             (map (comp :symbol :artifact))
-             (set))]
+   remove all entries in `:dependencies` that have a managed counterpart.
+
+   We expect the list of dependencies to treat as managed as an option
+   value to handle inheritance better."
+  [{:keys [managed-dependencies]} artifacts]
+  (let [managed-artifacts (set (map first managed-dependencies))]
     (remove
       (fn [{{:keys [symbol version-string]} :artifact, ks :keys}]
         (and (not (contains? (set ks) :managed-dependencies))
@@ -152,7 +149,7 @@
    "
   [options artifacts]
   (->> (collect-artifacts-from-map options [] artifacts)
-       (remove-managed-dependencies)
+       (remove-managed-dependencies options)
        (keep #(mark-artifact options %))))
 
 ;; ## Check
