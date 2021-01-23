@@ -9,7 +9,7 @@
                  ^:source-dep [potemkin "0.4.5"]
                  ^:source-dep [version-clj "0.1.2"]
                  ^:source-dep [jansi-clj "0.1.1"]
-                 ^:source-dep [ancient-clj "0.7.0-SNAPSHOT"
+                 ^:source-dep [ancient-clj "0.7.0"
                                :exclusions [clj-http
                                             org.clojure/data.xml]]
 
