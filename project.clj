@@ -6,7 +6,9 @@
             :year 2013
             :key "mit"}
 
-  :plugins [[lein-monolith "1.0.1"]]
+  :plugins [[lein-monolith "1.0.1"]
+            [org.clojure/core.rrb-vector "0.1.0"
+             :exclusions [org.clojure/clojure]]]
 
   :monolith
   {:project-dirs ["ancient-clj" "lein-ancient"]})
