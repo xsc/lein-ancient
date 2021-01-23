@@ -69,7 +69,6 @@ function run_tests() {
 bump_version $LEVEL release
 adjust_ancient_clj_version
 run_tests
-exit 0
 commit_release
 deploy_artifacts
 bump_version
