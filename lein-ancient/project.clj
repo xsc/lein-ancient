@@ -1,6 +1,5 @@
-(defproject lein-ancient "0.7.0-SNAPSHOT"
+(defproject lein-ancient "inherited-from-parent"
   :description "Check your Projects for outdated Dependencies."
-  :url "https://github.com/xsc/lein-ancient"
   :dependencies [[org.clojure/clojure "1.10.1" :scope "provided"]
 
                  ;; often-used dependencies to include as source
@@ -29,9 +28,14 @@
                  [org.clojure/data.xml "0.2.0-alpha5"
                   :exclusions [org.clojure/clojure]
                   :scope "provided"]]
-  :scm {:dir ".."}
 
-  :plugins [[lein-isolate "0.2.1"]]
+  :plugins [[lein-isolate "0.2.1"]
+            [lein-parent "0.3.8"]
+            [org.clojure/core.rrb-vector "0.1.0"
+             :exclusions [org.clojure/clojure]]]
+  :parent-project {:path "../project.clj"
+                   :inherit [:version :license :url]}
+  :scm {:dir ".."}
   :middleware [leiningen.isolate/middleware]
 
   :eval-in :leiningen
