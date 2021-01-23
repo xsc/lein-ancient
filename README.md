@@ -24,7 +24,7 @@ Install `lein-ancient` by putting the following into the `:plugins` vector of
 the `:user` profile in your `~/.lein/profiles.clj`:
 
 ```clojure
-[lein-ancient "0.6.15"]
+[lein-ancient "0.7.0"]
 ```
 
 Once `lein-ancient` is installed, use Leiningen's built-in help feature to
