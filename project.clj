@@ -1,4 +1,4 @@
-(defproject lein-ancient-parent "0.7.0"
+(defproject lein-ancient-parent "0.7.1-SNAPSHOT"
   :description "Check your Projects for outdated Dependencies"
   :url "https://github.com/xsc/lein-ancient"
   :license {:name "MIT License"
