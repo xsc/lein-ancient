@@ -25,7 +25,9 @@
   ;; uses default credentials
   "s3p://maven/bucket"
   {:uri "s3p://maven/bucket"}
-  {:uri "s3://maven/bucket"})
+  {:uri "s3://maven/bucket"}
+  {:uri "gs://bucket/maven/releases/" :no-auth true}
+  {:uri "gs://bucket/maven/releases/"})
 
 (tabular
   (fact "about invalid loader specifications."

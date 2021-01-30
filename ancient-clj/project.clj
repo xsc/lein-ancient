@@ -1,6 +1,11 @@
 (defproject ancient-clj "inherited-from-parent"
   :description "Maven Version Utilities for Clojure"
-  :dependencies [[org.clojure/clojure "1.10.1" :scope "provided"]
+  :dependencies [[com.google.cloud/google-cloud-storage "1.90.0"
+                  :exclusions [com.fasterxml.jackson.core/jackson-core
+                               io.opencensus/opencensus-api
+                               org.apache.httpcomponents/httpclient]]
+                 [io.opencensus/opencensus-api "0.23.0"]
+                 [org.clojure/clojure "1.10.1" :scope "provided"]
                  [org.clojure/data.xml "0.2.0-alpha6"]
                  [version-clj "0.1.2"]
                  ;; Note that this is the samve version used by s3-wagon-private 1.3.0

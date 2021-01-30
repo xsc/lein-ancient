@@ -1,5 +1,6 @@
 (ns ancient-clj.io
   (:require [ancient-clj.io
+             [google-cloud-storage :refer [google-cloud-storage-loader]]
              [http :refer [http-loader]]
              [local :refer [local-loader]]
              [s3 :refer [s3-loader]]]
@@ -83,6 +84,16 @@
 (defmethod loader-for* nil
   [_]
   nil)
+
+(defmethod loader-for* :gs
+  [{:keys [^String uri] :as opts}]
+  {:pre [(re-matches #"gs://.*" uri)]}
+  (let [[bucket path] (some-> (re-find #"gs://(.*)" uri)
+                              ^String (second)
+                              (.split "/" 2))]
+    (assert (not (empty? bucket)))
+    (assert (not (empty? path)))
+    (google-cloud-storage-loader bucket (assoc opts :path path))))
 
 (defmethod loader-for* :http
   [{:keys [uri] :as opts}]
