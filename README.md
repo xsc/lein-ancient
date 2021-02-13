@@ -1,7 +1,7 @@
 # lein-ancient
 
-![CI](https://github.com/xsc/lein-ancient/workflows/CI/badge.svg?branch=master)
 [![Clojars Artifact](https://img.shields.io/clojars/v/lein-ancient.svg)](https://clojars.org/lein-ancient)
+![CI](https://github.com/xsc/lein-ancient/workflows/CI/badge.svg?branch=master)
 
 A [Leiningen][lein] plugin to check your project for outdated dependencies and
 plugins, as well as upgrade them if desired.
