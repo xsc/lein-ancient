@@ -1,4 +1,4 @@
-(defproject lein-ancient "1.0.0-SNAPSHOT"
+(defproject lein-ancient "1.0.0-RC1"
   :description "Check your Projects for outdated Dependencies."
   :url "https://github.com/xsc/lein-ancient"
   :license {:name "MIT"
