@@ -9,7 +9,7 @@
   [{:keys [id version]} [_ _ & {:keys [upgrade upgrade?] :or {upgrade []}}]]
   (if (or (false? upgrade)
           (false? upgrade?)
-          (contains? #{[["snapshot"]]
+          (contains? #{[[] ["snapshot"]]
                        [["release"]]
                        [["latest"]]}
                      version))
