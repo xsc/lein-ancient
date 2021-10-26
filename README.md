@@ -19,13 +19,6 @@ lein-ancient is destined for Leiningen >= 2.4.0.
 
 ## Usage
 
-Install `lein-ancient` by putting the following into the `:plugins` vector of
-the `:user` profile in your `~/.lein/profiles.clj`:
-
-```clojure
-[lein-ancient "0.7.0"]
-```
-
 Once `lein-ancient` is installed, use Leiningen's built-in help feature to
 see how to use it:
 
