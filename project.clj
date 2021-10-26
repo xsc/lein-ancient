@@ -6,15 +6,15 @@
             :url "https://choosealicense.com/licenses/mit"
             :year 2013
             :key "mit"}
-  :dependencies [[org.clojure/clojure "1.10.2" :scope "provided"]
+  :dependencies [[org.clojure/clojure "1.10.3" :scope "provided"]
 
                  ;; often-used dependencies to include as source
                  ;; (to avoid dependency conflicts)
                  ^:inline-dep [rewrite-clj "0.6.1"]
-                 ^:inline-dep [org.clojure/tools.reader "1.3.5"]
+                 ^:inline-dep [org.clojure/tools.reader "1.3.6"]
                  ^:inline-dep [potemkin "0.4.5"]
-                 ^:inline-dep [version-clj "2.0.1"]
-                 ^:inline-dep [jansi-clj "0.1.1"]
+                 ^:inline-dep [version-clj "2.0.2"]
+                 ^:inline-dep [jansi-clj "1.0.0"]
                  ^:inline-dep [ancient-clj "1.0.0"
                                :exclusions [clj-commons/pomegranate
                                             potemkin
